@@ -1,74 +1,74 @@
 {
-  "name": "i-softviewer-qc-system",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@material-ui/core": "^4.11.3",
-    "@material-ui/icons": "^4.11.2",
-    "@material-ui/lab": "^4.0.0-alpha.58",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
-    "@types/jest": "^26.0.24",
-    "@types/node": "^12.20.33",
-    "@types/react": "^17.0.30",
-    "@types/react-dom": "^17.0.9",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
-    "typescript": "^4.4.4",
-    "web-vitals": "^1.1.2",
-    "classnames": "^2.2.6",
-    "node-sass": "^5.0.0",
-    "react-router-dom": "^5.2.0",
-    "axios": "^0.21.1",
-    "ramda": "^0.27.1",
-    "react-icons": "^4.2.0"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "build:stage": "env-cmd -f ./.env.staging npm run build && rm -rf build-uat && mv build build-uat",
-    "build:prod": "env-cmd -f ./.env.production npm run build && rm -rf build-prod && mv build build-prod",
-    "build:all": "npm run build:prod && npm run build:stage",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "@types/jest": "^26.0.20",
-    "@types/node": "^12.20.5",
-    "@types/react": "^17.0.3",
-    "@types/react-dom": "^17.0.2",
-    "@types/react-router-dom": "^5.1.7",
-    "env-cmd": "^10.1.0",
-    "eslint": "^7.2.0",
-    "eslint-config-airbnb": "^18.2.1",
-    "eslint-config-airbnb-typescript": "^12.3.1",
-    "eslint-config-prettier": "^8.1.0",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-prettier": "^3.3.1",
-    "eslint-plugin-react": "^7.21.5",
-    "eslint-plugin-react-hooks": "^1.7.0",
-    "prettier": "^2.2.1",
-    "prettier-eslint": "^12.0.0"
-  }
+    "name": "i-softviewer-qc-frontend",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@material-ui/core": "^4.11.3",
+        "@material-ui/icons": "^4.11.2",
+        "@material-ui/lab": "^4.0.0-alpha.58",
+        "@testing-library/jest-dom": "^5.14.1",
+        "@testing-library/react": "^11.2.7",
+        "@testing-library/user-event": "^12.8.3",
+        "@types/jest": "^26.0.24",
+        "@types/node": "^12.20.33",
+        "@types/react": "^17.0.30",
+        "@types/react-dom": "^17.0.9",
+        "react": "^17.0.2",
+        "react-dom": "^17.0.2",
+        "react-scripts": "4.0.3",
+        "typescript": "^4.4.4",
+        "web-vitals": "^1.1.2",
+        "classnames": "^2.2.6",
+        "node-sass": "^5.0.0",
+        "react-router-dom": "^5.2.0",
+        "axios": "^0.21.1",
+        "ramda": "^0.27.1",
+        "react-icons": "^4.2.0"
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "build:stage": "env-cmd -f ./.env.staging npm run build && rm -rf build-uat && mv build build-uat",
+        "build:prod": "env-cmd -f ./.env.production npm run build && rm -rf build-prod && mv build build-prod",
+        "build:all": "npm run build:prod && npm run build:stage",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject"
+    },
+    "eslintConfig": {
+        "extends": [
+            "react-app",
+            "react-app/jest"
+        ]
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "@types/jest": "^26.0.20",
+        "@types/node": "^12.20.5",
+        "@types/react": "^17.0.3",
+        "@types/react-dom": "^17.0.2",
+        "@types/react-router-dom": "^5.1.7",
+        "env-cmd": "^10.1.0",
+        "eslint": "^7.2.0",
+        "eslint-config-airbnb": "^18.2.1",
+        "eslint-config-airbnb-typescript": "^12.3.1",
+        "eslint-config-prettier": "^8.1.0",
+        "eslint-plugin-import": "^2.22.1",
+        "eslint-plugin-jsx-a11y": "^6.4.1",
+        "eslint-plugin-prettier": "^3.3.1",
+        "eslint-plugin-react": "^7.21.5",
+        "eslint-plugin-react-hooks": "^1.7.0",
+        "prettier": "^2.2.1",
+        "prettier-eslint": "^12.0.0"
+    }
 }
