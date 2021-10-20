@@ -2,12 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import './index.scss';
+import { BrowserRouter } from 'react-router-dom';
+
 import App from './App';
+import initCornerstone from './initCornerstone';
 import reportWebVitals from './reportWebVitals';
 
+initCornerstone();
 ReactDOM.render(
     <React.StrictMode>
-        <App />
+        <BrowserRouter>
+            <App />
+        </BrowserRouter>
     </React.StrictMode>,
     document.getElementById('root'),
 );
