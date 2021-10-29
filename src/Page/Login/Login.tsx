@@ -62,6 +62,7 @@ export default function Login() {
                             name="account"
                             autoFocus
                             autoComplete="off"
+                            value="test"
                         />
                         <TextField
                             margin="normal"
@@ -72,6 +73,7 @@ export default function Login() {
                             type="password"
                             id="password"
                             autoComplete="off"
+                            value="test"
                         />
                         <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
                             Sign In

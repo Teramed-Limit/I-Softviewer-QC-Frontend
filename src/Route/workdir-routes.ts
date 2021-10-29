@@ -1,6 +1,7 @@
 import { RouteConfig } from '../interface/route-config';
 import AdvancedQualityControl from '../Page/AdvancedQualityControl/AdvancedQualityControl';
 import Home from '../Page/Home/Home';
+import ImageSelect from '../Page/ImageSelect/ImageSelect';
 import Log from '../Page/Log/Log';
 import NewStudy from '../Page/NewStudy/NewStudy';
 import QualityControl from '../Page/QualityControl/QualityControl';
@@ -9,6 +10,11 @@ import User from '../Page/User/User';
 import ViewerQualityControl from '../Page/ViewerQualityControl/ViewerQualityControl';
 
 export const workdirRoutes: RouteConfig[] = [
+    {
+        path: '/newStudy/viewer',
+        component: ImageSelect,
+        protected: true,
+    },
     {
         path: '/newStudy',
         component: NewStudy,

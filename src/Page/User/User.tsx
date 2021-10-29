@@ -3,7 +3,9 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import Typography from '@mui/material/Typography';
+
+import UserAccount from '../../Container/UserAccount/UserAccount';
+import UserRoles from '../../Container/UserRoles/UserRoles';
 
 interface TabPanelProps {
     children?: React.ReactNode;
@@ -12,23 +14,9 @@ interface TabPanelProps {
 }
 
 function TabPanel(props: TabPanelProps) {
-    const { children, value, index, ...other } = props;
+    const { children, value, index } = props;
 
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`simple-tabpanel-${index}`}
-            aria-labelledby={`simple-tab-${index}`}
-            {...other}
-        >
-            {value === index && (
-                <Box sx={{ p: 3 }}>
-                    <Typography>{children}</Typography>
-                </Box>
-            )}
-        </div>
-    );
+    return value === index ? <>{children}</> : null;
 }
 
 const User = () => {
@@ -39,22 +27,18 @@ const User = () => {
     };
 
     return (
-        <Box sx={{ width: '100%' }}>
+        <Box sx={{ width: '100%', height: '100%' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-                    <Tab label="Item One" />
-                    <Tab label="Item Two" />
-                    <Tab label="Item Three" />
+                <Tabs value={value} onChange={handleChange}>
+                    <Tab label="User Account" />
+                    <Tab label="User Roles" />
                 </Tabs>
             </Box>
             <TabPanel value={value} index={0}>
-                Item One
+                <UserAccount />
             </TabPanel>
             <TabPanel value={value} index={1}>
-                Item Two
-            </TabPanel>
-            <TabPanel value={value} index={2}>
-                Item Three
+                <UserRoles />
             </TabPanel>
         </Box>
     );

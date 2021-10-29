@@ -1,0 +1,17 @@
+.grid {
+	width: 100%;
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+	background-color: black;
+}
+
+.viewer {
+	height: 100%;
+	overflow: auto;
+	background-color: black;
+}
+
+.drawerPaper {
+	top: 72px !important;
+}

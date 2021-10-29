@@ -2,12 +2,15 @@ import cornerstone from 'cornerstone-core';
 import cornerstoneMath from 'cornerstone-math';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
+import cornerstoneWebImageLoader from 'cornerstone-web-image-loader';
 import dicomParser from 'dicom-parser';
 import Hammer from 'hammerjs';
 
+import cornerstoneFileImageLoader from './ImageLoader/cornerstoneFileImageLoader';
+
 declare global {
     interface Window {
-        cornerstone: typeof cornerstone;
+        cornerstone: any;
         cornerstoneTools: typeof cornerstoneTools;
     }
 }
@@ -17,9 +20,30 @@ export default function initCornerstone() {
     cornerstoneTools.external.cornerstone = cornerstone;
     cornerstoneTools.external.Hammer = Hammer;
     cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
-
-    //
-    cornerstoneTools.init();
+    cornerstoneTools.init({
+        /**
+         * When cornerstone elements are enabled,
+         * should `mouse` input events be listened for?
+         */
+        mouseEnabled: true,
+        /**
+         * When cornerstone elements are enabled,
+         * should `touch` input events be listened for?
+         */
+        touchEnabled: false,
+        /**
+         * A special flag that synchronizes newly enabled cornerstone elements. When
+         * enabled, their active tools are set to reflect tools that have been
+         * activated with `setToolActive`.
+         */
+        globalToolSyncEnabled: false,
+        /**
+         * Most tools have an associated canvas or SVG cursor. Enabling this flag
+         * causes the cursor to be shown when the tool is active, bound to left
+         * click, and the user is hovering the enabledElement.
+         */
+        showSVGCursors: true,
+    });
 
     // Preferences
     const fontFamily =
@@ -32,6 +56,8 @@ export default function initCornerstone() {
     cornerstoneTools.store.state.touchProximity = 40;
 
     // IMAGE LOADER
+    cornerstoneFileImageLoader.external.cornerstone = cornerstone;
+    cornerstoneWebImageLoader.external.cornerstone = cornerstone;
     cornerstoneWADOImageLoader.external.cornerstone = cornerstone;
     cornerstoneWADOImageLoader.external.dicomParser = dicomParser;
     cornerstoneWADOImageLoader.webWorkerManager.initialize({

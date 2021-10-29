@@ -1,0 +1,15 @@
+.container {
+    display: flex;
+    flex-direction: row;
+}
+
+.sidebar {
+    padding: 5px;
+}
+
+.content {
+    padding: 5px;
+    display: flex;
+    flex: 70%;
+    flex-direction: column-reverse;
+}

@@ -1,0 +1,32 @@
+.toolbarButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #9ccef9;
+    text-align: center;
+    padding: 8px;
+    height: fit-content;
+    cursor: pointer;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+
+    &:hover {
+        color: #fff !important;
+    }
+
+    svg {
+        font-size: 36px;
+    }
+
+    .label {
+        font-size: 12px;
+        font-weight: 500;
+    }
+}
+
+.active {
+    color: rgb(0, 255, 0) !important;
+}

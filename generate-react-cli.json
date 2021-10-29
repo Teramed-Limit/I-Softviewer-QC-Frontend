@@ -1,30 +1,52 @@
 {
-  "usesTypeScript": true,
-  "usesCssModule": true,
-  "cssPreprocessor": "scss",
-  "testLibrary": "Testing Library",
-  "component": {
-    "default": {
-      "customTemplates": {
-        "component": "src/templates/component/TemplateName.tsx",
-        "style": "src/templates/component/TemplateName.module.scss"
-      },
-      "path": "src/components",
-      "withStyle": true,
-      "withTest": false,
-      "withStory": false,
-      "withLazy": false
-    },
-    "page": {
-      "customTemplates": {
-        "component": "src/templates/component/TemplateName.tsx",
-        "style": "src/templates/component/TemplateName.module.scss"
-      },
-      "path": "src/page",
-      "withStyle": true,
-      "withTest": false,
-      "withStory": false,
-      "withLazy": false
+    "usesTypeScript": true,
+    "usesCssModule": true,
+    "cssPreprocessor": "scss",
+    "testLibrary": "Testing Library",
+    "component": {
+        "default": {
+            "customTemplates": {
+                "component": "src/templates/component/TemplateName.tsx",
+                "style": "src/templates/component/TemplateName.module.scss"
+            },
+            "path": "src/components",
+            "withStyle": true,
+            "withTest": false,
+            "withStory": false,
+            "withLazy": false
+        },
+        "page": {
+            "customTemplates": {
+                "component": "src/templates/component/TemplateName.tsx",
+                "style": "src/templates/component/TemplateName.module.scss"
+            },
+            "path": "src/page",
+            "withStyle": true,
+            "withTest": false,
+            "withStory": false,
+            "withLazy": false
+        },
+        "container": {
+            "customTemplates": {
+                "component": "src/templates/component/TemplateName.tsx",
+                "style": "src/templates/component/TemplateName.module.scss"
+            },
+            "path": "src/container",
+            "withStyle": true,
+            "withTest": false,
+            "withStory": false,
+            "withLazy": false
+        },
+        "layout": {
+            "customTemplates": {
+                "component": "src/templates/component/TemplateName.tsx",
+                "style": "src/templates/component/TemplateName.module.scss"
+            },
+            "path": "src/layout",
+            "withStyle": true,
+            "withTest": false,
+            "withStory": false,
+            "withLazy": false
+        }
     }
-  }
 }
