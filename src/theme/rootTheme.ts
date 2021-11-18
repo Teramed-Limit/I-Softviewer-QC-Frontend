@@ -17,5 +17,22 @@ export const rootTheme = createTheme({
                 },
             },
         },
+        MuiCheckbox: {
+            defaultProps: {
+                size: 'small',
+            },
+            styleOverrides: {
+                root: {
+                    padding: '4px',
+                },
+            },
+        },
+        MuiPaper: {
+            styleOverrides: {
+                root: {
+                    transition: 'none',
+                },
+            },
+        },
     },
 });

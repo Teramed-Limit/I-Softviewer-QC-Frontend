@@ -1,48 +1,113 @@
-import React from 'react';
+import React, { useState } from 'react';
 
+import { Button } from '@mui/material';
 import { ColDef } from 'ag-grid-community';
-import cx from 'classnames';
+import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
 
 import GridTable from '../../Components/GridTable/GridTable';
+import BaseModal from '../../Container/BaseModal/BaseModal';
+import { useGridTable } from '../../hooks/useGridTable';
 import { FormDef } from '../../interface/form-define';
 import FormEditor from '../FormEditor/FormEditor';
 import classes from './GridTableEditor.module.scss';
 
 interface Props {
-    gridHeader?: string;
-    formHeader?: string;
+    apiPath: string;
+    identityId: string;
     colDef: ColDef[];
     formDef: FormDef;
-    rowData: any[];
-    orientation?: 'vertical' | 'horizontal';
-    buttonBar?: React.ReactNode;
+    initFormData: any;
+    addCallBack?: () => void;
+    updateCallBack?: () => void;
+    deleteCallBack?: () => void;
+    onSelectionChanged?: (gridApi: GridApi) => void;
 }
 
 const GridTableEditor = ({
-    gridHeader = '',
-    formHeader = '',
+    apiPath,
+    identityId,
     colDef,
     formDef,
-    rowData,
-    orientation = 'vertical',
-    buttonBar,
+    initFormData,
+    deleteCallBack,
+    addCallBack,
+    updateCallBack,
+    onSelectionChanged,
 }: Props) => {
+    const [formIsValid, setFormIsValid] = useState(false);
+    const {
+        open,
+        rowData,
+        colDefs,
+        editFormData,
+        saveType,
+        setOpen,
+        setEditFormData,
+        getRowNodeId,
+        gridReady,
+        updateFormData,
+        saveRow,
+        openEditor,
+    } = useGridTable({
+        apiPath,
+        identityId,
+        colDef,
+        deleteCallBack,
+        addCallBack,
+        updateCallBack,
+        initFormData,
+    });
+
+    const formInvalidChanged = (isValid) => {
+        setFormIsValid(isValid);
+    };
+
     return (
         <>
-            <div
-                className={cx(classes.container, {
-                    [classes.vertical]: orientation === 'vertical',
-                })}
-            >
-                {gridHeader === '' ? null : <h2>{gridHeader}</h2>}
-                <div className={`ag-theme-alpine ${classes.gridContainer}`}>
-                    <GridTable columnDefs={colDef} rowData={rowData} />
+            <div className={`ag-theme-alpine ${classes.gridContainer}`}>
+                <div className={classes.buttonGroup}>
+                    <Button variant="text" onClick={() => openEditor(editFormData, 'add')}>
+                        New
+                    </Button>
                 </div>
+                <GridTable
+                    rowSelection="single"
+                    columnDefs={colDefs}
+                    rowData={rowData}
+                    gridReady={gridReady}
+                    getRowNodeId={getRowNodeId}
+                    onSelectionChanged={onSelectionChanged}
+                />
             </div>
-
-            {buttonBar}
-
-            <FormEditor header={formHeader} formDef={formDef} />
+            <BaseModal width="50%" open={open} setOpen={setOpen}>
+                <FormEditor
+                    saveType={saveType}
+                    formDef={formDef}
+                    formData={editFormData}
+                    formDataChanged={updateFormData}
+                    formInvalidChanged={formInvalidChanged}
+                />
+                <div className={classes.footer}>
+                    <Button
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => {
+                            setEditFormData(initFormData);
+                            setOpen(false);
+                        }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        disabled={!formIsValid}
+                        variant="contained"
+                        color="primary"
+                        onClick={() => saveRow(saveType, editFormData)}
+                    >
+                        Save
+                    </Button>
+                </div>
+            </BaseModal>
         </>
     );
 };

@@ -11,11 +11,11 @@ export const define = {
             sections: [
                 {
                     fields: [
-                        { field: 'Name', label: 'Name' },
-                        { field: 'LocalAE', label: 'Local AE' },
-                        { field: 'ServerAE', label: 'ServerAE' },
-                        { field: 'Port', label: 'Port' },
-                        { field: 'Enabled', label: 'Enabled' },
+                        { field: 'Name', label: 'Name', type: 'Text' },
+                        { field: 'LocalAE', label: 'Local AE', type: 'Text' },
+                        { field: 'ServerAE', label: 'ServerAE', type: 'Text' },
+                        { field: 'Port', label: 'Port', type: 'Text' },
+                        { field: 'Enabled', label: 'Enabled', type: 'Text' },
                     ],
                 },
             ],
@@ -23,15 +23,45 @@ export const define = {
     },
     userRoleGroup: {
         colDef: [
-            { field: 'GroupName', headerName: 'Group Name', width: 200 },
-            { field: 'Description', headerName: 'Description', width: 200 },
+            {
+                field: 'deleteAction',
+                headerName: '',
+                width: 40,
+                cellStyle: { padding: 0 },
+                cellRenderer: 'iconRenderer',
+                cellRendererParams: {
+                    clicked: () => {},
+                    type: 'clear',
+                    color: 'error',
+                },
+            },
+            {
+                field: 'editAction',
+                headerName: '',
+                width: 40,
+                cellStyle: { padding: 0 },
+                cellRenderer: 'iconRenderer',
+                cellRendererParams: {
+                    clicked: () => {},
+                    type: 'edit',
+                    color: 'primary',
+                },
+            },
+            { field: 'roleName', headerName: 'Role Name', width: 200 },
+            { field: 'description', headerName: 'Description', width: 200 },
         ],
         formDef: {
             sections: [
                 {
                     fields: [
-                        { field: 'GroupName', label: 'Group Name' },
-                        { field: 'Description', label: 'Description' },
+                        {
+                            field: 'roleName',
+                            label: 'Role Name',
+                            type: 'Text',
+                            readOnly: true,
+                            validation: { type: 'Required' },
+                        },
+                        { field: 'description', label: 'Description', type: 'Text' },
                     ],
                 },
             ],
@@ -39,20 +69,60 @@ export const define = {
     },
     userAccount: {
         colDef: [
-            { field: 'UserName', headerName: 'User Name', width: 200 },
-            { field: 'Password', headerName: 'Password', width: 200 },
-            { field: 'PasswordExpiringDate', headerName: 'Password Expiring Date', width: 200 },
+            {
+                field: 'deleteAction',
+                headerName: '',
+                width: 40,
+                cellStyle: { padding: 0 },
+                cellRenderer: 'iconRenderer',
+                cellRendererParams: {
+                    clicked: () => {},
+                    type: 'clear',
+                    color: 'error',
+                },
+            },
+            {
+                field: 'editAction',
+                headerName: '',
+                width: 40,
+                cellStyle: { padding: 0 },
+                cellRenderer: 'iconRenderer',
+                cellRendererParams: {
+                    clicked: () => {},
+                    type: 'edit',
+                    color: 'primary',
+                },
+            },
+            { field: 'userID', headerName: 'User Id', width: 200 },
+            { field: 'userPassword', headerName: 'Password', width: 200 },
+            { field: 'doctorCName', headerName: 'Doctor CName', width: 200 },
+            { field: 'doctorEName', headerName: 'Doctor EName', width: 200 },
+            { field: 'roleList', headerName: 'Role Group', width: 200, cellRenderer: 'chipRenderer', flex: 1 },
         ],
         formDef: {
             sections: [
                 {
-                    fields: [{ field: 'UserName', label: 'User Name' }],
-                },
-                {
                     fields: [
-                        { field: 'Password', label: 'Password' },
-                        { field: 'ConfirmPassword', label: 'ConfirmPassword' },
-                        { field: 'PasswordExpiringDate', label: 'Password Expiring Date' },
+                        {
+                            field: 'userID',
+                            label: 'User Id',
+                            type: 'Text',
+                            readOnly: true,
+                            validation: { type: 'Required' },
+                        },
+                        { field: 'userPassword', label: 'Password', type: 'Text', validation: { type: 'Required' } },
+                        { field: 'doctorCName', label: 'Doctor CName', type: 'Text' },
+                        { field: 'doctorEName', label: 'Doctor EName', type: 'Text' },
+                        {
+                            field: 'roleList',
+                            label: 'Role Group',
+                            type: 'MultiSelect',
+                            optionSource: {
+                                type: 'http',
+                                source: 'role',
+                                key: 'roleName',
+                            },
+                        },
                     ],
                 },
             ],
@@ -74,19 +144,19 @@ export const define = {
             sections: [
                 {
                     fields: [
-                        { field: 'PatientID', label: 'PatientID', width: 200 },
-                        { field: 'PatientName', label: 'PatientName', width: 200 },
-                        { field: 'Birthday', label: 'Birthday', width: 200 },
-                        { field: 'Sex', label: 'Sex', width: 200 },
-                        { field: 'Exam Date', label: 'ExamDate', width: 200 },
+                        { field: 'PatientID', label: 'PatientID', type: 'Text' },
+                        { field: 'PatientName', label: 'PatientName', type: 'Text' },
+                        { field: 'Birthday', label: 'Birthday', type: 'Text' },
+                        { field: 'Sex', label: 'Sex', type: 'Text' },
+                        { field: 'Exam Date', label: 'ExamDate', type: 'Text' },
                     ],
                 },
                 {
                     fields: [
-                        { field: 'Physician Name', label: 'PhysicianName' },
-                        { field: 'Description', label: 'Description' },
-                        { field: 'Modality', label: 'Modality' },
-                        { field: 'AccessionNum', label: 'AccessionNum' },
+                        { field: 'Physician Name', label: 'PhysicianName', type: 'Text' },
+                        { field: 'Description', label: 'Description', type: 'Text' },
+                        { field: 'Modality', label: 'Modality', type: 'Text' },
+                        { field: 'AccessionNum', label: 'AccessionNum', type: 'Text' },
                     ],
                 },
             ],

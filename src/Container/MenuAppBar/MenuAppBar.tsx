@@ -12,10 +12,17 @@ import Toolbar from '@mui/material/Toolbar';
 import { useHistory } from 'react-router-dom';
 
 import logo from '../../asserts/logo.png';
+import { useAuth } from '../../hooks/useAuth';
 import classes from './MenuAppBar.module.scss';
 
 function MenuAppBar() {
     const history = useHistory();
+    const { logout } = useAuth();
+
+    const handleLogout = (event) => {
+        event.preventDefault();
+        logout();
+    };
 
     return (
         <AppBar position="static">
@@ -49,7 +56,7 @@ function MenuAppBar() {
                         </IconButton>
                     </Tooltip>
                     <Tooltip title="Logout">
-                        <IconButton size="large" color="inherit">
+                        <IconButton size="large" color="inherit" onClick={(e) => handleLogout(e)}>
                             <LogoutIcon />
                         </IconButton>
                     </Tooltip>

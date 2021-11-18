@@ -1,22 +1,19 @@
 .container {
     display: flex;
     flex-direction: column;
-}
-
-.buttonGroup {
-    align-self: flex-end;
-    margin-top: 8px;
+    height: calc(100% - 49px);
+    overflow: auto;
 }
 
 .functionContent {
     display: flex;
     flex-direction: row;
+    max-height: 300px;
+    flex-wrap: wrap;
+    padding-left: 36px;
+    padding-right: 36px;
 
     .functionList {
-        margin: 4px;
-        padding: 4px;
-        border: wheat 1px solid;
-        display: flex;
-        flex-direction: column;
+        flex: 1 1 33%;
     }
 }

@@ -1,8 +1,9 @@
 import * as React from 'react';
 
 import { Redirect, Route } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
-import { useAuth } from '../../hooks/useAuth';
+import { authInfo } from '../../atoms/auth';
 
 interface Props {
     path: string;
@@ -10,12 +11,12 @@ interface Props {
 }
 
 function PrivateRoute({ children, ...rest }: Props) {
-    const auth = useAuth();
+    const auth = useRecoilValue(authInfo);
     return (
         <Route
             {...rest}
             render={({ location }) =>
-                auth.user ? (
+                auth ? (
                     children
                 ) : (
                     <Redirect

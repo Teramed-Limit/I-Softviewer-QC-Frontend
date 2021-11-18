@@ -1,17 +1,13 @@
 .container {
     display: flex;
     flex-direction: row;
-    border: 1px solid #babfc7;
-    border-radius: 4px;
-    padding: 16px 0;
+    //border: 1px solid #babfc7;
+    //border-radius: 4px;
+    //padding: 16px 0;
 }
 
 .section {
     padding: 0 10px;
     display: flex;
     flex-direction: column;
-}
-
-.field {
-    margin: 8px !important;
 }

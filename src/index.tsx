@@ -2,17 +2,24 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 import './index.scss';
+import { ThemeProvider } from '@mui/material';
 import { BrowserRouter } from 'react-router-dom';
+import { RecoilRoot } from 'recoil';
 
 import App from './App';
 import initCornerstone from './initCornerstone';
 import reportWebVitals from './reportWebVitals';
+import { rootTheme } from './theme/rootTheme';
 
 initCornerstone();
 ReactDOM.render(
     <React.StrictMode>
         <BrowserRouter>
-            <App />
+            <RecoilRoot>
+                <ThemeProvider theme={rootTheme}>
+                    <App />
+                </ThemeProvider>
+            </RecoilRoot>
         </BrowserRouter>
     </React.StrictMode>,
     document.getElementById('root'),

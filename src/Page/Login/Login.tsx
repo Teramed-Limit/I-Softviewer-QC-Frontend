@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Avatar from '@mui/material/Avatar';
@@ -9,29 +10,26 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import { useAuth } from '../../hooks/useAuth';
+import classes from './Login.module.scss';
 
 const theme = createTheme();
 
 export default function Login() {
-    const history = useHistory();
     const location = useLocation<{ from: { pathname: string; search: string } }>();
-    const auth = useAuth();
+    const [password, setPassword] = useState('');
+    const [userId, setUserId] = useState('');
+
+    const { login, message } = useAuth();
 
     const { from } = location.state || { from: { pathname: '/home' } };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // const data = new FormData(event.currentTarget);
-        // console.log({
-        //     email: data.get('account'),
-        //     password: data.get('password'),
-        // });
-        auth.signin(() => {
-            history.replace(from);
-        });
+        const data = new FormData(event.currentTarget);
+        login(data.get('username'), data.get('password'), from);
     };
 
     return (
@@ -57,12 +55,13 @@ export default function Login() {
                             margin="normal"
                             required
                             fullWidth
-                            id="account"
-                            label="Account"
-                            name="account"
+                            id="username"
+                            label="User"
+                            name="username"
                             autoFocus
                             autoComplete="off"
-                            value="test"
+                            value={userId}
+                            onChange={(e) => setUserId(e.target.value)}
                         />
                         <TextField
                             margin="normal"
@@ -73,9 +72,11 @@ export default function Login() {
                             type="password"
                             id="password"
                             autoComplete="off"
-                            value="test"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
-                        <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+                        <div className={classes.message}>{message}</div>
+                        <Button type="submit" fullWidth variant="contained" sx={{ mt: 2, mb: 2 }}>
                             Sign In
                         </Button>
                     </Box>

@@ -4,9 +4,7 @@ import { Stack } from '@mui/material';
 import Button from '@mui/material/Button';
 import { useHistory } from 'react-router-dom';
 
-import { define } from '../../constant/setting-define';
 import { StudyParams } from '../../interface/study-params';
-import GridTableEditor from '../../Layout/GridTableEditor/GridTableEditor';
 import classes from './NewStudy.module.scss';
 
 const NewStudy = () => {
@@ -32,14 +30,7 @@ const NewStudy = () => {
                     Next
                 </Button>
             </Stack>
-            <div className={classes.content}>
-                <GridTableEditor
-                    formHeader="Study Data"
-                    colDef={define.studyData.colDef}
-                    formDef={define.studyData.formDef}
-                    rowData={[]}
-                />
-            </div>
+            <div className={classes.content} />
         </div>
     );
 };

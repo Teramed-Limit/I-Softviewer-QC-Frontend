@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 
 import { Button, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
-import axios from 'axios';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 
 import DicomViewer from '../../Components/DicomViewer/DicomViewer';
@@ -62,12 +61,6 @@ const ImageSelect = () => {
             formData.append('name', 'test');
             formData.append('file', data.files);
         });
-
-        console.log(formData);
-        axios
-            .post('http://localhost:56631/WeatherForecast', formData)
-            .then((response) => console.log(response))
-            .catch((error) => console.log(error));
     };
 
     return (
