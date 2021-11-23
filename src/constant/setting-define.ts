@@ -130,36 +130,24 @@ export const define = {
     },
     studyData: {
         colDef: [
-            { field: 'PatientID', headerName: 'PatientID', width: 200 },
-            { field: 'PatientName', headerName: 'PatientName', width: 200 },
-            { field: 'Birthday', headerName: 'Birthday', width: 200 },
-            { field: 'Sex', headerName: 'Sex', width: 200 },
-            { field: 'Exam Date', headerName: 'ExamDate', width: 200 },
-            { field: 'Physician Name', headerName: 'PhysicianName', width: 200 },
-            { field: 'Description', headerName: 'Description', width: 200 },
-            { field: 'Modality', headerName: 'Modality', width: 200 },
-            { field: 'AccessionNum', headerName: 'AccessionNum', width: 200 },
+            { field: 'cumcNo', headerName: 'Cumc No', width: 120 },
+            { field: 'episodeNo', headerName: 'EpisodeNo', width: 180 },
+            { field: 'documentNumber', headerName: 'Document Number', width: 160 },
+            { field: 'nameChinese', headerName: 'Chinese Name', width: 160 },
+            { field: 'nameEng', headerName: 'Eng Name', width: 160 },
+            { field: 'birthdate', headerName: 'Birthdate', width: 120 },
+            // { field: 'admissionDate', headerName: 'admissionDate', width: 120 },
+            { field: 'documentType', headerName: 'Document Type', width: 180 },
+            { field: 'dept', headerName: 'Dept', width: 120 },
         ],
-        formDef: {
-            sections: [
-                {
-                    fields: [
-                        { field: 'PatientID', label: 'PatientID', type: 'Text' },
-                        { field: 'PatientName', label: 'PatientName', type: 'Text' },
-                        { field: 'Birthday', label: 'Birthday', type: 'Text' },
-                        { field: 'Sex', label: 'Sex', type: 'Text' },
-                        { field: 'Exam Date', label: 'ExamDate', type: 'Text' },
-                    ],
-                },
-                {
-                    fields: [
-                        { field: 'Physician Name', label: 'PhysicianName', type: 'Text' },
-                        { field: 'Description', label: 'Description', type: 'Text' },
-                        { field: 'Modality', label: 'Modality', type: 'Text' },
-                        { field: 'AccessionNum', label: 'AccessionNum', type: 'Text' },
-                    ],
-                },
-            ],
-        },
     },
 };
+
+// export const queryField = [
+//     { field: 'PatientID', label: 'PatientID', type: 'Text' },
+//     { field: 'PatientName', label: 'PatientName', type: 'Text' },
+//     { field: 'AccessionNum', label: 'AccessionNum', type: 'Text' },
+//     { field: 'Physician Name', label: 'PhysicianName', type: 'Text' },
+//     { field: 'Modality', label: 'Modality', type: 'Text' },
+//     { field: 'Exam Date', label: 'ExamDate', type: 'Text' },
+// ];

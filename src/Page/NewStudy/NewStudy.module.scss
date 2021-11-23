@@ -1,6 +1,7 @@
 .container {
     display: flex;
     flex-direction: row;
+    height: 100%;
 }
 
 .sidebar {
@@ -8,8 +9,25 @@
 }
 
 .content {
-    padding: 5px;
     display: flex;
     flex: 70%;
-    flex-direction: column-reverse;
+    flex-direction: column;
+
+    .header {
+        display: flex;
+        flex-direction: row;
+        > * {
+            margin-right: 4px;
+        }
+    }
+
+    .body {
+        margin: 6px 0;
+        flex: 1 1 auto;
+    }
+
+    .footer {
+        display: flex;
+        justify-content: flex-end;
+    }
 }

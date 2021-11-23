@@ -12,7 +12,7 @@ interface Props {
     formDef: FormDef;
     formData: any;
     formDataChanged: (field, value) => void;
-    formInvalidChanged: (isValid: boolean) => void;
+    formInvalidChanged?: (isValid: boolean) => void;
     header?: string;
 }
 
@@ -44,7 +44,7 @@ const FormEditor = ({ saveType, formDef, formData, formDataChanged, formInvalidC
 
     useEffect(() => {
         const formIsValid = Object.entries(formValidateRecord).every(([, value]) => value);
-        formInvalidChanged(formIsValid);
+        formInvalidChanged?.(formIsValid);
     }, [formValidateRecord, formInvalidChanged]);
 
     return (

@@ -11,6 +11,27 @@ export const generateUUID = () => {
     return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4()}${s4()}${s4()}`;
 };
 
+function getRandom(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function randomNum(num) {
+    let text = '';
+    for (let i = 0; i < num; i++) text += getRandom(0, 9);
+    return text;
+}
+
+function randomLetter(max) {
+    let text = '';
+    const possible = 'abcdefghijklmnopqrstuvwxyz';
+    for (let i = 0; i < max; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text.toUpperCase();
+}
+
+export function generateAccessionNum() {
+    return `A${randomLetter(1)}${randomNum(8)}`;
+}
+
 export const coerceArray = (ary: string | any[]) => {
     if (Array.isArray(ary)) {
         return ary;
