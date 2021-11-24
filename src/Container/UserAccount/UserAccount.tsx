@@ -2,7 +2,7 @@ import React from 'react';
 
 import { define } from '../../constant/setting-define';
 import GridTableEditor from '../../Layout/GridTableEditor/GridTableEditor';
-import classes from '../UserRoles/UserRoles.module.scss';
+import classes from './UserAccount.module.scss';
 
 const initFormData = {
     createDateTime: '',

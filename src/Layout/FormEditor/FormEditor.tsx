@@ -48,7 +48,7 @@ const FormEditor = ({ saveType, formDef, formData, formDataChanged, formInvalidC
     }, [formValidateRecord, formInvalidChanged]);
 
     return (
-        <div>
+        <>
             {header === '' ? null : <h2>{header}</h2>}
             <div className={classes.container}>
                 {formDef.sections.map((section, index) => {
@@ -83,7 +83,7 @@ const FormEditor = ({ saveType, formDef, formData, formDataChanged, formInvalidC
                     );
                 })}
             </div>
-        </div>
+        </>
     );
 };
 

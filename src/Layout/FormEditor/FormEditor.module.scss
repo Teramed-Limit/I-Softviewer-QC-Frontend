@@ -1,9 +1,8 @@
 .container {
     display: flex;
     flex-direction: row;
-    //border: 1px solid #babfc7;
-    //border-radius: 4px;
-    //padding: 16px 0;
+    max-height: inherit;
+    overflow: auto;
 }
 
 .section {

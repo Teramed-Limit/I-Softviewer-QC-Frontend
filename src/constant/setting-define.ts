@@ -1,21 +1,74 @@
 export const define = {
     dicomSend: {
         colDef: [
-            { field: 'Name', headerName: 'Name', width: 200 },
-            { field: 'LocalAE', headerName: 'Local AE', width: 200 },
-            { field: 'ServerAE', headerName: 'Server AE', width: 200 },
-            { field: 'Port', headerName: 'Port', width: 200 },
-            { field: 'Enabled', headerName: 'Enabled', width: 80 },
+            { field: 'name', headerName: 'Name', width: 160 },
+            { field: 'aeTitle', headerName: 'AETitle', width: 160 },
+            { field: 'ipAddress', headerName: 'IP', width: 120 },
+            { field: 'portNumber', headerName: 'Port', width: 100 },
+            { field: 'remoteAETitle', headerName: 'RemoteAETitle', width: 160 },
+            { field: 'description', headerName: 'Description', flex: 1 },
+            {
+                field: 'worklistMatchKeys',
+                headerName: 'Worklist MatchKeys',
+                width: 180,
+                cellRenderer: 'xmlViewerRenderer',
+            },
+            {
+                field: 'worklistReturnKeys',
+                headerName: 'Worklist ReturnKeys',
+                width: 180,
+                cellRenderer: 'xmlViewerRenderer',
+            },
         ],
         formDef: {
             sections: [
                 {
                     fields: [
-                        { field: 'Name', label: 'Name', type: 'Text' },
-                        { field: 'LocalAE', label: 'Local AE', type: 'Text' },
-                        { field: 'ServerAE', label: 'ServerAE', type: 'Text' },
-                        { field: 'Port', label: 'Port', type: 'Text' },
-                        { field: 'Enabled', label: 'Enabled', type: 'Text' },
+                        {
+                            field: 'name',
+                            label: 'Name',
+                            width: 160,
+                            type: 'Text',
+                            readOnly: true,
+                            validation: { type: 'Required' },
+                        },
+                        {
+                            field: 'aeTitle',
+                            label: 'AETitle',
+                            width: 160,
+                            type: 'Text',
+                            validation: { type: 'Required' },
+                        },
+                        { field: 'ipAddress', label: 'IP', width: 120, type: 'Text', validation: { type: 'Required' } },
+                        {
+                            field: 'portNumber',
+                            label: 'Port',
+                            width: 100,
+                            type: 'Number',
+                            validation: { type: 'Required' },
+                        },
+                        {
+                            field: 'remoteAETitle',
+                            label: 'RemoteAETitle',
+                            width: 160,
+                            type: 'Text',
+                            validation: { type: 'Required' },
+                        },
+                        { field: 'description', label: 'Description', flex: 1, type: 'Text' },
+                        {
+                            field: 'worklistMatchKeys',
+                            label: 'Worklist MatchKeys',
+                            width: 180,
+                            cellRenderer: 'xmlViewerRenderer',
+                            type: 'Textarea',
+                        },
+                        {
+                            field: 'worklistReturnKeys',
+                            label: 'Worklist ReturnKeys',
+                            width: 180,
+                            cellRenderer: 'xmlViewerRenderer',
+                            type: 'Textarea',
+                        },
                     ],
                 },
             ],
@@ -23,30 +76,6 @@ export const define = {
     },
     userRoleGroup: {
         colDef: [
-            {
-                field: 'deleteAction',
-                headerName: '',
-                width: 40,
-                cellStyle: { padding: 0 },
-                cellRenderer: 'iconRenderer',
-                cellRendererParams: {
-                    clicked: () => {},
-                    type: 'clear',
-                    color: 'error',
-                },
-            },
-            {
-                field: 'editAction',
-                headerName: '',
-                width: 40,
-                cellStyle: { padding: 0 },
-                cellRenderer: 'iconRenderer',
-                cellRendererParams: {
-                    clicked: () => {},
-                    type: 'edit',
-                    color: 'primary',
-                },
-            },
             { field: 'roleName', headerName: 'Role Name', width: 200 },
             { field: 'description', headerName: 'Description', width: 200 },
         ],
@@ -69,30 +98,6 @@ export const define = {
     },
     userAccount: {
         colDef: [
-            {
-                field: 'deleteAction',
-                headerName: '',
-                width: 40,
-                cellStyle: { padding: 0 },
-                cellRenderer: 'iconRenderer',
-                cellRendererParams: {
-                    clicked: () => {},
-                    type: 'clear',
-                    color: 'error',
-                },
-            },
-            {
-                field: 'editAction',
-                headerName: '',
-                width: 40,
-                cellStyle: { padding: 0 },
-                cellRenderer: 'iconRenderer',
-                cellRendererParams: {
-                    clicked: () => {},
-                    type: 'edit',
-                    color: 'primary',
-                },
-            },
             { field: 'userID', headerName: 'User Id', width: 200 },
             { field: 'userPassword', headerName: 'Password', width: 200 },
             { field: 'doctorCName', headerName: 'Doctor CName', width: 200 },

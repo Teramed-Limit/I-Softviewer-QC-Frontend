@@ -79,7 +79,7 @@ const GridTableEditor = ({
                     onSelectionChanged={onSelectionChanged}
                 />
             </div>
-            <BaseModal width="50%" open={open} setOpen={setOpen}>
+            <BaseModal width="80%" maxHeight="80%" open={open} setOpen={setOpen}>
                 <FormEditor
                     saveType={saveType}
                     formDef={formDef}

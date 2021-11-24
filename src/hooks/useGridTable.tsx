@@ -19,6 +19,33 @@ const dispatchEvent = (colDefs: ColDef[], fieldId: string, event: (param) => voi
     return colDefs;
 };
 
+const gridActionButtons = [
+    {
+        field: 'deleteAction',
+        headerName: '',
+        width: 40,
+        cellStyle: { padding: 0 },
+        cellRenderer: 'iconRenderer',
+        cellRendererParams: {
+            clicked: () => {},
+            type: 'clear',
+            color: 'error',
+        },
+    },
+    {
+        field: 'editAction',
+        headerName: '',
+        width: 40,
+        cellStyle: { padding: 0 },
+        cellRenderer: 'iconRenderer',
+        cellRendererParams: {
+            clicked: () => {},
+            type: 'edit',
+            color: 'primary',
+        },
+    },
+];
+
 interface Props<T> {
     apiPath: string;
     identityId: string;
@@ -79,7 +106,7 @@ export const useGridTable = <T,>({
     }, []);
 
     useEffect(() => {
-        let mutateColDef: ColDef[] = [...colDef];
+        let mutateColDef: ColDef[] = [...gridActionButtons, ...colDef];
         mutateColDef = dispatchEvent(mutateColDef, 'editAction', (param) => openEditor(param.data, 'update'));
         mutateColDef = dispatchEvent(mutateColDef, 'deleteAction', (param) => deleteRow(param));
         setColDefs(mutateColDef);

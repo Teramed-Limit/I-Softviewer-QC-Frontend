@@ -12,6 +12,7 @@ import ButtonCell from './CellRenderer/ButtonCell/ButtonCell';
 import CheckboxCell from './CellRenderer/CheckboxCell/CheckboxCell';
 import ChipCell from './CellRenderer/ChipCell/ChipCell';
 import IconCell from './CellRenderer/IconCell/IconCell';
+import XmlViewerCell from './CellRenderer/XmlViewerCell/XmlViewerCell';
 import classes from './GridTable.module.scss';
 
 interface TableProps {
@@ -29,6 +30,7 @@ const frameworkComponents = {
     buttonRenderer: ButtonCell,
     chipRenderer: ChipCell,
     iconRenderer: IconCell,
+    xmlViewerRenderer: XmlViewerCell,
 };
 
 function GridTable({
