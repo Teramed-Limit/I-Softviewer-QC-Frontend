@@ -16,7 +16,7 @@ interface Props {
 
 const TextEdit = ({ field, value, isValid, autoFocus, readOnly = false, onValueChanged }: Props) => {
     const [isDirty, setDirty] = useState(false);
-    const [validationMsg] = useState(field.validation ? `- ${ValidationMessage[field.validation.type]}` : '');
+    const [validationMsg] = useState(field.validation ? `- ${ValidationMessage[field.validation?.type]}` : '');
 
     return (
         <TextField

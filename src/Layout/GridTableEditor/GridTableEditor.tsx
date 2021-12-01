@@ -67,7 +67,7 @@ const GridTableEditor = ({
             <div className={`ag-theme-alpine ${classes.gridContainer}`}>
                 <div className={classes.buttonGroup}>
                     <Button variant="text" onClick={() => openEditor(editFormData, 'add')}>
-                        New
+                        Add Row
                     </Button>
                 </div>
                 <GridTable

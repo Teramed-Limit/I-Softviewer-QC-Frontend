@@ -8,16 +8,7 @@ import { AxiosResponse } from 'axios';
 import { map } from 'rxjs/operators';
 
 import { http } from '../api/axios';
-
-const dispatchEvent = (colDefs: ColDef[], fieldId: string, event: (param) => void): ColDef[] => {
-    const foundColDef = colDefs.find((col) => col.field === fieldId);
-    if (foundColDef === undefined) {
-        return colDefs;
-    }
-
-    foundColDef.cellRendererParams.clicked = event;
-    return colDefs;
-};
+import { dispatchCellEvent } from '../utils/general';
 
 const gridActionButtons = [
     {
@@ -107,8 +98,8 @@ export const useGridTable = <T,>({
 
     useEffect(() => {
         let mutateColDef: ColDef[] = [...gridActionButtons, ...colDef];
-        mutateColDef = dispatchEvent(mutateColDef, 'editAction', (param) => openEditor(param.data, 'update'));
-        mutateColDef = dispatchEvent(mutateColDef, 'deleteAction', (param) => deleteRow(param));
+        mutateColDef = dispatchCellEvent(mutateColDef, 'editAction', (param) => openEditor(param.data, 'update'));
+        mutateColDef = dispatchCellEvent(mutateColDef, 'deleteAction', (param) => deleteRow(param));
         setColDefs(mutateColDef);
     }, [colDef, deleteRow, openEditor]);
 

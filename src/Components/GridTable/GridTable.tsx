@@ -12,6 +12,8 @@ import ButtonCell from './CellRenderer/ButtonCell/ButtonCell';
 import CheckboxCell from './CellRenderer/CheckboxCell/CheckboxCell';
 import ChipCell from './CellRenderer/ChipCell/ChipCell';
 import IconCell from './CellRenderer/IconCell/IconCell';
+import LinkCell from './CellRenderer/LinkCell/LinkCell';
+import QCChipCell from './CellRenderer/QCChipCell/QCChipCell';
 import XmlViewerCell from './CellRenderer/XmlViewerCell/XmlViewerCell';
 import classes from './GridTable.module.scss';
 
@@ -23,14 +25,17 @@ interface TableProps {
     rowSelection?: string;
     gridReady?: (gridReadyEvent: GridReadyEvent) => void;
     getRowNodeId?: GetRowNodeIdFunc;
+    checkboxSelect?: boolean;
 }
 
 const frameworkComponents = {
     checkboxRenderer: CheckboxCell,
     buttonRenderer: ButtonCell,
     chipRenderer: ChipCell,
+    qcChipRenderer: QCChipCell,
     iconRenderer: IconCell,
     xmlViewerRenderer: XmlViewerCell,
+    linkRenderer: LinkCell,
 };
 
 function GridTable({
@@ -41,6 +46,7 @@ function GridTable({
     rowSelection = 'multiple',
     gridReady,
     getRowNodeId,
+    checkboxSelect = true,
 }: TableProps) {
     const gridApi = useRef<GridApi | null>(null);
 
@@ -57,7 +63,7 @@ function GridTable({
             }}
             onGridReady={onGridReady}
             rowData={rowData}
-            rowMultiSelectWithClick
+            rowMultiSelectWithClick={checkboxSelect}
             rowSelection={rowSelection}
             frameworkComponents={frameworkComponents}
             onFirstDataRendered={(event) => (onFirstDataRendered ? onFirstDataRendered(event.api) : null)}
@@ -74,12 +80,14 @@ function GridTable({
                     field={col.field}
                     sortable
                     resizable={col.resizable || true}
+                    pinned={col.pinned}
                     valueFormatter={col.valueFormatter}
-                    headerCheckboxSelection={rowSelection === 'multiple' && index === 0}
-                    checkboxSelection={rowSelection === 'multiple' && index === 0}
+                    headerCheckboxSelection={checkboxSelect && rowSelection === 'multiple' && index === 0}
+                    checkboxSelection={checkboxSelect && rowSelection === 'multiple' && index === 0}
                     hide={col.hide}
                     flex={col.flex}
                     width={col.width}
+                    minWidth={col.minWidth}
                 />
             ))}
         </AgGridReact>

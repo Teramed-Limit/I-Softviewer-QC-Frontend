@@ -24,7 +24,7 @@ export default function Login() {
 
     const { login, message } = useAuth();
 
-    const { from } = location.state || { from: { pathname: '/home' } };
+    const { from } = location.state || { from: { pathname: '/qualityControl' } };
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();

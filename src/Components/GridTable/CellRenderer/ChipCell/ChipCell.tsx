@@ -22,10 +22,10 @@ const ChipCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
 
     return (
         <>
-            {props.value.map((roleName) => {
+            {props.value.map((label) => {
                 return (
-                    <Box key={roleName} sx={{ mr: '2px', display: 'flex', alignItems: 'center ' }}>
-                        <Chip size="small" label={roleName} />
+                    <Box key={label} sx={{ mr: '2px', display: 'flex', alignItems: 'center ' }}>
+                        <Chip size="small" label={label} />
                     </Box>
                 );
             })}

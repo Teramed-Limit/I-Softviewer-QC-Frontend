@@ -13,11 +13,11 @@ import {
 import { map } from 'rxjs/operators';
 
 import { http } from '../../../../api/axios';
-import { MultiSelectField } from '../../../../interface/form-define';
+import { SelectField } from '../../../../interface/form-define';
 import classes from './MultiSelect.module.scss';
 
 interface Props {
-    field: MultiSelectField;
+    field: SelectField;
     value: string[];
     readOnly?: boolean;
     autoFocus: boolean;

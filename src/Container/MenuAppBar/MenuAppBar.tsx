@@ -36,7 +36,7 @@ function MenuAppBar() {
 
                 <div>
                     <Tooltip title="Home">
-                        <IconButton size="large" color="inherit" onClick={() => history.push('/home')}>
+                        <IconButton size="large" color="inherit" onClick={() => history.push('/qualityControl')}>
                             <HomeIcon />
                         </IconButton>
                     </Tooltip>

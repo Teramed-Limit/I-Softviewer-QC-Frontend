@@ -1,5 +1,6 @@
 import { RefObject } from 'react';
 
+import { ColDef } from 'ag-grid-community';
 import * as R from 'ramda';
 
 export const generateUUID = () => {
@@ -80,4 +81,33 @@ export function isASCII(str) {
 
 export function escapeSpecialCharacters(str) {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+export const dispatchCellEvent = (colDefs: ColDef[], fieldId: string, event: (param) => void): ColDef[] => {
+    const foundColDef = colDefs.find((col) => col.field === fieldId);
+    if (foundColDef === undefined) {
+        return colDefs;
+    }
+
+    foundColDef.cellRendererParams.clicked = event;
+    return colDefs;
+};
+
+export function dateToStr(date) {
+    const d = new Date(date);
+    let month = `${d.getMonth() + 1}`;
+    let day = `${d.getDate()}`;
+    const year = d.getFullYear();
+
+    if (month.length < 2) month = `0${month}`;
+    if (day.length < 2) day = `0${day}`;
+
+    return `${year}${month}${day}`;
+}
+
+export function strToDate(dateString: string) {
+    const year = dateString.substring(0, 4);
+    const month = dateString.substring(4, 6);
+    const day = dateString.substring(6, 8);
+    return new Date(+year, +month - 1, +day);
 }

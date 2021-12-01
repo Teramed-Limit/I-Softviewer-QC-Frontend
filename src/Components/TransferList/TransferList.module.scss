@@ -1,0 +1,13 @@
+.footer {
+    margin-top: 6px;
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0;
+    min-height: auto;
+    flex-wrap: nowrap;
+
+    :nth-child(odd) {
+        margin: 0 4px;
+    }
+}

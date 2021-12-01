@@ -13,7 +13,7 @@ function Main() {
             <MenuAppBar />
             <div className={classes.main}>
                 <Switch>
-                    <Redirect exact from="/" to="/home" />
+                    <Redirect exact from="/" to="/qualityControl" />
                     {workdirRoutes.map((route, i) => (
                         <RouteWithSubRoutes key={i.toString()} {...route} />
                     ))}

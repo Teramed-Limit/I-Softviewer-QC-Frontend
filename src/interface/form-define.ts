@@ -14,7 +14,7 @@ export interface Field {
     validation?: Validation;
 }
 
-export interface MultiSelectField extends Field {
+export interface SelectField extends Field {
     optionSource: OptionSource;
 }
 
@@ -22,6 +22,7 @@ export interface OptionSource {
     type: string;
     source: string;
     key: string;
+    labelKey: string;
 }
 
 export interface Validation {

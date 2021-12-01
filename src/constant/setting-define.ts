@@ -126,6 +126,7 @@ export const define = {
                                 type: 'http',
                                 source: 'role',
                                 key: 'roleName',
+                                labelKey: 'roleName',
                             },
                         },
                     ],
@@ -146,13 +147,80 @@ export const define = {
             { field: 'dept', headerName: 'Dept', width: 120 },
         ],
     },
+    patientStudy: {
+        colDef: [
+            { field: 'patientId', headerName: 'Patient Id', width: 160 },
+            {
+                field: 'patientsName',
+                headerName: 'Patient Name',
+                width: 160,
+            },
+            {
+                field: 'accessionNumber',
+                headerName: 'AccessionNumber',
+                width: 160,
+                pinned: 'left',
+                cellRenderer: 'linkRenderer',
+                cellRendererParams: {
+                    urlPath: '/qualityControl/viewer/studies/studyInstanceUID/{studyInstanceUID}',
+                },
+            },
+            {
+                field: 'state',
+                headerName: 'State',
+                width: 250,
+                pinned: 'left',
+                cellRenderer: 'qcChipRenderer',
+            },
+            {
+                field: 'advanced',
+                headerName: 'Advanced',
+                width: 140,
+                pinned: 'left',
+                cellRenderer: 'buttonRenderer',
+                cellRendererParams: {
+                    clicked: () => {},
+                    color: 'primary',
+                    variant: 'contained',
+                    label: 'Advanced',
+                },
+            },
+            { field: 'patientsSex', headerName: 'Sex', type: 'Text', width: 120 },
+            { field: 'patientsBirthDate', headerName: 'BirthDate', width: 120 },
+            { field: 'studyInstanceUID', headerName: 'StudyInstanceUID', hide: true, width: 120 },
+            { field: 'studyDescription', headerName: 'StudyDescription', flex: 1, minWidth: 200 },
+            { field: 'modality', headerName: 'Modality', width: 120 },
+            // { field: 'referringPhysiciansName', headerName: 'Referring Physicians Name', width: 120 },
+            { field: 'performingPhysiciansName', headerName: 'Performing Physician', width: 200 },
+            { field: 'studyDate', headerName: 'Study Date', width: 120 },
+        ],
+    },
+    series: {
+        colDef: [],
+    },
+    image: {
+        colDef: [],
+    },
+    worklist: {
+        colDef: [],
+    },
 };
 
-// export const queryField = [
-//     { field: 'PatientID', label: 'PatientID', type: 'Text' },
-//     { field: 'PatientName', label: 'PatientName', type: 'Text' },
-//     { field: 'AccessionNum', label: 'AccessionNum', type: 'Text' },
-//     { field: 'Physician Name', label: 'PhysicianName', type: 'Text' },
-//     { field: 'Modality', label: 'Modality', type: 'Text' },
-//     { field: 'Exam Date', label: 'ExamDate', type: 'Text' },
-// ];
+export const queryField = [
+    { field: 'patientId', label: 'Patient ID', type: 'Text' },
+    { field: 'patientsName', label: 'Patient Name', type: 'Text' },
+    { field: 'patientsSex', label: 'Sex', type: 'Text' },
+    { field: 'patientsBirthDate', label: 'BirthDate', type: 'Text' },
+    { field: 'studyInstanceUID', label: 'StudyInstanceUID', type: 'Text' },
+    { field: 'accessionNumber', label: 'AccessionNumber', type: 'Text' },
+    { field: 'studyDescription', label: 'StudyDescription', type: 'Text' },
+    {
+        field: 'modality',
+        label: 'Modality',
+        type: 'SingleSelect',
+        optionSource: { type: 'static', source: 'modality' },
+    },
+    { field: 'referringPhysiciansName', label: 'Referring Physicians Name', type: 'Text' },
+    { field: 'performingPhysiciansName', label: 'Performing Physicians Name', type: 'Text' },
+    { field: 'studyDate', label: 'Study Date', type: 'DataRange' },
+];

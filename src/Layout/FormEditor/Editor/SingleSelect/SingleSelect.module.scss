@@ -1,0 +1,19 @@
+.input {
+    min-height: 32px !important;
+}
+
+.label {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    height: 32px !important;
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+
+    .chip {
+        margin-right: 2px;
+    }
+}

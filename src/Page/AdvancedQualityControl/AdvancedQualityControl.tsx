@@ -1,16 +1,17 @@
 import React from 'react';
 
+import { Box, Stack } from '@mui/material';
 import { useParams } from 'react-router-dom';
-
-import classes from './AdvancedQualityControl.module.scss';
 
 const AdvancedQualityControl = () => {
     const { studyInsUID } = useParams<{ studyInsUID: string }>();
+
     return (
-        <div className={classes.Template}>
-            <h1>AdvancedQualityControl component</h1>
-            <h3>ID: {studyInsUID}</h3>
-        </div>
+        <Stack spacing={2}>
+            <Box>Item 1</Box>
+            <Box>Item 2</Box>
+            <Box>Item 3</Box>
+        </Stack>
     );
 };
 

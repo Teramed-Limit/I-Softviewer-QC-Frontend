@@ -21,12 +21,12 @@ export const workdirRoutes: RouteConfig[] = [
         protected: true,
     },
     {
-        path: '/qualityControl/viewer/studies/:studyInsUID',
+        path: '/qualityControl/viewer/studies/studyInstanceUID/:studyInsUID',
         component: ViewerQualityControl,
         protected: true,
     },
     {
-        path: '/qualityControl/advanced/studies/:studyInsUID',
+        path: '/qualityControl/advanced/studies/studyInstanceUID/:studyInsUID',
         component: AdvancedQualityControl,
         protected: true,
     },
@@ -55,10 +55,10 @@ export const workdirRoutes: RouteConfig[] = [
         protected: true,
         exact: true,
     },
-    {
-        path: '/home',
-        component: Home,
-        protected: true,
-        exact: true,
-    },
+    // {
+    //     path: '/home',
+    //     component: Home,
+    //     protected: true,
+    //     exact: true,
+    // },
 ];

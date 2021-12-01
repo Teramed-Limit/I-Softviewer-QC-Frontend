@@ -38,11 +38,6 @@ body,
     overflow: hidden;
 }
 
-::-webkit-scrollbar {
-    width: 6px;
-    background: transparent;
-}
-
 /* Track */
 ::-webkit-scrollbar-track {
     background: transparent;
@@ -60,11 +55,11 @@ body,
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
+    width: 10px;
     background: transparent;
 }
 
 ::-webkit-scrollbar:horizontal {
-    height: 6px;
+    height: 10px;
     background: transparent;
 }

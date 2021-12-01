@@ -1,0 +1,41 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.queryCondition {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    > * {
+        margin: 0 4px !important;
+    }
+}
+
+.tableHeader {
+    display: flex;
+}
+
+.tableContainer {
+    margin-top: 10px;
+    flex: 1 1 auto;
+}
+
+.actionButtonGroup {
+    margin-top: 4px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.toolbarBtn {
+    height: 44px;
+    font-weight: 600 !important;
+    font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji' !important;
+    font-size: 0.875rem !important;;
+    line-height: 1.75;
+    padding: 20px !important;
+}
