@@ -111,3 +111,10 @@ export function strToDate(dateString: string) {
     const day = dateString.substring(6, 8);
     return new Date(+year, +month - 1, +day);
 }
+
+export const reorder = <T>(list: Array<T>, startIndex, endIndex): Array<T> => {
+    const result = [...list];
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    return result.slice();
+};

@@ -23,6 +23,16 @@ export const rootTheme = createTheme({
         },
     },
     components: {
+        MuiInput: {
+            defaultProps: {
+                size: 'small',
+            },
+        },
+        MuiTextField: {
+            defaultProps: {
+                size: 'small',
+            },
+        },
         MuiButtonBase: {
             defaultProps: {
                 disableRipple: true,

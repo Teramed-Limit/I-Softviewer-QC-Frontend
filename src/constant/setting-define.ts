@@ -196,13 +196,27 @@ export const define = {
         ],
     },
     series: {
-        colDef: [],
+        colDef: [
+            { field: 'seriesModality', headerName: 'Modality', width: 160 },
+            { field: 'state', headerName: 'Status', width: 250, cellRenderer: 'qcChipRenderer' },
+            { field: 'seriesDescription', headerName: 'Description', flex: 1 },
+            { field: 'seriesInstanceUID', headerName: 'SeriesInstanceUID', hide: true },
+        ],
     },
-    image: {
-        colDef: [],
+    images: {
+        colDef: [
+            { field: 'imageNumber', headerName: 'Image No', width: 120 },
+            { field: 'sopInstanceUID', headerName: 'SOPInstanceUID', flex: 1 },
+            { field: 'sopClassUID', headerName: 'SOPClassUID', hide: true },
+            { field: 'filePath', headerName: 'FilePath', hide: true },
+        ],
     },
-    worklist: {
-        colDef: [],
+    imageTags: {
+        colDef: [
+            { field: 'tag', headerName: 'Tag', flex: 1 },
+            { field: 'name', headerName: 'Name', flex: 1 },
+            { field: 'value', headerName: 'Value', flex: 1 },
+        ],
     },
 };
 

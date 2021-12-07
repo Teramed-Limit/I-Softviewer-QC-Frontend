@@ -27,11 +27,9 @@ const NewStudy = () => {
     };
 
     const queryHISData = () => {
-        http.get(`searchStudyData/queryHIS/episodeNo/${episodeNo}/dept/${dept}`).subscribe(
-            (res: AxiosResponse<HISData[]>) => {
-                setRowData(res.data);
-            },
-        );
+        http.get(`hisWell/queryHIS/episodeNo/${episodeNo}/dept/${dept}`).subscribe((res: AxiosResponse<HISData[]>) => {
+            setRowData(res.data);
+        });
     };
 
     const onNext = () => {
