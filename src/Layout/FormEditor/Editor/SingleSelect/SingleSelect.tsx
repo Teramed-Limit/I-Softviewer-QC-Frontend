@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import { MenuItem, MenuProps, TextField } from '@mui/material';
 
 import { useSelectOptions } from '../../../../hooks/useSelectOptions';
 import { SelectField } from '../../../../interface/form-define';
+import { ValidationMessage } from '../validationMapper';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -22,17 +23,17 @@ interface Props {
     value: string;
     readOnly?: boolean;
     autoFocus: boolean;
-    onValueChanged: (value: string, fieldId: string) => void;
+    isValid: boolean;
+    onValueChanged: (value: any, fieldId: string) => void;
 }
 
-const SingleSelect = ({ field, value, autoFocus, onValueChanged, readOnly = false }: Props) => {
-    const { options } = useSelectOptions(
-        field.optionSource.type,
-        field.optionSource.source,
-        field.optionSource.labelKey,
-    );
+const SingleSelect = ({ field, value, autoFocus, isValid, onValueChanged, readOnly = false }: Props) => {
+    const [isDirty, setDirty] = useState(false);
+    const [validationMsg] = useState(field.validation ? `- ${ValidationMessage[field.validation?.type]}` : '');
+    const { options } = useSelectOptions(field.optionSource.type, field.optionSource.source);
 
     const handleChange = (event) => {
+        setDirty(true);
         onValueChanged(event.target.value, field.field);
     };
 
@@ -42,20 +43,21 @@ const SingleSelect = ({ field, value, autoFocus, onValueChanged, readOnly = fals
             autoFocus={autoFocus}
             fullWidth
             size="small"
-            label={field.label}
+            label={`${field.label} ${validationMsg}`}
             select
             value={value}
+            error={!isValid && isDirty}
             onChange={handleChange}
             SelectProps={{ MenuProps: menuProps }}
         >
             <MenuItem value="">
-                <em>None</em>
+                <em>- None -</em>
             </MenuItem>
             {options.map((item) => {
                 const optionLabel = field.optionSource.labelKey ? item[field.optionSource.labelKey] : item;
                 const optionKey = field.optionSource.key ? item[field.optionSource.key] : item;
                 return (
-                    <MenuItem key={optionKey} value={item}>
+                    <MenuItem key={optionKey} value={optionKey}>
                         {optionLabel}
                     </MenuItem>
                 );

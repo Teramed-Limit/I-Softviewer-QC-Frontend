@@ -19,19 +19,16 @@ const OptionRetrieverMapper: { [props: string]: OptionRetriever } = {
     },
 };
 
-export const useSelectOptions = (type: string, source: string, labelKey: string) => {
+export const useSelectOptions = (type: string, source: string) => {
     const [options, setOptions] = React.useState<any[]>([]);
 
     useEffect(() => {
         const optionRetriever = OptionRetrieverMapper[type];
-        const subscription = optionRetriever
-            .retrieve(source)
-            // .pipe(map((opt: any[]) => opt.map((item) => (labelKey ? item[labelKey] : item))))
-            .subscribe({
-                next: setOptions,
-            });
+        const subscription = optionRetriever.retrieve(source).subscribe({
+            next: setOptions,
+        });
         return () => subscription.unsubscribe();
-    }, [labelKey, source, type]);
+    }, [source, type]);
 
     return { options };
 };
