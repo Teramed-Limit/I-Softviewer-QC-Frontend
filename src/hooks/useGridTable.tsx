@@ -4,11 +4,10 @@ import { ColDef } from 'ag-grid-community';
 import { GridReadyEvent } from 'ag-grid-community/dist/lib/events';
 import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
 import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRenderers/iCellRenderer';
-import { AxiosResponse } from 'axios';
-import { map } from 'rxjs/operators';
 
 import { http } from '../api/axios';
 import { dispatchCellEvent } from '../utils/general';
+import { useHttp } from './useHttp';
 
 const gridActionButtons = [
     {
@@ -58,33 +57,23 @@ export const useGridTable = <T,>({
 }: Props<T>) => {
     const gridApi = useRef<GridApi | null>(null);
     const [open, setOpen] = useState(false);
-    const [rowData, setRowData] = useState<T[]>([]);
     const [colDefs, setColDefs] = useState<ColDef[]>([]);
     const [editFormData, setEditFormData] = useState<T>(initFormData);
     const [saveType, setSaveType] = useState<string>('add');
 
-    useEffect(() => {
-        const subscription = http
-            .get(apiPath)
-            .pipe(map((res) => res.data))
-            .subscribe({
-                next: setRowData,
-            });
-
-        return () => {
-            subscription.unsubscribe();
-        };
-    }, [apiPath]);
+    const { response } = useHttp<T>(http.get(apiPath), {
+        callOnComponentLoad: true,
+        showNotification: false,
+    });
 
     const deleteRow = useCallback(
         (cellRendererParams: ICellRendererParams) => {
             const id = cellRendererParams.data[identityId];
             http.delete(`${apiPath}/${identityId}/${id}`).subscribe({
-                next: (res: AxiosResponse) => {
+                next: () => {
                     gridApi?.current?.applyTransaction({ remove: [cellRendererParams.data] });
                     deleteCallBack?.();
                 },
-                error: (err: AxiosResponse) => {},
             });
         },
         [apiPath, deleteCallBack, identityId],
@@ -114,19 +103,18 @@ export const useGridTable = <T,>({
     const saveRow = (eventType: string, formData: T) => {
         const addUser = () => {
             http.post(`${apiPath}/${identityId}`, formData).subscribe({
-                next: (res: AxiosResponse) => {
+                next: () => {
                     setOpen(false);
                     setEditFormData(initFormData);
                     gridApi?.current?.applyTransaction({ add: [formData], addIndex: 0 });
                     addCallBack?.();
                 },
-                error: (err: AxiosResponse) => {},
             });
         };
 
         const updateUser = () => {
             http.post(`${apiPath}/${identityId}/${formData[identityId]}`, formData).subscribe({
-                next: (res: AxiosResponse) => {
+                next: () => {
                     setOpen(false);
                     setEditFormData(initFormData);
                     gridApi?.current?.applyTransaction({ update: [formData] });
@@ -135,7 +123,6 @@ export const useGridTable = <T,>({
                     gridApi?.current?.refreshCells({ force: true, rowNodes: [rowNode] });
                     updateCallBack?.();
                 },
-                error: (err: AxiosResponse) => {},
             });
         };
 
@@ -145,12 +132,11 @@ export const useGridTable = <T,>({
     return {
         gridApi,
         open,
-        rowData,
+        rowData: response,
         colDefs,
         editFormData,
         saveType,
         setOpen,
-        setRowData,
         setColDefs,
         setEditFormData,
         setSaveType,

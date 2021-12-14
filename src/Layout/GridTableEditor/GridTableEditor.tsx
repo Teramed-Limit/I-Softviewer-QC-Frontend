@@ -48,7 +48,7 @@ const GridTableEditor = ({
         updateFormData,
         saveRow,
         openEditor,
-    } = useGridTable({
+    } = useGridTable<any[]>({
         apiPath,
         identityId,
         colDef,
@@ -73,7 +73,7 @@ const GridTableEditor = ({
                 <GridTable
                     rowSelection="single"
                     columnDefs={colDefs}
-                    rowData={rowData}
+                    rowData={rowData || []}
                     gridReady={gridReady}
                     getRowNodeId={getRowNodeId}
                     onSelectionChanged={onSelectionChanged}

@@ -1,6 +1,5 @@
 import { RouteConfig } from '../interface/route-config';
 import AdvancedQualityControl from '../Page/AdvancedQualityControl/AdvancedQualityControl';
-import Home from '../Page/Home/Home';
 import ImageSelect from '../Page/ImageSelect/ImageSelect';
 import Log from '../Page/Log/Log';
 import NewStudy from '../Page/NewStudy/NewStudy';

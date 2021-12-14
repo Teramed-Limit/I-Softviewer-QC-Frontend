@@ -54,7 +54,6 @@ const UserRoles = () => {
                     });
                 });
             },
-            error: (err: AxiosResponse) => {},
         });
     };
 
@@ -78,13 +77,13 @@ const UserRoles = () => {
             });
 
         const addFunction = () => {
-            http.post(url, {}).subscribe((res: AxiosResponse) => {
+            http.post(url, {}).subscribe(() => {
                 updateFunctionState(true);
             });
         };
 
         const deleteFunction = () => {
-            http.delete(url).subscribe((res: AxiosResponse) => {
+            http.delete(url).subscribe(() => {
                 updateFunctionState(false);
             });
         };

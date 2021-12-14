@@ -1,13 +1,19 @@
 import { RefObject, useCallback, useEffect, useRef } from 'react';
 
-import { getRefElement } from '../utils/general';
-
 interface UseEventListener {
     type: keyof WindowEventMap;
     listener: EventListener;
     element?: RefObject<Element> | Document | Window | null;
     options?: AddEventListenerOptions;
 }
+
+export const getRefElement = <T,>(element?: RefObject<Element> | T): Element | T | undefined | null => {
+    if (element && 'current' in element) {
+        return element.current;
+    }
+
+    return element;
+};
 
 export const useEventListener = ({ type, listener, element = window, options }: UseEventListener): void => {
     const savedListener = useRef<EventListener>();

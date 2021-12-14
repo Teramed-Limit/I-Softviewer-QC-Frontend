@@ -10,17 +10,18 @@ import { http } from '../../api/axios';
 import GridTable from '../../Components/GridTable/GridTable';
 import { define } from '../../constant/setting-define';
 import { HISData } from '../../interface/his-data';
-import { StudyParams } from '../../interface/study-params';
+import { CreateStudyParams } from '../../interface/study-params';
+import { generateNewStudyInstanceUID } from '../../utils/dicom-utils';
 import { generateAccessionNum } from '../../utils/general';
 import classes from './NewStudy.module.scss';
 
 const NewStudy = () => {
-    const history = useHistory<StudyParams>();
+    const history = useHistory<CreateStudyParams>();
     const [rowData, setRowData] = useState<HISData[]>([]);
     const [selectedRow, setSelectedRow] = useState<HISData | null>(null);
     const [episodeNo, setEpisodeNo] = useState('');
     const [dept, setDept] = useState('');
-    const [randomAccessionNum, setRandomAccessionNum] = useState(generateAccessionNum());
+    const [randomAccessionNum] = useState(generateAccessionNum());
 
     const onSelectionChanged = (gridApi: GridApi) => {
         setSelectedRow(gridApi.getSelectedRows()[0]);
@@ -34,15 +35,18 @@ const NewStudy = () => {
 
     const onNext = () => {
         if (selectedRow === null) return;
-
+        const studyInstanceUID = generateNewStudyInstanceUID();
         history.push({
             pathname: '/newStudy/viewer',
             state: {
-                accessionNum: 'sssssss',
-                patientId: selectedRow.documentNumber,
+                patientId: selectedRow.episodeNo,
                 patientName: selectedRow.nameEng,
+                otherPatientName: selectedRow.nameChinese,
                 birthdate: selectedRow.birthdate,
                 sex: selectedRow.sex,
+                accessionNum: randomAccessionNum,
+                studyInstanceUID,
+                seriesInstanceUID: `${studyInstanceUID}.1`,
             },
         });
     };

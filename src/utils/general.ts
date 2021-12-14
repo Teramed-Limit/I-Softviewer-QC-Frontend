@@ -1,7 +1,7 @@
-import { RefObject } from 'react';
-
 import { ColDef } from 'ag-grid-community';
 import * as R from 'ramda';
+
+import { ImageBufferAndData } from '../interface/create-and-modify-study-params';
 
 export const generateUUID = () => {
     function s4() {
@@ -46,14 +46,6 @@ export const trim = (str: string) => str.replace(/^\s+|\s+$/gm, '');
 
 export const isEmptyOrNil = (value: any) => {
     return R.isEmpty(value) || R.isNil(value);
-};
-
-export const getRefElement = <T>(element?: RefObject<Element> | T): Element | T | undefined | null => {
-    if (element && 'current' in element) {
-        return element.current;
-    }
-
-    return element;
 };
 
 export function getFileNameWithExt(event) {
@@ -112,9 +104,53 @@ export function strToDate(dateString: string) {
     return new Date(+year, +month - 1, +day);
 }
 
+const pad = (v) => {
+    return v < 10 ? `0${v}` : v;
+};
+
+export const getDateString = (d) => {
+    const year = d.getFullYear();
+    const month = pad(d.getMonth() + 1);
+    const day = pad(d.getDate());
+    const hour = pad(d.getHours());
+    const min = pad(d.getMinutes());
+    const sec = pad(d.getSeconds());
+    // YYYYMMDDhhmmss
+    return year + month + day + hour + min + sec;
+    // YYYY-MM-DD hh:mm:ss
+    // return year+"-"+month+"-"day+" "+hour+":"+min+":"+sec
+};
+
 export const reorder = <T>(list: Array<T>, startIndex, endIndex): Array<T> => {
     const result = [...list];
     const [removed] = result.splice(startIndex, 1);
     result.splice(endIndex, 0, removed);
     return result.slice();
+};
+
+export const getExtension = (str) => str.slice(str.lastIndexOf('.'));
+
+export const toImageInfo = (file, type, seriesInsUid, sopClassUID, index): Promise<ImageBufferAndData> => {
+    const base64Str = readBase64(file);
+    return base64Str.then((result) => {
+        return new Promise((resolve) => {
+            resolve({
+                buffer: result,
+                type,
+                seriesInstanceUID: seriesInsUid,
+                sopInstanceUID: `${seriesInsUid}.${index + 1}`,
+                sopClassUID,
+                imageNumber: `${index + 1}`,
+            });
+        });
+    });
+};
+
+export const readBase64 = (file): Promise<string> => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(',')[1]);
+        reader.onerror = (error) => reject(error);
+        reader.readAsDataURL(file);
+    });
 };

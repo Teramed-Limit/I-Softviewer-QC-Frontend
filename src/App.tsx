@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Switch } from 'react-router-dom';
 
 import './App.scss';
 import InjectAxiosInterceptors from './api/InjectAxiosInterceptors ';
+import NotificationMessageAlert from './Components/NotificationMessageAlert/NotificationMessageAlert';
 import { useAuth } from './hooks/useAuth';
 import { appRoutes } from './Route/app-routes';
 import RouteWithSubRoutes from './Route/RouteWithSubRoutes/RouteWithSubRoutes';
@@ -18,6 +19,7 @@ function App() {
     return (
         <>
             <InjectAxiosInterceptors />
+            <NotificationMessageAlert />
             <Router>
                 <Switch>
                     {appRoutes.map((route, i) => (
