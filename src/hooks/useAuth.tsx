@@ -35,8 +35,8 @@ export const useAuth = () => {
                 delay(timeout),
                 tap(() =>
                     refreshToken().subscribe({
-                        next: (res: AxiosResponse<LoginResult>) => {},
-                        error: (err: AxiosResponse) => {
+                        next: () => {},
+                        error: () => {
                             TokenService.removeUser();
                             setAuth(false);
                             stopTokenTimer();
@@ -91,7 +91,7 @@ export const useAuth = () => {
                 startTokenTimer();
                 history.replace(navigatePath);
             },
-            error: (err: AxiosResponse) => {
+            error: () => {
                 setMessage('UserId or password incorrect');
             },
         });

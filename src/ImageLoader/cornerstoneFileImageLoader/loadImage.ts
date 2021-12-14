@@ -37,5 +37,6 @@ export function loadImage(imageId) {
 }
 
 export function configure(opts) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     options = opts;
 }

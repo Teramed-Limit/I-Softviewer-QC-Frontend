@@ -7,17 +7,14 @@ export const http = Axios.create({
 });
 
 export const setupInterceptors = (expireToken: () => void) => {
-    http.interceptors.request.use(
-        (config) => {
-            const newConfig = { ...config };
-            const token = TokenService.getLocalAccessToken();
-            if (token) {
-                newConfig.headers.Authorization = `Bearer ${token}`;
-            }
-            return config;
-        },
-        (error) => {},
-    );
+    http.interceptors.request.use((config) => {
+        const newConfig = { ...config };
+        const token = TokenService.getLocalAccessToken();
+        if (token) {
+            newConfig.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    });
 
     http.interceptors.response.use(
         (res) => {

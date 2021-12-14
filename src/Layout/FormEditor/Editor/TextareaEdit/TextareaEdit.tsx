@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { TextField } from '@mui/material';
 
 import { Field } from '../../../../interface/form-define';
+import { ValidationMessage } from '../validationMapper';
 
 interface Props {
     field: Field;
@@ -15,6 +16,7 @@ interface Props {
 
 const TextareaEdit = ({ field, value, isValid, autoFocus, readOnly = false, onValueChanged }: Props) => {
     const [isDirty, setDirty] = useState(false);
+    const [validationMsg] = useState(field.validation ? `- ${ValidationMessage[field.validation?.type]}` : '');
     const ref = useRef<HTMLTextAreaElement | null>(null);
 
     useEffect(() => {
@@ -27,12 +29,13 @@ const TextareaEdit = ({ field, value, isValid, autoFocus, readOnly = false, onVa
                 fullWidth
                 multiline
                 spellCheck={false}
-                label={field.label}
+                label={`${field.label} ${validationMsg}`}
                 disabled={readOnly}
                 placeholder="Empty"
                 value={value}
                 autoFocus={autoFocus}
                 id={field.field}
+                error={!isValid && isDirty}
                 onChange={(e) => {
                     onValueChanged(e.target.value, field.field);
                     setDirty(true);
