@@ -7,9 +7,9 @@ import { Field } from '../../../../interface/form-define';
 
 interface Props {
     field: Field;
-    value: boolean;
+    value: number;
     readOnly?: boolean;
-    onValueChanged: (value: boolean, fieldId: string) => void;
+    onValueChanged: (value: number, fieldId: string) => void;
 }
 
 const CheckboxEdit = ({ field, value, onValueChanged, readOnly = false }: Props) => {
@@ -19,9 +19,9 @@ const CheckboxEdit = ({ field, value, onValueChanged, readOnly = false }: Props)
                 <Checkbox
                     size="small"
                     disabled={readOnly}
-                    checked={value}
+                    checked={value === 1}
                     onChange={(e) => {
-                        onValueChanged(e.target.checked, field.field);
+                        onValueChanged(e.target.checked ? 1 : 0, field.field);
                     }}
                 />
             }

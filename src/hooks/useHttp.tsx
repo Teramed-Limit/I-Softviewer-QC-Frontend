@@ -30,11 +30,14 @@ export const useHttp = <T extends any>(
     const setNotification = useSetRecoilState(atomNotification);
     const [response, setResponse] = useState<T>();
     const [requestOptions] = useState({ ...defaultOptions, ...options });
+    const [loading, setLoading] = useState(false);
     const loaded = useRef(false);
 
     const requestFun = useCallback(() => {
+        setLoading(true);
         const subscription = request$.subscribe({
             next: (res: AxiosResponse) => {
+                setLoading(false);
                 setResponse(res.data);
                 requestOptions?.whenSuccess?.(res.data);
                 if (requestOptions?.showNotification)
@@ -44,6 +47,7 @@ export const useHttp = <T extends any>(
                     });
             },
             error: (err: AxiosError) => {
+                setLoading(false);
                 requestOptions?.whenError?.(err);
                 setNotification({
                     messageType: MessageType.Error,
@@ -64,5 +68,51 @@ export const useHttp = <T extends any>(
         requestFun();
     }, [requestOptions, requestFun]);
 
-    return { response, requestFun };
+    return { response, requestFun, loading };
+};
+
+export const useHttpEx = <T extends any>(
+    request$: (...args) => AxiosObservable<T>,
+    options: HttpRequestOptions<T> = {
+        callOnComponentLoad: false,
+        showNotification: true,
+    },
+) => {
+    const setNotification = useSetRecoilState(atomNotification);
+    const [response, setResponse] = useState<T>();
+    const [requestOptions] = useState({ ...defaultOptions, ...options });
+    const [loading, setLoading] = useState(false);
+
+    const requestFun = useCallback(
+        (...args) => {
+            setLoading(true);
+            const subscription = request$(...args).subscribe({
+                next: (res: AxiosResponse) => {
+                    setLoading(false);
+                    setResponse(res.data);
+                    requestOptions?.whenSuccess?.(res.data);
+                    if (requestOptions?.showNotification)
+                        setNotification({
+                            messageType: MessageType.Success,
+                            message: requestOptions?.successMessage || 'Request success',
+                        });
+                },
+                error: (err: AxiosError) => {
+                    setLoading(false);
+                    requestOptions?.whenError?.(err);
+                    setNotification({
+                        messageType: MessageType.Error,
+                        message: err.response?.data || 'Http request failed!',
+                    });
+                },
+            });
+
+            return () => {
+                subscription.unsubscribe();
+            };
+        },
+        [request$, requestOptions, setNotification],
+    );
+
+    return { response, requestFun, loading };
 };

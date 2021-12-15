@@ -1,74 +1,85 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 
 import { Button } from '@mui/material';
-import { ColDef } from 'ag-grid-community';
+import { ColDef, RowNode } from 'ag-grid-community';
 import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
+import { AxiosObservable } from 'axios-observable';
 
 import GridTable from '../../Components/GridTable/GridTable';
-import BaseModal from '../../Container/BaseModal/BaseModal';
 import { useGridTable } from '../../hooks/useGridTable';
 import { FormDef } from '../../interface/form-define';
-import FormEditor from '../FormEditor/FormEditor';
 import classes from './GridTableEditor.module.scss';
 
 interface Props {
     apiPath: string;
+    externalUpdateRowApi?: (formData: any) => AxiosObservable<any>;
+    enableApi?: boolean;
+    filterRow?: boolean;
     identityId: string;
+    subIdentityId?: string;
     colDef: ColDef[];
     formDef: FormDef;
+    enableButtonBar?: boolean;
+    enableEdit?: boolean;
+    enableDelete?: boolean;
     initFormData: any;
     addCallBack?: () => void;
     updateCallBack?: () => void;
     deleteCallBack?: () => void;
     onSelectionChanged?: (gridApi: GridApi) => void;
+    filterRowFunction?: (node: RowNode) => boolean;
+    isFilterActivate?: () => boolean;
 }
 
 const GridTableEditor = ({
     apiPath,
+    externalUpdateRowApi,
+    enableApi = true,
     identityId,
+    subIdentityId = '',
+    filterRow = false,
     colDef,
     formDef,
+    enableButtonBar = true,
+    enableEdit = true,
+    enableDelete = true,
     initFormData,
     deleteCallBack,
     addCallBack,
     updateCallBack,
     onSelectionChanged,
+    filterRowFunction,
+    isFilterActivate,
 }: Props) => {
-    const [formIsValid, setFormIsValid] = useState(false);
-    const {
-        open,
-        rowData,
-        colDefs,
-        editFormData,
-        saveType,
-        setOpen,
-        setEditFormData,
-        getRowNodeId,
-        gridReady,
-        updateFormData,
-        saveRow,
-        openEditor,
-    } = useGridTable<any[]>({
+    const { gridApi, rowData, colDefs, getRowNodeId, gridReady, openEditor, rendererFormEditor } = useGridTable<any[]>({
+        formDef,
+        externalUpdateRowApi,
         apiPath,
+        enableApi,
         identityId,
+        subIdentityId,
         colDef,
         deleteCallBack,
         addCallBack,
         updateCallBack,
         initFormData,
+        enableEdit,
+        enableDelete,
     });
 
-    const formInvalidChanged = (isValid) => {
-        setFormIsValid(isValid);
-    };
+    useEffect(() => {
+        gridApi?.current?.onFilterChanged();
+    }, [filterRow, gridApi]);
 
     return (
         <>
             <div className={`ag-theme-alpine ${classes.gridContainer}`}>
                 <div className={classes.buttonGroup}>
-                    <Button variant="text" onClick={() => openEditor(editFormData, 'add')}>
-                        Add Row
-                    </Button>
+                    {enableButtonBar && (
+                        <Button variant="text" onClick={() => openEditor(initFormData, 'add')}>
+                            Add Row
+                        </Button>
+                    )}
                 </div>
                 <GridTable
                     rowSelection="single"
@@ -77,37 +88,11 @@ const GridTableEditor = ({
                     gridReady={gridReady}
                     getRowNodeId={getRowNodeId}
                     onSelectionChanged={onSelectionChanged}
+                    isFilterActivate={isFilterActivate}
+                    filterRowFunction={filterRowFunction}
                 />
             </div>
-            <BaseModal width="80%" maxHeight="80%" open={open} setOpen={setOpen}>
-                <FormEditor
-                    saveType={saveType}
-                    formDef={formDef}
-                    formData={editFormData}
-                    formDataChanged={updateFormData}
-                    formInvalidChanged={formInvalidChanged}
-                />
-                <div className={classes.footer}>
-                    <Button
-                        variant="outlined"
-                        color="primary"
-                        onClick={() => {
-                            setEditFormData(initFormData);
-                            setOpen(false);
-                        }}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        disabled={!formIsValid}
-                        variant="contained"
-                        color="primary"
-                        onClick={() => saveRow(saveType, editFormData)}
-                    >
-                        Save
-                    </Button>
-                </div>
-            </BaseModal>
+            {rendererFormEditor()}
         </>
     );
 };

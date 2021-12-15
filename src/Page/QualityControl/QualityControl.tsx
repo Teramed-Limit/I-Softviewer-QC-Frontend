@@ -83,7 +83,13 @@ const QualityControl = () => {
     useEffect(() => {
         let mutateColDef: ColDef[] = [...define.patientStudy.colDef];
         mutateColDef = dispatchCellEvent(mutateColDef, 'advanced', (param: ICellRendererParams) =>
-            history.push(`/qualityControl/advanced/studies/studyInstanceUID/${param.data.studyInstanceUID}`),
+            history.push({
+                pathname: `/qualityControl/advanced/studies/studyInstanceUID/${param.data.studyInstanceUID}`,
+                state: {
+                    patientId: param.data.patientId,
+                    patientName: param.data.patientName,
+                },
+            }),
         );
         setColDefs(mutateColDef);
     }, [history]);

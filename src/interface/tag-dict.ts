@@ -15,3 +15,16 @@ export interface TagData {
     isPrivateTag: boolean;
     element: TagElement;
 }
+
+export interface DicomTagData {
+    id: string;
+    level: number;
+    tag: string;
+    group: number;
+    element: number;
+    name: string;
+    vr: string;
+    length: string;
+    value: string;
+    editable: boolean;
+}

@@ -1,23 +1,17 @@
 import React, { useImperativeHandle } from 'react';
 
 import ClearIcon from '@mui/icons-material/Clear';
-import EditIcon from '@mui/icons-material/Edit';
 import { IconButton } from '@mui/material';
 import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRenderers/iCellRenderer';
 import { AgReactComponent } from 'ag-grid-react/lib/interfaces';
 
+import { DeleteRowClick } from '../../../../hooks/useGridTable';
+
 interface Props extends ICellRendererParams {
-    clicked: (...params) => void;
-    type: string;
-    color: 'inherit' | 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
+    onClick: DeleteRowClick;
 }
 
-const IconMapper = {
-    clear: <ClearIcon />,
-    edit: <EditIcon />,
-};
-
-const IconCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
+const DeleteRowCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
     useImperativeHandle(ref, () => ({
         getReactContainerStyle() {
             return {
@@ -29,10 +23,10 @@ const IconCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
     }));
 
     return (
-        <IconButton color={props.color} component="span" onClick={() => props.clicked(props)}>
-            {IconMapper[props.type]}
+        <IconButton color="error" component="span" onClick={() => props.onClick(props)}>
+            <ClearIcon />
         </IconButton>
     );
 });
 
-export default IconCell;
+export default DeleteRowCell;

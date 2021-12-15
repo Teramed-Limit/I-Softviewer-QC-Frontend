@@ -4,9 +4,10 @@ export const define = {
             { field: 'name', headerName: 'Name', width: 160 },
             { field: 'operationType', headerName: 'Type', width: 160 },
             { field: 'aeTitle', headerName: 'AETitle', width: 160 },
+            { field: 'remoteAETitle', headerName: 'Remote AETitle', width: 160 },
             { field: 'ipAddress', headerName: 'IP', width: 120 },
             { field: 'port', headerName: 'Port', width: 100 },
-            { field: 'remoteAETitle', headerName: 'Remote AETitle', width: 160 },
+            { field: 'moveAETitle', headerName: 'Move AETitle', width: 160 },
             { field: 'enable', headerName: 'Enable', width: 100, cellRenderer: 'checkboxRenderer' },
             { field: 'description', headerName: 'Description', flex: 1 },
         ],
@@ -31,12 +32,18 @@ export const define = {
                             },
                             validation: { type: 'Required' },
                         },
-                        { field: 'aeTitle', label: 'AE Title', type: 'Text', validation: { type: 'Required' } },
+                        { field: 'aeTitle', label: 'AETitle', type: 'Text', validation: { type: 'Required' } },
+                        {
+                            field: 'remoteAETitle',
+                            label: 'Remote AETitle',
+                            type: 'Text',
+                            validation: { type: 'Required' },
+                        },
                         { field: 'ipAddress', label: 'IP', type: 'Text', validation: { type: 'Required' } },
                         { field: 'port', label: 'Port', type: 'Number', validation: { type: 'Required' } },
                         {
-                            field: 'sendingAETitle',
-                            label: 'Sending AE Title',
+                            field: 'moveAETitle',
+                            label: 'Move AETitle',
                             type: 'Text',
                             validation: { type: 'Required' },
                         },
@@ -163,7 +170,6 @@ export const define = {
             { field: 'studyInstanceUID', headerName: 'StudyInstanceUID', hide: true, width: 120 },
             { field: 'studyDescription', headerName: 'StudyDescription', flex: 1, minWidth: 200 },
             { field: 'modality', headerName: 'Modality', width: 120 },
-            // { field: 'referringPhysiciansName', headerName: 'Referring Physicians Name', width: 120 },
             { field: 'performingPhysiciansName', headerName: 'Performing Physician', width: 200 },
             { field: 'studyDate', headerName: 'Study Date', width: 120 },
         ],
@@ -186,10 +192,24 @@ export const define = {
     },
     imageTags: {
         colDef: [
-            { field: 'tag', headerName: 'Tag', flex: 1 },
+            { field: 'id', headerName: 'id', hide: true },
+            { field: 'tag', headerName: 'Tag', flex: 1, cellRenderer: 'tagRenderer' },
+            { field: 'vr', headerName: 'VR', width: 80 },
             { field: 'name', headerName: 'Name', flex: 1 },
             { field: 'value', headerName: 'Value', flex: 1 },
         ],
+        formDef: {
+            sections: [
+                {
+                    fields: [
+                        { field: 'tag', label: 'Tag', type: 'Text', readOnly: true },
+                        { field: 'vr', label: 'VR', type: 'Text', readOnly: true },
+                        { field: 'name', label: 'Name', type: 'Text', readOnly: true },
+                        { field: 'value', label: 'Value', type: 'Text' },
+                    ],
+                },
+            ],
+        },
     },
 };
 
