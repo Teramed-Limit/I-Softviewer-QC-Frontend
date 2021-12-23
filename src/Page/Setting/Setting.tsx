@@ -1,5 +1,7 @@
 import React from 'react';
 
+import Typography from '@mui/material/Typography';
+
 import { define } from '../../constant/setting-define';
 import { DicomNode } from '../../interface/dicom-node';
 import GridTableEditor from '../../Layout/GridTableEditor/GridTableEditor';
@@ -12,6 +14,9 @@ const initFormData: Partial<DicomNode> = {
 const Setting = () => {
     return (
         <div className={classes.container}>
+            <Typography sx={{ paddingLeft: '4px' }} variant="h6" component="div">
+                Service Providers
+            </Typography>
             <GridTableEditor
                 apiPath="configuration/dicomNode"
                 identityId="name"

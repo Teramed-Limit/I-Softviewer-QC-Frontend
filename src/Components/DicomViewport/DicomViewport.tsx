@@ -1,7 +1,7 @@
 import React from 'react';
 
 import cx from 'classnames';
-import { EVENTS } from 'cornerstone-core';
+import { EnabledElement, EVENTS, Viewport, Image } from 'cornerstone-core';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 
 import { ViewPortElement } from '../../interface/dicom-viewport';
@@ -55,6 +55,18 @@ const DicomViewport = ({
     setActiveViewportIndex,
     registerRenderImage,
 }: Props) => {
+    const onNewImage = (event: { detail: { viewport: Viewport; image: Image; enabledElement: EnabledElement } }) => {
+        const { viewport, image, enabledElement } = event.detail;
+        registerRenderImage({
+            viewportIndex,
+            element: enabledElement.element,
+            canvas: enabledElement.canvas,
+            image,
+            viewport,
+            initViewport: deepCopy(viewport),
+        });
+    };
+
     return (
         <CornerstoneViewport
             className={cx(classes.viewport, {
@@ -75,21 +87,14 @@ const DicomViewport = ({
             frameRate={22}
             activeTool={activeTool}
             setViewportActive={() => setActiveViewportIndex(viewportIndex)}
-            onElementEnabled={(elementEnabledEvt) => {
-                const { canvas, element } = elementEnabledEvt.detail;
-
-                element.addEventListener(EVENTS.NEW_IMAGE, (imageRenderedEvent) => {
-                    const { viewport, image } = imageRenderedEvent.detail;
-                    registerRenderImage({
-                        viewportIndex,
-                        element,
-                        canvas,
-                        image,
-                        viewport,
-                        initViewport: deepCopy(viewport),
-                    });
-                });
-            }}
+            eventListeners={[
+                {
+                    target: 'cornerstone',
+                    eventName: EVENTS.NEW_IMAGE,
+                    handler: onNewImage,
+                },
+            ]}
+            onElementEnabled={() => {}}
         />
     );
 };

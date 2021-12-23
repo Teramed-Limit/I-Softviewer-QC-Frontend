@@ -7,7 +7,7 @@ export interface ViewPortElement {
     image: Image | DicomImage;
     viewport: Viewport;
     initViewport: Viewport;
-    canvas: HTMLCanvasElement;
+    canvas?: HTMLCanvasElement;
 }
 
 export interface DicomImage extends Image {

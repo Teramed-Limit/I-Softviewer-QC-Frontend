@@ -20,7 +20,7 @@ export const EditorDefaultValue = {
     Text: '',
     Number: 0,
     Textarea: '',
-    DataRange: [null, null],
+    DataRange: '',
     Checkbox: '',
     MultiSelect: [],
     SingleSelect: '',

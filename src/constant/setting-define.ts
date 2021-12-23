@@ -114,7 +114,7 @@ export const define = {
             ],
         },
     },
-    studyData: {
+    hisStudy: {
         colDef: [
             { field: 'cumcNo', headerName: 'Cumc No', width: 120 },
             { field: 'episodeNo', headerName: 'EpisodeNo', width: 180 },
@@ -129,29 +129,24 @@ export const define = {
     },
     patientStudy: {
         colDef: [
-            { field: 'patientId', headerName: 'Patient Id', width: 160 },
             {
-                field: 'patientsName',
-                headerName: 'Patient Name',
-                width: 160,
-            },
-            {
-                field: 'accessionNumber',
-                headerName: 'AccessionNumber',
+                field: 'patientID',
+                headerName: 'Patient Id',
                 width: 160,
                 pinned: 'left',
                 cellRenderer: 'linkRenderer',
-                cellRendererParams: {
-                    urlPath: '/qualityControl/viewer/studies/studyInstanceUID/{studyInstanceUID}',
-                },
+                cellRendererParams: { clicked: () => {} },
             },
-            {
-                field: 'state',
-                headerName: 'State',
-                width: 250,
-                pinned: 'left',
-                cellRenderer: 'qcChipRenderer',
-            },
+            { field: 'patientName', headerName: 'Patient Name', width: 160 },
+            { field: 'accessionNumber', headerName: 'AccessionNumber', width: 160 },
+            { field: 'studyID', headerName: 'studyID', hide: true, width: 120, pinned: 'left' },
+            // {
+            //     field: 'state',
+            //     headerName: 'State',
+            //     width: 250,
+            //     pinned: 'left',
+            //     cellRenderer: 'qcChipRenderer',
+            // },
             {
                 field: 'advanced',
                 headerName: 'Advanced',
@@ -165,29 +160,42 @@ export const define = {
                     label: 'Advanced',
                 },
             },
-            { field: 'patientsSex', headerName: 'Sex', type: 'Text', width: 120 },
-            { field: 'patientsBirthDate', headerName: 'BirthDate', width: 120 },
-            { field: 'studyInstanceUID', headerName: 'StudyInstanceUID', hide: true, width: 120 },
+            { field: 'patientSex', headerName: 'Sex', type: 'Text', width: 120 },
+            { field: 'patientBirthDate', headerName: 'BirthDate', width: 120 },
+            { field: 'studyDate', headerName: 'Study Date', width: 120 },
             { field: 'studyDescription', headerName: 'StudyDescription', flex: 1, minWidth: 200 },
             { field: 'modality', headerName: 'Modality', width: 120 },
-            { field: 'performingPhysiciansName', headerName: 'Performing Physician', width: 200 },
+            // { field: 'performingPhysiciansName', headerName: 'Performing Physician', width: 200 },
+            { field: 'referringPhysicianName', headerName: 'Referring Physician', width: 200 },
+            { field: 'studyInstanceUID', headerName: 'StudyInstanceUID', hide: true, width: 120 },
+        ],
+    },
+    qrStudy: {
+        colDef: [
+            { field: 'patientID', headerName: 'Patient Id', width: 160 },
+            { field: 'patientName', headerName: 'Patient Name', width: 160 },
+            { field: 'accessionNumber', headerName: 'AccessionNumber', width: 160 },
+            { field: 'studyID', headerName: 'studyID', hide: true, width: 120, pinned: 'left' },
+            { field: 'patientSex', headerName: 'Sex', type: 'Text', width: 120 },
+            { field: 'patientBirthDate', headerName: 'BirthDate', width: 120 },
             { field: 'studyDate', headerName: 'Study Date', width: 120 },
-        ],
-    },
-    series: {
-        colDef: [
-            { field: 'seriesModality', headerName: 'Modality', width: 160 },
-            { field: 'state', headerName: 'Status', width: 250, cellRenderer: 'qcChipRenderer' },
-            { field: 'seriesDescription', headerName: 'Description', flex: 1 },
-            { field: 'seriesInstanceUID', headerName: 'SeriesInstanceUID', hide: true },
-        ],
-    },
-    images: {
-        colDef: [
-            { field: 'imageNumber', headerName: 'Image No', width: 120 },
-            { field: 'sopInstanceUID', headerName: 'SOPInstanceUID', flex: 1 },
-            { field: 'sopClassUID', headerName: 'SOPClassUID', hide: true },
-            { field: 'filePath', headerName: 'FilePath', hide: true },
+            { field: 'studyDescription', headerName: 'StudyDescription', flex: 1, minWidth: 200 },
+            { field: 'modality', headerName: 'Modality', width: 120 },
+            { field: 'referringPhysicianName', headerName: 'Referring Physician', width: 200 },
+            { field: 'studyInstanceUID', headerName: 'StudyInstanceUID', hide: true, width: 120 },
+            {
+                field: 'retrieve',
+                headerName: '',
+                width: 100,
+                pinned: 'right',
+                cellRenderer: 'buttonRenderer',
+                cellRendererParams: {
+                    clicked: () => {},
+                    color: 'primary',
+                    variant: 'contained',
+                    label: 'Retrieve',
+                },
+            },
         ],
     },
     imageTags: {
@@ -213,7 +221,8 @@ export const define = {
     },
 };
 
-export const queryField = [
+export const defaultQueryFields = ['patientId', 'accessionNumber', 'modality', 'studyDate'];
+export const dbQueryField = [
     { field: 'patientId', label: 'Patient ID', type: 'Text' },
     { field: 'patientsName', label: 'Patient Name', type: 'Text' },
     { field: 'patientsSex', label: 'Sex', type: 'Text' },
@@ -230,4 +239,23 @@ export const queryField = [
     { field: 'referringPhysiciansName', label: 'Referring Physicians Name', type: 'Text' },
     { field: 'performingPhysiciansName', label: 'Performing Physicians Name', type: 'Text' },
     { field: 'studyDate', label: 'Study Date', type: 'DataRange' },
+];
+
+export const defaultQRQueryFields = ['patientId', 'accessionNumber', 'modality', 'studyDate', 'queryName'];
+export const qrQueryField = [
+    ...dbQueryField,
+    ...[
+        {
+            field: 'queryName',
+            label: 'Query Target',
+            type: 'SingleSelect',
+            disabled: true,
+            optionSource: {
+                type: 'http',
+                source: 'configuration/dicomNode/operationType/Query-Retrieve',
+                key: 'name',
+                labelKey: 'name',
+            },
+        },
+    ],
 ];

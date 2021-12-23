@@ -12,6 +12,7 @@ import classes from './GridTableEditor.module.scss';
 
 interface Props {
     apiPath: string;
+    isSequenceId?: boolean;
     externalUpdateRowApi?: (formData: any) => AxiosObservable<any>;
     enableApi?: boolean;
     filterRow?: boolean;

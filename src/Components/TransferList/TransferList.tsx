@@ -11,26 +11,27 @@ import ListItemText from '@mui/material/ListItemText';
 import Paper from '@mui/material/Paper';
 import * as R from 'ramda';
 
+import { TransferItem } from '../../interface/transfer-item';
 import classes from './TransferList.module.scss';
 
-function not(a: readonly string[], b: readonly string[]) {
+function not(a: readonly TransferItem[], b: readonly TransferItem[]) {
     return a.filter((value) => b.indexOf(value) === -1);
 }
 
-function intersection(a: readonly string[], b: readonly string[]) {
+function intersection(a: readonly TransferItem[], b: readonly TransferItem[]) {
     return a.filter((value) => b.indexOf(value) !== -1);
 }
 
 interface Props {
-    itemList: string[];
-    selectItemList: string[];
-    onTransferListChanged: (itemList: string[]) => void;
+    itemList: TransferItem[];
+    selectItemList: TransferItem[];
+    onTransferListChanged: (itemList: TransferItem[]) => void;
 }
 
 function TransferList({ itemList, selectItemList, onTransferListChanged }: Props) {
-    const [checked, setChecked] = React.useState<string[]>([]);
-    const [left, setLeft] = React.useState<string[]>([]);
-    const [right, setRight] = React.useState<string[]>(selectItemList);
+    const [checked, setChecked] = React.useState<TransferItem[]>([]);
+    const [left, setLeft] = React.useState<TransferItem[]>([]);
+    const [right, setRight] = React.useState<TransferItem[]>(selectItemList);
 
     const leftChecked = intersection(checked, left);
     const rightChecked = intersection(checked, right);
@@ -39,7 +40,7 @@ function TransferList({ itemList, selectItemList, onTransferListChanged }: Props
         setLeft(R.without(selectItemList, itemList));
     }, [itemList, selectItemList]);
 
-    const handleToggle = (value: string) => () => {
+    const handleToggle = (value: TransferItem) => () => {
         const currentIndex = checked.indexOf(value);
         const newChecked = [...checked];
 
@@ -50,11 +51,6 @@ function TransferList({ itemList, selectItemList, onTransferListChanged }: Props
         }
 
         setChecked(newChecked);
-    };
-
-    const handleAllRight = () => {
-        setRight(right.concat(left));
-        setLeft([]);
     };
 
     const handleCheckedRight = () => {
@@ -69,19 +65,30 @@ function TransferList({ itemList, selectItemList, onTransferListChanged }: Props
         setChecked(not(checked, rightChecked));
     };
 
-    const handleAllLeft = () => {
-        setLeft(left.concat(right));
-        setRight([]);
+    const handleAllRight = () => {
+        setRight(right.concat(left.filter((item) => !item.disabled)));
+        setLeft([...left.filter((item) => item.disabled)]);
     };
 
-    const customList = (items: readonly string[]) => (
+    const handleAllLeft = () => {
+        setLeft(left.concat(right.filter((item) => !item.disabled)));
+        setRight([...right.filter((item) => item.disabled)]);
+    };
+
+    const customList = (items: readonly TransferItem[]) => (
         <Paper sx={{ width: 250, height: 350, overflow: 'auto' }} elevation={3}>
             <List dense component="div" role="list">
-                {items.map((item: string) => {
-                    const labelId = `transfer-list-item-${item}-label`;
+                {items.map((item: TransferItem) => {
+                    const labelId = `transfer-list-item-${item.id}-label`;
 
                     return (
-                        <ListItem key={item} role="listitem" button onClick={handleToggle(item)}>
+                        <ListItem
+                            key={item.id}
+                            role="listitem"
+                            button
+                            onClick={handleToggle(item)}
+                            disabled={item.disabled}
+                        >
                             <ListItemIcon>
                                 <Checkbox
                                     checked={checked.indexOf(item) !== -1}
@@ -92,7 +99,7 @@ function TransferList({ itemList, selectItemList, onTransferListChanged }: Props
                                     }}
                                 />
                             </ListItemIcon>
-                            <ListItemText id={labelId} primary={item} />
+                            <ListItemText id={labelId} primary={item.label} />
                         </ListItem>
                     );
                 })}
@@ -107,16 +114,6 @@ function TransferList({ itemList, selectItemList, onTransferListChanged }: Props
                 <Grid item>{customList(left)}</Grid>
                 <Grid item>
                     <Grid container direction="column" alignItems="center">
-                        <Button
-                            sx={{ my: 0.5 }}
-                            variant="outlined"
-                            size="small"
-                            onClick={handleAllRight}
-                            disabled={left.length === 0}
-                            aria-label="move all right"
-                        >
-                            ≫
-                        </Button>
                         <Button
                             sx={{ my: 0.5 }}
                             variant="outlined"
@@ -141,6 +138,16 @@ function TransferList({ itemList, selectItemList, onTransferListChanged }: Props
                             sx={{ my: 0.5 }}
                             variant="outlined"
                             size="small"
+                            onClick={handleAllRight}
+                            disabled={left.length === 0}
+                            aria-label="move all right"
+                        >
+                            ≫
+                        </Button>
+                        <Button
+                            sx={{ my: 0.5 }}
+                            variant="outlined"
+                            size="small"
                             onClick={handleAllLeft}
                             disabled={right.length === 0}
                             aria-label="move all left"
@@ -156,7 +163,7 @@ function TransferList({ itemList, selectItemList, onTransferListChanged }: Props
                     variant="contained"
                     color="primary"
                     onClick={() => {
-                        onTransferListChanged(left);
+                        onTransferListChanged(right);
                     }}
                 >
                     Save

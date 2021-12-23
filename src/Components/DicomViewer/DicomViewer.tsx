@@ -1,5 +1,4 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 
@@ -22,11 +21,6 @@ const wwwcSynchronizer = new cornerstoneTools.Synchronizer(
     cornerstoneTools.wwwcSynchronizer,
 );
 
-// const updateImageSynchronizer = new cornerstoneTools.Synchronizer(
-//     'cornerstonenewimage',
-//     cornerstoneTools.updateImageSynchronizer,
-// );
-
 function DicomViewer({ imageIds }: Props) {
     const viewerRef = React.useRef<HTMLDivElement>(null);
 
@@ -34,12 +28,9 @@ function DicomViewer({ imageIds }: Props) {
     const [activeViewportIndex, setActiveViewportIndex] = useState(0);
     const [activeTool, setActiveTool] = useState('Wwwc');
     const [viewerHeight, setViewerHeight] = useState(0);
-    const [row, setRow] = useState(3);
-    const [col, setCol] = useState(3);
+    const [row, setRow] = useState(2);
+    const [col, setCol] = useState(2);
     const [openModal, setModalOpen] = React.useState(false);
-    // const [drawer, setDrawer] = useState({
-    //     dicomTag: false,
-    // });
 
     useEffect(() => {
         setRenderImages({});
@@ -81,17 +72,6 @@ function DicomViewer({ imageIds }: Props) {
         cornerstone.fitToWindow(renderImage.element);
     };
 
-    // const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
-    //     if (
-    //         event.type === 'keydown' &&
-    //         ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')
-    //     ) {
-    //         return;
-    //     }
-    //
-    //     setDrawer({ ...drawer, dicomTag: open });
-    // };
-
     return (
         <>
             <DicomViewerToolbar
@@ -123,14 +103,6 @@ function DicomViewer({ imageIds }: Props) {
             <BaseModal open={openModal} setOpen={setModalOpen}>
                 <DicomTag image={renderImages[activeViewportIndex]?.image} />
             </BaseModal>
-            {/* <Drawer */}
-            {/*    PaperProps={{ className: classes.drawerPaper }} */}
-            {/*    anchor="right" */}
-            {/*    open={drawer.dicomTag} */}
-            {/*    onClose={toggleDrawer(false)} */}
-            {/* > */}
-            {/*    <DicomTag image={renderImages[activeViewportIndex]?.image} /> */}
-            {/* </Drawer> */}
         </>
     );
 }

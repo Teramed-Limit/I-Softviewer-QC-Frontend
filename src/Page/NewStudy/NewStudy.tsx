@@ -71,7 +71,7 @@ const NewStudy = () => {
                 <div className={`ag-theme-alpine ${classes.body}`}>
                     <GridTable
                         rowSelection="single"
-                        columnDefs={define.studyData.colDef}
+                        columnDefs={define.hisStudy.colDef}
                         rowData={rowData}
                         onSelectionChanged={onSelectionChanged}
                     />

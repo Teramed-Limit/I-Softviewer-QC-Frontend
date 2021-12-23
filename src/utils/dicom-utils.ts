@@ -1,7 +1,9 @@
+import { AxiosResponse } from 'axios';
 import dicomParser from 'dicom-parser';
 
 import { TAG_DICT } from '../constant/dicom-tag-dict';
 import { DICOM_UID } from '../constant/dicom-uid';
+import { DicomQRResult } from '../interface/dicom-dataset';
 import { TagElement } from '../interface/tag-dict';
 import { getDateString, readBase64 } from './general';
 
@@ -44,3 +46,25 @@ export const hydrateDataset = (file): Promise<{ dcmDataset: dicomParser.DataSet;
 function getRandomNumberBetween(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
 }
+
+export const parseDicomTagResult = (res: AxiosResponse<DicomQRResult>) => {
+    const newRowData: any[] = [];
+    res.data?.datasets?.forEach((study) => {
+        let row = {};
+        study.forEach((tag) => (row = { ...row, [tag.keyword]: tag.value }));
+        newRowData.push(row);
+    });
+    return newRowData;
+};
+
+export const parseDicomTagToDcmUrlArray = (res: AxiosResponse<DicomQRResult>): string[] => {
+    const dcmUrlList: string[] = [];
+    res.data?.fileSetIDs?.forEach((tag) => {
+        if (tag.value.includes('https')) {
+            dcmUrlList.push(tag.value.replace('https', 'dicomweb'));
+        } else {
+            dcmUrlList.push(tag.value.replace('http', 'dicomweb'));
+        }
+    });
+    return dcmUrlList;
+};

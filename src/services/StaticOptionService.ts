@@ -51,7 +51,7 @@ const modalityOptions = [
     'XA',
 ];
 
-const dicomOperationTypeOptions = ['C-STORE', 'C-FIND', 'C-GET', 'C-MOVE'];
+const dicomOperationTypeOptions = ['C-STORE', 'Query-Retrieve', 'Worklist'];
 
 export const StaticOptionMapper = {
     modality: modalityOptions,

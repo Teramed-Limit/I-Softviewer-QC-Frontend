@@ -12,6 +12,7 @@ export interface Field {
     label: string;
     readOnly?: boolean;
     validation?: Validation;
+    disabled?: boolean;
 }
 
 export interface SelectField extends Field {

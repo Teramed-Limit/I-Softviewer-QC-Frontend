@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { AxiosError } from 'axios';
 import { AxiosObservable } from 'axios-observable';
+import { useParams } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import { concatMap, from, tap, toArray } from 'rxjs';
 
@@ -29,7 +30,7 @@ const initDicomIOD = {
 
 const AdvancedQualityControl = () => {
     const setNotification = useSetRecoilState(atomNotification);
-    // const { studyInsUID } = useParams<{ studyInsUID: string }>();
+    const { studyInsUID } = useParams<{ studyInsUID: string }>();
     const [dicomData, setDicomData] = useState<DicomIOD>(initDicomIOD);
     const [sopInstanceUID, setSopInstanceUID] = useState('');
     const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>('');
@@ -41,17 +42,16 @@ const AdvancedQualityControl = () => {
     useEffect(() => {
         setLoading(true);
         const dicomIOD: DicomIOD = deepCopy(initDicomIOD);
-        const studyInstanceUID = '1.2.826.0.1.3680043.6.21455.15878.20190806073929.992.236';
         const subscription = http
             // Study
-            .get<DicomStudy>(`dicomDbQuery/studyInstanceUID/${studyInstanceUID}`)
+            .get<DicomStudy>(`dicomDbQuery/studyInstanceUID/${studyInsUID}`)
             .pipe(
                 tap((studyRes) => (dicomIOD.dicomStudy = [studyRes.data])),
                 // Patient
                 concatMap((studyRes) => http.get<DicomPatient>(`dicomDbQuery/patientId/${studyRes.data.patientId}`)),
                 tap((patientRes) => (dicomIOD.dicomPatient = patientRes.data)),
                 // Series
-                concatMap(() => http.get<DicomSeries[]>(`dicomDbQuery/studyInstanceUID/${studyInstanceUID}/series`)),
+                concatMap(() => http.get<DicomSeries[]>(`dicomDbQuery/studyInstanceUID/${studyInsUID}/series`)),
                 tap((seriesRes) => (dicomIOD.dicomSeries = seriesRes.data)),
                 concatMap((seriesRes) => from(seriesRes.data.map((seriesData) => seriesData.seriesInstanceUID))),
                 // Image
@@ -77,7 +77,7 @@ const AdvancedQualityControl = () => {
         return () => {
             subscription.unsubscribe();
         };
-    }, [setNotification]);
+    }, [setNotification, studyInsUID]);
 
     useEffect(() => {
         if (isEmptyOrNil(sopInstanceUID)) return;

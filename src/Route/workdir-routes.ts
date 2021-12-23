@@ -54,10 +54,4 @@ export const workdirRoutes: RouteConfig[] = [
         protected: true,
         exact: true,
     },
-    // {
-    //     path: '/home',
-    //     component: Home,
-    //     protected: true,
-    //     exact: true,
-    // },
 ];

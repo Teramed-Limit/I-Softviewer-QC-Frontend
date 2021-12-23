@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Button, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { DataSet } from 'dicom-parser';
 import * as R from 'ramda';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { http } from '../../api/axios';
 import DicomViewer from '../../Components/DicomViewer/DicomViewer';
@@ -31,18 +31,13 @@ const BufferType = {
 
 const ImageSelect = () => {
     const location = useLocation<CreateStudyParams>();
+    const history = useHistory();
     const [imageIds, setImageIds] = useState<string[]>([]);
     const [createStudyData, setCreateStudyData] = useState<CreateAndModifyStudy<ImageBufferAndData>>({
-        patientInfo: {
-            patientId: location.state.patientId,
-            patientsName: location.state.patientName,
-            patientsSex: location.state.sex,
-            patientsBirthDate: location.state.birthdate,
-            otherPatientNames: location.state.otherPatientName,
-        },
-        studyInfo: [],
-        seriesInfo: [],
+        patientInfo: undefined,
         imageInfos: [],
+        seriesInfo: [],
+        studyInfo: [],
         sendOtherEnableNodes: false,
     });
     const { requestFun: onSaveToOwnPacs } = useHttp(
@@ -50,9 +45,26 @@ const ImageSelect = () => {
         { successMessage: 'Save study success' },
     );
     const { requestFun: onSaveToAllEnablePacs } = useHttp(
-        http.post('studyMaintenance', { ...createStudyData, sendOtherEnableNodes: false }),
+        http.post('studyMaintenance', { ...createStudyData, sendOtherEnableNodes: true }),
         { successMessage: 'Send images to PACS success' },
     );
+
+    useEffect(() => {
+        if (!location.state) history.push('/');
+        setCreateStudyData({
+            patientInfo: {
+                patientId: location.state.patientId,
+                patientsName: location.state.patientName,
+                patientsSex: location.state.sex,
+                patientsBirthDate: location.state.birthdate,
+                otherPatientNames: location.state.otherPatientName,
+            },
+            studyInfo: [],
+            seriesInfo: [],
+            imageInfos: [],
+            sendOtherEnableNodes: false,
+        });
+    }, [history, location.state]);
 
     const onAddImageFile = async (e) => {
         if (!e.target.files.length) return;

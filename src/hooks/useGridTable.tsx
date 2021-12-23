@@ -87,23 +87,29 @@ export const useGridTable = <T,>({
     const [saveType, setSaveType] = useState<string>('add');
     const [rowData, setRowData] = useState([]);
 
+    const getRowData = useCallback(
+        () =>
+            http.get(apiPath).subscribe({
+                next: (res: AxiosResponse) => {
+                    setRowData(res.data);
+                    gridApi?.current?.onFilterChanged();
+                },
+                error: (err: AxiosError) => {
+                    setRowData([]);
+                    setNotification({
+                        messageType: MessageType.Error,
+                        message: err.response?.data || 'Http request failed!',
+                    });
+                },
+            }),
+        [apiPath, setNotification],
+    );
+
     useEffect(() => {
         if (!enableApi) return;
-        const subscription = http.get(apiPath).subscribe({
-            next: (res: AxiosResponse) => {
-                setRowData(res.data);
-                gridApi?.current?.onFilterChanged();
-            },
-            error: (err: AxiosError) => {
-                setRowData([]);
-                setNotification({
-                    messageType: MessageType.Error,
-                    message: err.response?.data || 'Http request failed!',
-                });
-            },
-        });
+        const subscription = getRowData();
         return subscription.unsubscribe;
-    }, [apiPath, enableApi, setNotification]);
+    }, [apiPath, enableApi, getRowData, setNotification]);
 
     const openEditor = useCallback((formData, type: string) => {
         setEditFormData(formData);
@@ -135,7 +141,7 @@ export const useGridTable = <T,>({
                 },
             });
         },
-        [addCallBack, apiPath, identityId, initFormData],
+        [apiPath, identityId, initFormData, addCallBack, getRowData],
     );
 
     const updateRow = useCallback(
