@@ -3,11 +3,11 @@ import React from 'react';
 import Typography from '@mui/material/Typography';
 
 import { define } from '../../constant/setting-define';
-import { DicomNode } from '../../interface/dicom-node';
+import { DicomOperationNode } from '../../interface/dicom-node';
 import GridTableEditor from '../../Layout/GridTableEditor/GridTableEditor';
 import classes from './Setting.module.scss';
 
-const initFormData: Partial<DicomNode> = {
+const initFormData: Partial<DicomOperationNode> = {
     enable: 1,
 };
 
@@ -18,7 +18,7 @@ const Setting = () => {
                 Service Providers
             </Typography>
             <GridTableEditor
-                apiPath="configuration/dicomNode"
+                apiPath="configuration/dicomOperationNode"
                 identityId="name"
                 colDef={define.dicomSend.colDef}
                 formDef={define.dicomSend.formDef}

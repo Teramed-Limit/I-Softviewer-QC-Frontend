@@ -1,14 +1,20 @@
 import React from 'react';
 
-import { useLocation } from 'react-router-dom';
+import { Box } from '@mui/material';
+import { useParams } from 'react-router-dom';
 
 import DicomViewer from '../../Components/DicomViewer/DicomViewer';
-import { ViewerStudyParams } from '../../interface/study-params';
+import { useDicom } from '../../hooks/useDicom';
 
 const ViewerQualityControl = () => {
-    // const { studyInsUID } = useParams<{ studyInsUID: string }>();
-    const location = useLocation<ViewerStudyParams>();
-    return <DicomViewer imageIds={location?.state?.dcmList || []} />;
+    const { studyInsUID } = useParams<{ studyInsUID: string }>();
+    const { dcmUrlList } = useDicom(studyInsUID);
+
+    return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <DicomViewer imageIds={dcmUrlList} />
+        </Box>
+    );
 };
 
 export default ViewerQualityControl;

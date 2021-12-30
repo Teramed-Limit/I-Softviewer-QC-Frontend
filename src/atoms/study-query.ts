@@ -2,10 +2,10 @@ import { atom } from 'recoil';
 
 import { dbQueryField } from '../constant/setting-define';
 
-export const initQueryParams = (fields) => {
+export const initQueryParams = (fields, initialParams: any = {}) => {
     let params = {};
     fields.map((field) => field.field).forEach((id) => (params = { ...params, [id]: '' }));
-    return params;
+    return { ...params, ...initialParams };
 };
 
 export const atomStudyQueryCondition = atom({

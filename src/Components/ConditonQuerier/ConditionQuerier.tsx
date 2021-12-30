@@ -35,9 +35,12 @@ const ConditionQuerier = ({ fields, queryPairData, defaultQueryFields, onQuery, 
         onQueryPairDataChanged(value, fieldId);
     };
 
-    const onQueryConditionChanged = (itemList: TransferItem[]) => {
-        const fieldIdList = itemList.map((item) => item.id);
-        setSelectedTransferItems(itemList);
+    const onQueryConditionChanged = (selectedList: TransferItem[], unselectedList: TransferItem[]) => {
+        // reset query pair data
+        unselectedList.forEach((item) => onQueryPairDataChanged('', item.id));
+        // update query field
+        const fieldIdList = selectedList.map((item) => item.id);
+        setSelectedTransferItems(selectedList);
         setQueryFields(fields.filter((field) => fieldIdList.includes(field.field)));
         setOpen(false);
     };

@@ -8,7 +8,3 @@ export interface CreateStudyParams {
     birthdate: string;
     sex: string;
 }
-
-export interface ViewerStudyParams {
-    dcmList: string[];
-}

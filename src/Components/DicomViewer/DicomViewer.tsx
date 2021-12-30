@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
+
 import cornerstone from 'cornerstone-core';
-import cornerstoneTools from 'cornerstone-tools';
+// import cornerstoneTools from 'cornerstone-tools';
 
 import BaseModal from '../../Container/BaseModal/BaseModal';
 import { useResize } from '../../hooks/useResize';
@@ -16,10 +17,10 @@ interface Props {
 }
 
 // Create the synchronizer
-const wwwcSynchronizer = new cornerstoneTools.Synchronizer(
-    'cornerstoneimagerendered',
-    cornerstoneTools.wwwcSynchronizer,
-);
+// const wwwcSynchronizer = new cornerstoneTools.Synchronizer(
+//     'cornerstoneimagerendered',
+//     cornerstoneTools.wwwcSynchronizer,
+// );
 
 function DicomViewer({ imageIds }: Props) {
     const viewerRef = React.useRef<HTMLDivElement>(null);
@@ -57,8 +58,17 @@ function DicomViewer({ imageIds }: Props) {
         setViewerHeight(viewerRef.current.offsetHeight);
     };
 
+    const onCanvasWheel = (event) => {
+        if (viewerRef.current === null) return;
+        viewerRef.current.scroll({
+            top: viewerRef.current.scrollTop + (event.deltaY < 0 ? -100 : 100),
+            behavior: 'auto',
+        });
+    };
+
     const registerRenderImage = (viewPortElement: ViewPortElement) => {
-        wwwcSynchronizer.add(viewPortElement.element);
+        // wwwcSynchronizer.add(viewPortElement.element);
+        viewPortElement.canvas?.addEventListener('wheel', onCanvasWheel, false);
         setRenderImages((list) => {
             return { ...list, [viewPortElement.viewportIndex]: viewPortElement };
         });
@@ -84,19 +94,35 @@ function DicomViewer({ imageIds }: Props) {
                 setActiveTool={setActiveTool}
             />
             <div className={classes.viewer} ref={viewerRef}>
-                <div className={classes.grid}>
+                <div
+                    className={classes.grid}
+                    style={{
+                        gridTemplateRows: `repeat(${row}, ${100 / row}%)`,
+                        gridTemplateColumns: `repeat(${col}, ${100 / col}%)`,
+                    }}
+                >
                     {imageIds.map((imageId, viewportIndex) => (
-                        <DicomViewport
+                        <div
                             key={imageId}
-                            viewportIndex={viewportIndex}
-                            width={`${100 / col}%`}
-                            height={`${viewerHeight / row}px`}
-                            isActive={activeViewportIndex === viewportIndex}
-                            imageId={imageId}
-                            activeTool={activeTool}
-                            setActiveViewportIndex={setActiveViewportIndex}
-                            registerRenderImage={registerRenderImage}
-                        />
+                            style={{
+                                height: `${viewerHeight / row}px`,
+                                minHeight: `${viewerHeight / row}px`,
+                                maxHeight: `${viewerHeight / row}px`,
+                                flex: `1 1 auto`,
+                                padding: '4px',
+                            }}
+                        >
+                            {viewerHeight && (
+                                <DicomViewport
+                                    viewportIndex={viewportIndex}
+                                    isActive={activeViewportIndex === viewportIndex}
+                                    imageId={imageId}
+                                    activeTool={activeTool}
+                                    setActiveViewportIndex={setActiveViewportIndex}
+                                    registerRenderImage={registerRenderImage}
+                                />
+                            )}
+                        </div>
                     ))}
                 </div>
             </div>

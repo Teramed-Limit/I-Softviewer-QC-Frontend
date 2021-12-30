@@ -3,81 +3,27 @@ import React, { useEffect, useRef, useState } from 'react';
 import { FormControlLabel, Stack, Switch } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { AxiosError } from 'axios';
 import { AxiosObservable } from 'axios-observable';
 import { useParams } from 'react-router-dom';
-import { useSetRecoilState } from 'recoil';
-import { concatMap, from, tap, toArray } from 'rxjs';
 
 import { http } from '../../api/axios';
-import { atomNotification } from '../../atoms/notification';
 import DicomTreeView from '../../Components/DicomTreeView/DicomTreeView';
 import DicomTreeViewSkeleton from '../../Components/DicomTreeViewSkeleton/DicomTreeViewSkeleton';
 import { define } from '../../constant/setting-define';
-import { DicomImagePath, DicomIOD, DicomPatient, DicomSeries, DicomStudy } from '../../interface/dicom-data';
-import { MessageType } from '../../interface/notification';
+import { useDicom } from '../../hooks/useDicom';
 import { DicomTagData } from '../../interface/tag-dict';
 import GridTableEditor from '../../Layout/GridTableEditor/GridTableEditor';
-import { deepCopy, isEmptyOrNil } from '../../utils/general';
+import { isEmptyOrNil } from '../../utils/general';
 import classes from './AdvancedQualityControl.module.scss';
 
-const initDicomIOD = {
-    dicomPatient: {},
-    dicomStudy: [],
-    dicomSeries: [],
-    dicomImage: [],
-};
-
 const AdvancedQualityControl = () => {
-    const setNotification = useSetRecoilState(atomNotification);
     const { studyInsUID } = useParams<{ studyInsUID: string }>();
-    const [dicomData, setDicomData] = useState<DicomIOD>(initDicomIOD);
     const [sopInstanceUID, setSopInstanceUID] = useState('');
     const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>('');
     const [enableApi, setEnableApi] = useState(false);
     const [filterRow, setFilterRow] = useState(true);
-    const [loading, setLoading] = useState(false);
     const activateFilterRef = useRef(true);
-
-    useEffect(() => {
-        setLoading(true);
-        const dicomIOD: DicomIOD = deepCopy(initDicomIOD);
-        const subscription = http
-            // Study
-            .get<DicomStudy>(`dicomDbQuery/studyInstanceUID/${studyInsUID}`)
-            .pipe(
-                tap((studyRes) => (dicomIOD.dicomStudy = [studyRes.data])),
-                // Patient
-                concatMap((studyRes) => http.get<DicomPatient>(`dicomDbQuery/patientId/${studyRes.data.patientId}`)),
-                tap((patientRes) => (dicomIOD.dicomPatient = patientRes.data)),
-                // Series
-                concatMap(() => http.get<DicomSeries[]>(`dicomDbQuery/studyInstanceUID/${studyInsUID}/series`)),
-                tap((seriesRes) => (dicomIOD.dicomSeries = seriesRes.data)),
-                concatMap((seriesRes) => from(seriesRes.data.map((seriesData) => seriesData.seriesInstanceUID))),
-                // Image
-                concatMap((seriesInstanceUID) =>
-                    http.get<DicomImagePath[]>(`dicomDbQuery/seriesInstanceUID/${seriesInstanceUID}/images`),
-                ),
-                tap((imageRes) => (dicomIOD.dicomImage = [...dicomIOD.dicomImage, ...imageRes.data])),
-                toArray(),
-            )
-            .subscribe({
-                next: () => {
-                    setDicomData(dicomIOD);
-                    setLoading(false);
-                },
-                error: (err: AxiosError) => {
-                    setLoading(false);
-                    setNotification({
-                        messageType: MessageType.Error,
-                        message: err.response?.data || 'Http request failed!',
-                    });
-                },
-            });
-        return () => {
-            subscription.unsubscribe();
-        };
-    }, [setNotification, studyInsUID]);
+    const { dicomData, loading } = useDicom(studyInsUID);
 
     useEffect(() => {
         if (isEmptyOrNil(sopInstanceUID)) return;

@@ -25,7 +25,7 @@ function intersection(a: readonly TransferItem[], b: readonly TransferItem[]) {
 interface Props {
     itemList: TransferItem[];
     selectItemList: TransferItem[];
-    onTransferListChanged: (itemList: TransferItem[]) => void;
+    onTransferListChanged: (selectedList: TransferItem[], unselectedList: TransferItem[]) => void;
 }
 
 function TransferList({ itemList, selectItemList, onTransferListChanged }: Props) {
@@ -163,7 +163,7 @@ function TransferList({ itemList, selectItemList, onTransferListChanged }: Props
                     variant="contained"
                     color="primary"
                     onClick={() => {
-                        onTransferListChanged(right);
+                        onTransferListChanged(right, left);
                     }}
                 >
                     Save

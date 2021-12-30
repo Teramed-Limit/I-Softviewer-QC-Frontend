@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import cx from 'classnames';
-import { EnabledElement, EVENTS, Viewport, Image } from 'cornerstone-core';
+import { EVENTS, Viewport } from 'cornerstone-core';
 import CornerstoneViewport from 'react-cornerstone-viewport';
 
+import { CornerstoneViewportEvent } from '../../interface/cornerstone-viewport-event';
 import { ViewPortElement } from '../../interface/dicom-viewport';
 import { deepCopy } from '../../utils/general';
 import classes from './DicomViewport.module.scss';
@@ -31,13 +32,10 @@ const tools = [
     'Eraser',
     'EllipticalRoi',
     'RectangleRoi',
-    'Eraser',
 ];
 
 interface Props {
     viewportIndex: number;
-    width: string;
-    height: string;
     imageId: string;
     isActive: boolean;
     activeTool: string;
@@ -46,8 +44,6 @@ interface Props {
 }
 
 const DicomViewport = ({
-    width,
-    height,
     imageId,
     viewportIndex,
     isActive,
@@ -55,7 +51,10 @@ const DicomViewport = ({
     setActiveViewportIndex,
     registerRenderImage,
 }: Props) => {
-    const onNewImage = (event: { detail: { viewport: Viewport; image: Image; enabledElement: EnabledElement } }) => {
+    const [initViewport] = useState<Viewport>({
+        voi: { windowWidth: 128, windowCenter: 128 },
+    });
+    const onNewImage = (event: CornerstoneViewportEvent) => {
         const { viewport, image, enabledElement } = event.detail;
         registerRenderImage({
             viewportIndex,
@@ -73,12 +72,9 @@ const DicomViewport = ({
                 [classes.active]: isActive,
             })}
             style={{
-                maxWidth: width,
-                minWidth: width,
-                height,
-                maxHeight: height,
-                flex: '1 1 auto',
-                border: '3px black solid',
+                height: '100%',
+                border: '3px rgb(32,165,214,0.3) solid',
+                borderRadius: '6px',
             }}
             tools={tools}
             imageIds={[imageId]}
@@ -87,6 +83,7 @@ const DicomViewport = ({
             frameRate={22}
             activeTool={activeTool}
             setViewportActive={() => setActiveViewportIndex(viewportIndex)}
+            initialViewport={initViewport}
             eventListeners={[
                 {
                     target: 'cornerstone',

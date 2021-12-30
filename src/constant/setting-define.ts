@@ -130,7 +130,7 @@ export const define = {
     patientStudy: {
         colDef: [
             {
-                field: 'patientID',
+                field: 'patientId',
                 headerName: 'Patient Id',
                 width: 160,
                 pinned: 'left',
@@ -252,7 +252,7 @@ export const qrQueryField = [
             disabled: true,
             optionSource: {
                 type: 'http',
-                source: 'configuration/dicomNode/operationType/Query-Retrieve',
+                source: 'configuration/dicomOperationNode/operationType/Query-Retrieve',
                 key: 'name',
                 labelKey: 'name',
             },

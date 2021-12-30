@@ -86,7 +86,8 @@ export const dispatchCellEvent = (colDefs: ColDef[], fieldId: string, clickEvent
 };
 
 export function dateToStr(date) {
-    const d = new Date(date);
+    let d = new Date();
+    if (date !== null) d = new Date(date);
     let month = `${d.getMonth() + 1}`;
     let day = `${d.getDate()}`;
     const year = d.getFullYear();

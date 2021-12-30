@@ -141,7 +141,7 @@ export const useGridTable = <T,>({
                 },
             });
         },
-        [apiPath, identityId, initFormData, addCallBack, getRowData],
+        [apiPath, identityId, initFormData, addCallBack],
     );
 
     const updateRow = useCallback(

@@ -1,4 +1,4 @@
-export interface DicomNode {
+export interface DicomOperationNode {
     name: string;
     operationType: string;
     aeTitle: string;

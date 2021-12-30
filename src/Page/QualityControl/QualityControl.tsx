@@ -19,7 +19,6 @@ import DicomQueryRetrieve from '../../Components/DicomQueryRetrieve/DicomQueryRe
 import GridTable from '../../Components/GridTable/GridTable';
 import { dbQueryField, defaultQueryFields, define } from '../../constant/setting-define';
 import BaseModal from '../../Container/BaseModal/BaseModal';
-import { DicomQRResult } from '../../interface/dicom-dataset';
 import { dispatchCellEvent } from '../../utils/general';
 import classes from './QualityControl.module.scss';
 
@@ -40,8 +39,9 @@ const QualityControl = () => {
 
     const onQuery = () => {
         gridApiRef.current?.showLoadingOverlay();
-        http.get<DicomQRResult>(`searchDcmService/qrfind`, { params: { ...queryPairData } }).subscribe({
-            next: () => {
+        http.get(`dicomDbQuery`, { params: { ...queryPairData } }).subscribe({
+            next: (res) => {
+                setRowData(res.data);
                 gridApiRef.current?.hideOverlay();
             },
             error: () => {
@@ -78,7 +78,7 @@ const QualityControl = () => {
     useEffect(() => {
         let mutateColDef: ColDef[] = [...define.patientStudy.colDef];
         mutateColDef = dispatchCellEvent(mutateColDef, 'advanced', onAdvancedClick);
-        mutateColDef = dispatchCellEvent(mutateColDef, 'patientID', onViewerClick);
+        mutateColDef = dispatchCellEvent(mutateColDef, 'patientId', onViewerClick);
         setColDefs(mutateColDef);
     }, [onViewerClick, onAdvancedClick]);
 
