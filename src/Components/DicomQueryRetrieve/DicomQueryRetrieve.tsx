@@ -12,10 +12,11 @@ import { http } from '../../api/axios';
 import { atomNotification } from '../../atoms/notification';
 import { initQueryParams } from '../../atoms/study-query';
 import { defaultQRQueryFields, define, qrQueryField } from '../../constant/setting-define';
+import { useGridColDef } from '../../hooks/useGridColDef';
 import { DicomQRResult } from '../../interface/dicom-dataset';
 import { MessageType } from '../../interface/notification';
 import { parseDicomTagResult } from '../../utils/dicom-utils';
-import { dispatchCellEvent, isEmptyOrNil } from '../../utils/general';
+import { isEmptyOrNil } from '../../utils/general';
 import ConditionQuerier from '../ConditonQuerier/ConditionQuerier';
 import GridTable from '../GridTable/GridTable';
 import classes from './DicomQueryRetrieve.module.scss';
@@ -27,6 +28,7 @@ interface QueryField {
 
 const DicomQueryRetrieve = () => {
     const setNotification = useSetRecoilState(atomNotification);
+    const { dispatchCellEvent } = useGridColDef();
     const [queryPairData, setQueryPairData] = useState<QueryField>({ ...initQueryParams(qrQueryField), queryName: '' });
     const [rowData, setRowData] = useState<any[]>([]);
     const [colDefs, setColDefs] = useState<ColDef[]>([]);
@@ -101,7 +103,7 @@ const DicomQueryRetrieve = () => {
         mutateColDef = dispatchCellEvent(mutateColDef, 'retrieve', onMoveStudy);
         setColDefs(mutateColDef);
         gridApiRef.current?.setColumnDefs(mutateColDef);
-    }, [onMoveStudy]);
+    }, [dispatchCellEvent, onMoveStudy]);
 
     return (
         <Box sx={{ display: 'flex', height: '100%', flexDirection: 'column' }}>

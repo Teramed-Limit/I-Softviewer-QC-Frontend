@@ -1,3 +1,5 @@
+import { RoleFunction } from './user-role';
+
 export interface UserAccountInfo {
     userID: string;
     userPassword: string;
@@ -23,4 +25,5 @@ export interface LoginResult {
     username: string;
     accessToken: string;
     refreshToken: string;
+    functionList: RoleFunction[];
 }

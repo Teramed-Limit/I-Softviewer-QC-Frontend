@@ -6,6 +6,7 @@ export interface UserRole {
 export interface RoleFunction {
     roleName: string;
     functionName: string;
+    correspondElementId: string;
     description: string;
     checked: boolean;
 }

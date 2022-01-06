@@ -75,16 +75,6 @@ export function escapeSpecialCharacters(str) {
     return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-export const dispatchCellEvent = (colDefs: ColDef[], fieldId: string, clickEvent: (param) => void): ColDef[] => {
-    const foundColDef = colDefs.find((col) => col.field === fieldId);
-    if (foundColDef === undefined) {
-        return colDefs;
-    }
-
-    foundColDef.cellRendererParams.clicked = clickEvent;
-    return colDefs;
-};
-
 export function dateToStr(date) {
     let d = new Date();
     if (date !== null) d = new Date(date);

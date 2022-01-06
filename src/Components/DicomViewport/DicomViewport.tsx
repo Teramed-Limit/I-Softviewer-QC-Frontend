@@ -52,7 +52,7 @@ const DicomViewport = ({
     registerRenderImage,
 }: Props) => {
     const [initViewport] = useState<Viewport>({
-        voi: { windowWidth: 128, windowCenter: 128 },
+        // voi: { windowWidth: 128, windowCenter: 128 },
     });
     const onNewImage = (event: CornerstoneViewportEvent) => {
         const { viewport, image, enabledElement } = event.detail;

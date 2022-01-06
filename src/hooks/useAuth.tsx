@@ -8,6 +8,7 @@ import { map } from 'rxjs/operators';
 
 import { http } from '../api/axios';
 import { authInfo } from '../atoms/auth';
+import { userAvailableFunction } from '../atoms/user-available-function';
 import { LoginResult } from '../interface/user-account';
 import TokenService from '../services/TokenService';
 
@@ -17,6 +18,7 @@ export const useAuth = () => {
     const history = useHistory();
     const [message, setMessage] = useState('');
     const setAuth = useSetRecoilState(authInfo);
+    const setUserAvailableFunction = useSetRecoilState(userAvailableFunction);
 
     const getTokenRemainingTime = () => {
         const accessToken = TokenService.getLocalAccessToken();
@@ -88,6 +90,7 @@ export const useAuth = () => {
             next: (res: AxiosResponse<LoginResult>) => {
                 TokenService.setUser(res.data);
                 setAuth(TokenService.getUser());
+                setUserAvailableFunction(res.data.functionList);
                 startTokenTimer();
                 history.replace(navigatePath);
             },

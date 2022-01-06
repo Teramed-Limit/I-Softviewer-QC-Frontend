@@ -12,6 +12,7 @@ import Toolbar from '@mui/material/Toolbar';
 import { useHistory } from 'react-router-dom';
 
 import logo from '../../asserts/logo.png';
+import WithElementVisibility from '../../HOC/WithElementVisiblity/WithElementVisibility';
 import { useAuth } from '../../hooks/useAuth';
 import classes from './MenuAppBar.module.scss';
 
@@ -40,21 +41,33 @@ function MenuAppBar() {
                             <HomeIcon />
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title="Log">
-                        <IconButton size="large" color="inherit" onClick={() => history.push('/log')}>
-                            <BugReportIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Settings">
-                        <IconButton size="large" color="inherit" onClick={() => history.push('/setting')}>
-                            <SettingsIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <Tooltip title="User">
-                        <IconButton size="large" color="inherit" onClick={() => history.push('/user')}>
-                            <AccountCircle />
-                        </IconButton>
-                    </Tooltip>
+                    <WithElementVisibility
+                        wrappedComp={
+                            <Tooltip id="menuAppbar__tooltip-log" title="Log">
+                                <IconButton size="large" color="inherit" onClick={() => history.push('/log')}>
+                                    <BugReportIcon />
+                                </IconButton>
+                            </Tooltip>
+                        }
+                    />
+                    <WithElementVisibility
+                        wrappedComp={
+                            <Tooltip id="menuAppbar__tooltip-settings" title="Settings">
+                                <IconButton size="large" color="inherit" onClick={() => history.push('/setting')}>
+                                    <SettingsIcon />
+                                </IconButton>
+                            </Tooltip>
+                        }
+                    />
+                    <WithElementVisibility
+                        wrappedComp={
+                            <Tooltip id="menuAppbar__tooltip-user" title="User">
+                                <IconButton size="large" color="inherit" onClick={() => history.push('/user')}>
+                                    <AccountCircle />
+                                </IconButton>
+                            </Tooltip>
+                        }
+                    />
                     <Tooltip title="Logout">
                         <IconButton size="large" color="inherit" onClick={(e) => handleLogout(e)}>
                             <LogoutIcon />

@@ -149,6 +149,7 @@ export const define = {
             // },
             {
                 field: 'advanced',
+                colId: 'qualityControl__gridCol-advanced',
                 headerName: 'Advanced',
                 width: 140,
                 pinned: 'left',

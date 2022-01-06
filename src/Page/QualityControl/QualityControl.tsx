@@ -19,12 +19,16 @@ import DicomQueryRetrieve from '../../Components/DicomQueryRetrieve/DicomQueryRe
 import GridTable from '../../Components/GridTable/GridTable';
 import { dbQueryField, defaultQueryFields, define } from '../../constant/setting-define';
 import BaseModal from '../../Container/BaseModal/BaseModal';
-import { dispatchCellEvent } from '../../utils/general';
+import WithElementVisibility from '../../HOC/WithElementVisiblity/WithElementVisibility';
+import { useGridColDef } from '../../hooks/useGridColDef';
+import { useRoleFunctionAvailable } from '../../hooks/useRoleFunctionAvailable';
 import classes from './QualityControl.module.scss';
 
 const QualityControl = () => {
     const history = useHistory();
     const [queryPairData, setQueryPairData] = useRecoilState(atomStudyQueryCondition);
+    const { checkAvailable } = useRoleFunctionAvailable();
+    const { dispatchCellEvent, assignCellVisibility } = useGridColDef();
     const [rowData, setRowData] = useRecoilState(atomStudyQueryResult);
     const [colDefs, setColDefs] = useState<ColDef[]>([]);
     const gridApiRef = useRef<GridApi | null>(null);
@@ -79,8 +83,9 @@ const QualityControl = () => {
         let mutateColDef: ColDef[] = [...define.patientStudy.colDef];
         mutateColDef = dispatchCellEvent(mutateColDef, 'advanced', onAdvancedClick);
         mutateColDef = dispatchCellEvent(mutateColDef, 'patientId', onViewerClick);
+        mutateColDef = assignCellVisibility(mutateColDef, 'advanced', checkAvailable);
         setColDefs(mutateColDef);
-    }, [onViewerClick, onAdvancedClick]);
+    }, [onViewerClick, onAdvancedClick, checkAvailable, dispatchCellEvent, assignCellVisibility]);
 
     return (
         <div className={classes.container}>
@@ -89,24 +94,34 @@ const QualityControl = () => {
                     Study List
                 </Typography>
                 <Stack direction="row" spacing={1}>
-                    <Button
-                        className={classes.toolbarBtn}
-                        variant="contained"
-                        color="secondary"
-                        startIcon={<AddIcon />}
-                        onClick={() => setOpenQRModal(true)}
-                    >
-                        Query-Retrieve Study
-                    </Button>
-                    <Button
-                        className={classes.toolbarBtn}
-                        variant="contained"
-                        color="secondary"
-                        startIcon={<AddIcon />}
-                        onClick={onNewStudy}
-                    >
-                        Import Study
-                    </Button>
+                    <WithElementVisibility
+                        wrappedComp={
+                            <Button
+                                id="qualityControl__button-qrStudy"
+                                className={classes.toolbarBtn}
+                                variant="contained"
+                                color="secondary"
+                                startIcon={<AddIcon />}
+                                onClick={() => setOpenQRModal(true)}
+                            >
+                                Query-Retrieve Study
+                            </Button>
+                        }
+                    />
+                    <WithElementVisibility
+                        wrappedComp={
+                            <Button
+                                id="qualityControl__button-newStudy"
+                                className={classes.toolbarBtn}
+                                variant="contained"
+                                color="secondary"
+                                startIcon={<AddIcon />}
+                                onClick={onNewStudy}
+                            >
+                                Import Study
+                            </Button>
+                        }
+                    />
                 </Stack>
             </Box>
 
