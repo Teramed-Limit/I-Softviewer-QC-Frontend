@@ -29,7 +29,7 @@ function MenuAppBar() {
         <AppBar position="static">
             <Toolbar>
                 <div className={classes.logoContainer}>
-                    <img src={logo} alt="" />
+                    {/* <img src={logo} alt="" /> */}
                     <Typography variant="h6" component="div">
                         I-Software QC
                     </Typography>
@@ -41,15 +41,15 @@ function MenuAppBar() {
                             <HomeIcon />
                         </IconButton>
                     </Tooltip>
-                    <WithElementVisibility
-                        wrappedComp={
-                            <Tooltip id="menuAppbar__tooltip-log" title="Log">
-                                <IconButton size="large" color="inherit" onClick={() => history.push('/log')}>
-                                    <BugReportIcon />
-                                </IconButton>
-                            </Tooltip>
-                        }
-                    />
+                    {/* <WithElementVisibility */}
+                    {/*    wrappedComp={ */}
+                    {/*        <Tooltip id="menuAppbar__tooltip-log" title="Log"> */}
+                    {/*            <IconButton size="large" color="inherit" onClick={() => history.push('/log')}> */}
+                    {/*                <BugReportIcon /> */}
+                    {/*            </IconButton> */}
+                    {/*        </Tooltip> */}
+                    {/*    } */}
+                    {/* /> */}
                     <WithElementVisibility
                         wrappedComp={
                             <Tooltip id="menuAppbar__tooltip-settings" title="Settings">

@@ -84,7 +84,7 @@ const AdvancedQualityControl = () => {
                             />
                         </Typography>
                     </div>
-                    <div className={`ag-theme-alpine ${classes.tableContainer}`}>
+                    <div className={`ag-theme-dark ${classes.tableContainer}`}>
                         <GridTableEditor
                             apiPath={`dicomTag/sopInstanceUID/${sopInstanceUID}`}
                             externalUpdateRowApi={modifyTagRequest}
@@ -101,7 +101,13 @@ const AdvancedQualityControl = () => {
                             isFilterActivate={() => true}
                         />
                     </div>
-                    <Typography className={classes.header} color="inherit" variant="h6" component="div">
+                    <Typography
+                        sx={{ marginTop: '8px' }}
+                        className={classes.header}
+                        color="inherit"
+                        variant="h6"
+                        component="div"
+                    >
                         Image thumbnail
                     </Typography>
                     <div className={classes.image}>

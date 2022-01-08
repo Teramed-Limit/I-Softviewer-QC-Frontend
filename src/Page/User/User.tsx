@@ -6,6 +6,7 @@ import Tabs from '@mui/material/Tabs';
 
 import UserAccount from '../../Container/UserAccount/UserAccount';
 import UserRoles from '../../Container/UserRoles/UserRoles';
+import classes from './User.module.scss';
 
 interface TabPanelProps {
     children?: React.ReactNode;

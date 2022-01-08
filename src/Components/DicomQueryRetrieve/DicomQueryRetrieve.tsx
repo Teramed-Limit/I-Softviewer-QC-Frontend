@@ -20,6 +20,7 @@ import { isEmptyOrNil } from '../../utils/general';
 import ConditionQuerier from '../ConditonQuerier/ConditionQuerier';
 import GridTable from '../GridTable/GridTable';
 import classes from './DicomQueryRetrieve.module.scss';
+import '../../styles/ag-grid/ag-theme-custom-dark.scss';
 
 interface QueryField {
     queryName: string;
@@ -114,7 +115,7 @@ const DicomQueryRetrieve = () => {
                 onQuery={onQuery}
                 onQueryPairDataChanged={onValueChanged}
             />
-            <div className={`ag-theme-alpine ${classes.tableContainer}`}>
+            <div className={`ag-theme-dark ${classes.tableContainer}`}>
                 <GridTable checkboxSelect={false} columnDefs={colDefs} rowData={rowData} gridReady={gridReady} />
             </div>
         </Box>

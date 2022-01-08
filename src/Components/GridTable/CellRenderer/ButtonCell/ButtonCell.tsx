@@ -23,7 +23,12 @@ const ButtonCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
     }));
 
     return (
-        <Button variant={props.variant} color={props.color} onClick={() => props.clicked(props)}>
+        <Button
+            sx={{ fontSize: '0.8125rem !important' }}
+            variant={props.variant}
+            color={props.color}
+            onClick={() => props.clicked(props)}
+        >
             {props.label}
         </Button>
     );

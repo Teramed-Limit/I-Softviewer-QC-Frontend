@@ -73,7 +73,7 @@ const GridTableEditor = ({
 
     return (
         <>
-            <div className={`ag-theme-alpine ${classes.gridContainer}`}>
+            <div className={`ag-theme-dark ${classes.gridContainer}`}>
                 <div className={classes.buttonGroup}>
                     {enableButtonBar && (
                         <Button variant="text" onClick={() => openEditor(initFormData, 'add')}>

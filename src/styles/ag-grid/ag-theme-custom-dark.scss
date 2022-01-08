@@ -1,0 +1,20 @@
+@import '~ag-grid-community/src/styles/ag-grid.scss';
+@import '~ag-grid-community/src/styles/ag-theme-alpine-dark/sass/ag-theme-alpine-dark-mixin.scss';
+
+.ag-theme-dark {
+    @include ag-theme-alpine-dark(
+        (
+            borders: true,
+            border-radius: 6px,
+            border-color: transparent,
+            font-size: 14px,
+            header-foreground-color: #e09247,
+            background-color: #181e3b,
+            header-background-color: #112b47,
+        )
+    );
+
+    .ag-root-wrapper {
+        border-radius: 20px;
+    }
+}

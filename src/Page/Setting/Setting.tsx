@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Box } from '@mui/material';
 import Typography from '@mui/material/Typography';
 
 import { define } from '../../constant/setting-define';
@@ -17,13 +18,15 @@ const Setting = () => {
             <Typography sx={{ paddingLeft: '4px' }} variant="h6" component="div">
                 Service Providers
             </Typography>
-            <GridTableEditor
-                apiPath="configuration/dicomOperationNode"
-                identityId="name"
-                colDef={define.dicomSend.colDef}
-                formDef={define.dicomSend.formDef}
-                initFormData={initFormData}
-            />
+            <Box className={classes.content}>
+                <GridTableEditor
+                    apiPath="configuration/dicomOperationNode"
+                    identityId="name"
+                    colDef={define.dicomSend.colDef}
+                    formDef={define.dicomSend.formDef}
+                    initFormData={initFormData}
+                />
+            </Box>
         </div>
     );
 };

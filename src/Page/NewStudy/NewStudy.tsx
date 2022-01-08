@@ -68,7 +68,7 @@ const NewStudy = () => {
                     </Button>
                 </div>
 
-                <div className={`ag-theme-alpine ${classes.body}`}>
+                <div className={`ag-theme-dark ${classes.body}`}>
                     <GridTable
                         rowSelection="single"
                         columnDefs={define.hisStudy.colDef}

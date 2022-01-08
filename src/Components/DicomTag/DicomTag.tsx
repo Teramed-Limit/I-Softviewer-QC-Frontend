@@ -200,7 +200,7 @@ const DicomTag = ({ image }: Props) => {
     }, [dumpDataSet, image]);
 
     return (
-        <div className={`ag-theme-alpine ${classes.gridContainer}`}>
+        <div className={`ag-theme-dark ${classes.gridContainer}`}>
             <AgGridReact
                 defaultColDef={{
                     resizable: true,

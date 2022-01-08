@@ -132,7 +132,7 @@ const QualityControl = () => {
                 onQuery={onQuery}
                 onQueryPairDataChanged={onValueChanged}
             />
-            <div className={`ag-theme-alpine ${classes.tableContainer}`}>
+            <div className={`${classes.tableContainer} ag-theme-dark`}>
                 <GridTable
                     checkboxSelect={false}
                     columnDefs={colDefs}

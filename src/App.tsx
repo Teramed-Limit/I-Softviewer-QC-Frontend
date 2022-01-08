@@ -9,6 +9,8 @@ import { useAuth } from './hooks/useAuth';
 import { appRoutes } from './Route/app-routes';
 import RouteWithSubRoutes from './Route/RouteWithSubRoutes/RouteWithSubRoutes';
 
+import { CssBaseline } from '@mui/material';
+
 function App() {
     const { initialAuth } = useAuth();
 
@@ -18,6 +20,7 @@ function App() {
 
     return (
         <>
+            <CssBaseline />
             <InjectAxiosInterceptors />
             <NotificationMessageAlert />
             <Router>
