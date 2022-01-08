@@ -67,6 +67,7 @@ export const useAuth = () => {
             map((res: AxiosResponse<LoginResult>) => {
                 TokenService.setUser(res.data);
                 setAuth(TokenService.getUser());
+                setUserAvailableFunction(res.data.functionList);
                 startTokenTimer();
                 return of(res.data);
             }),
