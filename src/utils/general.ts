@@ -1,4 +1,3 @@
-import { ColDef } from 'ag-grid-community';
 import * as R from 'ramda';
 
 import { ImageBufferAndData } from '../interface/create-and-modify-study-params';

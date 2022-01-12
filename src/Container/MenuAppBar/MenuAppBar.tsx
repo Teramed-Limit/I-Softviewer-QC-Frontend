@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import { AccountCircle } from '@mui/icons-material';
-import BugReportIcon from '@mui/icons-material/BugReport';
 import HomeIcon from '@mui/icons-material/Home';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SettingsIcon from '@mui/icons-material/Settings';
@@ -11,7 +10,6 @@ import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import { useHistory } from 'react-router-dom';
 
-import logo from '../../asserts/logo.png';
 import WithElementVisibility from '../../HOC/WithElementVisiblity/WithElementVisibility';
 import { useAuth } from '../../hooks/useAuth';
 import classes from './MenuAppBar.module.scss';

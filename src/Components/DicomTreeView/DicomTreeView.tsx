@@ -66,7 +66,7 @@ const DicomTreeView = ({ dicomIOD, onImageSelected }: Props) => {
         onImageSelected(instanceUID);
     };
 
-    const onDragEnd = (result) => {};
+    const onDragEnd = () => {};
 
     const patientLabel = () => `${dicomIOD?.dicomPatient.patientsName} (${dicomIOD?.dicomPatient.patientId})`;
     const studyLabel = (study: DicomStudyTree) => `${study.accessionNumber} (${study.modality})`;
@@ -81,7 +81,7 @@ const DicomTreeView = ({ dicomIOD, onImageSelected }: Props) => {
                     <span className={classes.text}>{patientLabel()}</span>
                 </div>
             </div>
-            <DragDropContext onDragEnd={(result) => onDragEnd(result)}>
+            <DragDropContext onDragEnd={() => onDragEnd()}>
                 <Node<DicomStudyTree>
                     isRoot
                     nodeKey="dicomStudy"
