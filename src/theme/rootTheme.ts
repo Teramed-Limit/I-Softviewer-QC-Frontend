@@ -306,7 +306,7 @@ export const rootTheme = createTheme({
             main: '#1DB45A',
             light: '#6AE79C',
             dark: '#1AA251',
-            contrastText: 'rgba(0, 0, 0, 0.87)',
+            contrastText: '#fff',
         },
         warning: {
             '50': '#FFF9EB',

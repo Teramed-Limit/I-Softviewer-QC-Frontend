@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from 'react';
 
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import BadgeIcon from '@mui/icons-material/Badge';
+import CakeIcon from '@mui/icons-material/Cake';
+import SaveIcon from '@mui/icons-material/Save';
+import SendIcon from '@mui/icons-material/Send';
+import WcIcon from '@mui/icons-material/Wc';
 import { Button, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { DataSet } from 'dicom-parser';
 import * as R from 'ramda';
+import { AiOutlineFieldNumber } from 'react-icons/all';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { http } from '../../api/axios';
@@ -21,6 +28,7 @@ import {
 import { CreateStudyParams } from '../../interface/study-params';
 import { hydrateDataset } from '../../utils/dicom-utils';
 import { dateToStr, getExtension, toImageInfo } from '../../utils/general';
+import classes from './ImageSelect.module.scss';
 
 const BufferType = {
     '.dcm': 0,
@@ -130,6 +138,8 @@ const ImageSelect = () => {
             const sopInstanceUID = dcmDataset.string('x00080018');
             const sopClassUID = dcmDataset.string('x00080016');
             const modality = dcmDataset.string('x00080060');
+            // const windowWidth = dcmDataset.string('x00281051');
+            // const windowCenter = dcmDataset.string('x00281050');
 
             const addInstanceInfo = (key, value, list) => {
                 const uid = R.path([key], value);
@@ -169,23 +179,43 @@ const ImageSelect = () => {
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <div>Patient Name: {location.state?.patientName}</div>
-            <div>Patient Id: {location.state?.patientId}</div>
-            <div>AccessionNum: {location.state?.accessionNum}</div>
-            <Stack direction="row" spacing={2}>
-                <FileSelect
-                    label="Open Image Files"
-                    accept="image/bmp, image/png, image/jpeg"
-                    onChange={onAddImageFile}
-                />
-                <FileSelect label="Open DICOM Files" accept=".dcm" onChange={onAddDicomFile} />
-                <Button variant="outlined" onClick={onSaveToOwnPacs}>
-                    Save Order
-                </Button>
-                <Button variant="outlined" onClick={onSaveToAllEnablePacs}>
-                    Send DICOM
-                </Button>
-            </Stack>
+            <Box sx={{ display: 'flex', alignContent: 'space-between', width: '100%', margin: '8px 0' }}>
+                <Stack direction="column" spacing={1} sx={{ display: 'flex', flexDirection: 'column' }}>
+                    <Stack direction="row" spacing={2}>
+                        <span className={classes.iconText}>
+                            <BadgeIcon /> {location.state?.patientId}
+                        </span>
+                        <span className={classes.iconText}>
+                            <AiOutlineFieldNumber style={{ fontSize: '24px' }} /> {location.state?.accessionNum}
+                        </span>
+                    </Stack>
+                    <Stack direction="row" spacing={2}>
+                        <span className={classes.iconText}>
+                            <AccountCircleIcon /> {location.state?.patientName}
+                        </span>
+                        <span className={classes.iconText}>
+                            <CakeIcon /> {location.state?.birthdate}
+                        </span>
+                        <span className={classes.iconText}>
+                            <WcIcon /> {location.state?.sex}
+                        </span>
+                    </Stack>
+                </Stack>
+                <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'end', width: '100%' }}>
+                    <FileSelect
+                        label="Open Image Files"
+                        accept="image/bmp, image/png, image/jpeg"
+                        onChange={onAddImageFile}
+                    />
+                    <FileSelect label="Open DICOM Files" accept=".dcm" onChange={onAddDicomFile} />
+                    <Button variant="contained" color="success" onClick={onSaveToOwnPacs} startIcon={<SaveIcon />}>
+                        Save Order
+                    </Button>
+                    <Button variant="contained" color="error" onClick={onSaveToAllEnablePacs} startIcon={<SendIcon />}>
+                        Send DICOM
+                    </Button>
+                </Stack>
+            </Box>
             <DicomViewer imageIds={imageIds} />
         </Box>
     );
