@@ -59,7 +59,11 @@ const DicomQueryRetrieve = () => {
                 setRowData(parseDicomTagResult(res));
                 gridApiRef.current?.hideOverlay();
             },
-            error: () => {
+            error: (err) => {
+                setNotification({
+                    messageType: MessageType.Error,
+                    message: err.response?.data || 'Http request failed!',
+                });
                 gridApiRef.current?.hideOverlay();
             },
         });
