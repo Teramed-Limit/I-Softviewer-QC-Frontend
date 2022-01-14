@@ -3,10 +3,13 @@ import cornerstoneMath from 'cornerstone-math';
 import cornerstoneTools from 'cornerstone-tools';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import cornerstoneWebImageLoader from 'cornerstone-web-image-loader';
+// import { debug } from 'debug';
 import dicomParser from 'dicom-parser';
 import Hammer from 'hammerjs';
 
-import cornerstoneFileImageLoader from './ImageLoader/cornerstoneFileImageLoader';
+import cornerstoneFileImageLoader from './cornerstone-extend/image-loader/cornerstoneFileImageLoader';
+import { wadoRsMetaDataProvider } from './cornerstone-extend/metadata-provider/wadoRsMetaDataProvider';
+import { wadoUriMetaDataProvider } from './cornerstone-extend/metadata-provider/wadoUriMetaDataProvider';
 
 declare global {
     interface Window {
@@ -20,6 +23,7 @@ export default function initCornerstone() {
     cornerstoneTools.external.cornerstone = cornerstone;
     cornerstoneTools.external.Hammer = Hammer;
     cornerstoneTools.external.cornerstoneMath = cornerstoneMath;
+    // cornerstoneTools.external.debug = debug;
     cornerstoneTools.init({
         /**
          * When cornerstone elements are enabled,
@@ -71,6 +75,10 @@ export default function initCornerstone() {
             },
         },
     });
+
+    // Metadata provider
+    cornerstone.metaData.addProvider(wadoRsMetaDataProvider);
+    cornerstone.metaData.addProvider(wadoUriMetaDataProvider);
 
     // Debug
     window.cornerstone = cornerstone;

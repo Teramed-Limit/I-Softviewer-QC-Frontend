@@ -1,15 +1,16 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 
-import cornerstone from 'cornerstone-core';
+import cx from 'classnames';
+import cornerstone, { Viewport } from 'cornerstone-core';
+
 // import cornerstoneTools from 'cornerstone-tools';
-
 import BaseModal from '../../Container/BaseModal/BaseModal';
 import { useResize } from '../../hooks/useResize';
+import { CornerstoneViewportEvent, NewImageEvent } from '../../interface/cornerstone-viewport-event';
 import { ViewPortElement } from '../../interface/dicom-viewport';
-import { deepCopy } from '../../utils/general';
+import CornerstoneViewport from '../CornerstoneViewport/CornerstoneViewport';
 import DicomTag from '../DicomTag/DicomTag';
 import DicomViewerToolbar from '../DicomViewerToolbar/DicomViewerToolbar';
-import DicomViewport from '../DicomViewport/DicomViewport';
 import classes from './DicomViewer.module.scss';
 
 interface Props {
@@ -22,9 +23,32 @@ interface Props {
 //     cornerstoneTools.wwwcSynchronizer,
 // );
 
+const tools = [
+    {
+        name: 'Wwwc',
+        mode: 'active',
+        modeOptions: { mouseButtonMask: 1 },
+    },
+    'DoubleTapFitToWindow',
+    'Zoom',
+    'Pan',
+    'Magnify',
+    'Length',
+    'Probe',
+    'Angle',
+    'Bidirectional',
+    'FreehandRoi',
+    'Eraser',
+    'EllipticalRoi',
+    'RectangleRoi',
+    // Scroll
+    // { name: 'StackScrollMouseWheel', mode: 'active' },
+];
+
 function DicomViewer({ imageIds }: Props) {
     const viewerRef = React.useRef<HTMLDivElement>(null);
 
+    const [initViewport] = useState<Viewport>({});
     const [renderImages, setRenderImages] = useState({});
     const [activeViewportIndex, setActiveViewportIndex] = useState(0);
     const [activeTool, setActiveTool] = useState('Wwwc');
@@ -58,29 +82,31 @@ function DicomViewer({ imageIds }: Props) {
         setViewerHeight(viewerRef.current.offsetHeight);
     };
 
-    const onCanvasWheel = (event) => {
-        if (viewerRef.current === null) return;
-        viewerRef.current.scroll({
-            top: viewerRef.current.scrollTop + (event.deltaY < 0 ? -100 : 100),
-            behavior: 'auto',
-        });
-    };
-
-    const registerRenderImage = (viewPortElement: ViewPortElement) => {
-        // wwwcSynchronizer.add(viewPortElement.element);
-        viewPortElement.canvas?.addEventListener('wheel', onCanvasWheel, false);
-        setRenderImages((list) => {
-            return { ...list, [viewPortElement.viewportIndex]: viewPortElement };
-        });
-    };
-
     const resetViewport = () => {
         const renderImage = renderImages[activeViewportIndex] as ViewPortElement;
         if (renderImage === undefined) return;
-
-        cornerstone.setViewport(renderImage.element, deepCopy(renderImage.initViewport));
-        cornerstone.fitToWindow(renderImage.element);
+        cornerstone.reset(renderImage.element);
     };
+
+    const onViewportActive = useCallback((index) => {
+        setActiveViewportIndex(index);
+    }, []);
+
+    const onNewImage = useCallback((event: CornerstoneViewportEvent<NewImageEvent>, viewportIndex) => {
+        // wwwcSynchronizer.add(viewPortElement.element);
+        setRenderImages((list) => {
+            return {
+                ...list,
+                [viewportIndex]: {
+                    viewportIndex,
+                    element: event.detail.element,
+                    canvas: event.detail.enabledElement.canvas,
+                    image: event.detail.image,
+                    viewport: event.detail.viewport,
+                },
+            };
+        });
+    }, []);
 
     return (
         <>
@@ -112,15 +138,30 @@ function DicomViewer({ imageIds }: Props) {
                                 padding: '4px',
                             }}
                         >
-                            {viewerHeight && (
-                                <DicomViewport
-                                    viewportIndex={viewportIndex}
-                                    isActive={activeViewportIndex === viewportIndex}
-                                    imageId={imageId}
-                                    activeTool={activeTool}
-                                    setActiveViewportIndex={setActiveViewportIndex}
-                                    registerRenderImage={registerRenderImage}
-                                />
+                            {viewerRef.current && viewerHeight && (
+                                <>
+                                    <CornerstoneViewport
+                                        className={cx(classes.viewport, {
+                                            [classes.active]: activeViewportIndex === viewportIndex,
+                                        })}
+                                        style={{
+                                            height: '100%',
+                                            border: '3px rgb(32,165,214,0.3) solid',
+                                            borderRadius: '6px',
+                                        }}
+                                        viewerElement={viewerRef.current}
+                                        viewPortIndex={viewportIndex}
+                                        tools={tools}
+                                        imageIds={[imageId]}
+                                        // imageIds={imageIds}
+                                        isPlaying={false}
+                                        frameRate={22}
+                                        activeTool={activeTool}
+                                        setViewportActive={onViewportActive}
+                                        initialViewport={initViewport}
+                                        onNewImageCallBack={onNewImage}
+                                    />
+                                </>
                             )}
                         </div>
                     ))}

@@ -10,7 +10,6 @@ import {
     BiShapeTriangle,
     BsEyedropper,
     BsFillEraserFill,
-    GiArrowCursor,
     GiMagnifyingGlass,
     GiMove,
     IoEllipseOutline,
@@ -42,12 +41,6 @@ const DicomViewerToolbar = ({ row, col, activeTool, changeLayout, resetViewport,
             >
                 <LayoutTool row={+row - 1} col={+col - 1} onChange={changeLayout} />
             </PopoverButton>
-            <IconButton
-                isActive={activeTool === 'notool'}
-                onClick={() => setActiveTool('notool')}
-                IconComp={<GiArrowCursor />}
-                label="General"
-            />
             <IconButton
                 isActive={activeTool === 'Wwwc'}
                 onClick={() => setActiveTool('Wwwc')}
@@ -111,12 +104,12 @@ const DicomViewerToolbar = ({ row, col, activeTool, changeLayout, resetViewport,
                 />
             </IconMenuButton>
             <IconButton isActive={false} onClick={() => resetViewport()} IconComp={<RotateLeftIcon />} label="Reset" />
-            <IconButton
-                isActive={false}
-                onClick={() => openModal(true)}
-                IconComp={<AiFillFileText />}
-                label="DICOM Tag"
-            />
+            {/* <IconButton */}
+            {/*    isActive={false} */}
+            {/*    onClick={() => openModal(true)} */}
+            {/*    IconComp={<AiFillFileText />} */}
+            {/*    label="DICOM Tag" */}
+            {/* /> */}
         </Box>
     );
 };

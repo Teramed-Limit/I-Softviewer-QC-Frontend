@@ -51,8 +51,8 @@ export interface ImageInfo {
     imageNumber?: string;
     imageDate?: string;
     imageTime?: string;
-    windowWidth?: number;
-    windowCenter?: number;
+    windowWidth?: string;
+    windowCenter?: string;
 }
 
 export interface ImageBufferAndData extends ImageInfo {

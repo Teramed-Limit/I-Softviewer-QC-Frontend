@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 
+import { CssBaseline } from '@mui/material';
 import { BrowserRouter as Router, Switch } from 'react-router-dom';
 
 import './App.scss';
@@ -8,8 +9,6 @@ import NotificationMessageAlert from './Components/NotificationMessageAlert/Noti
 import { useAuth } from './hooks/useAuth';
 import { appRoutes } from './Route/app-routes';
 import RouteWithSubRoutes from './Route/RouteWithSubRoutes/RouteWithSubRoutes';
-
-import { CssBaseline } from '@mui/material';
 
 function App() {
     const { initialAuth } = useAuth();

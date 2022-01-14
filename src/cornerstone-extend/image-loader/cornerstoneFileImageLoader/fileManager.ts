@@ -1,4 +1,4 @@
-import { generateUUID } from '../../utils/general';
+import { generateUUID } from '../../../utils/general';
 
 let files: Blob[] = [];
 

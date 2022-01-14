@@ -10,8 +10,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { http } from '../../api/axios';
 import DicomViewer from '../../Components/DicomViewer/DicomViewer';
 import FileSelect from '../../Components/FileSelect/FileSelect';
+import cornerstoneFileImageLoader from '../../cornerstone-extend/image-loader/cornerstoneFileImageLoader';
 import { useHttp } from '../../hooks/useHttp';
-import cornerstoneFileImageLoader from '../../ImageLoader/cornerstoneFileImageLoader';
 import {
     CreateAndModifyStudy,
     ImageBufferAndData,
