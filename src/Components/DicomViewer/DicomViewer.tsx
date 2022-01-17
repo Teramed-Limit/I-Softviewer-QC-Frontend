@@ -138,7 +138,7 @@ function DicomViewer({ imageIds }: Props) {
                                 padding: '4px',
                             }}
                         >
-                            {viewerRef.current && viewerHeight && (
+                            {viewerRef.current && viewerHeight !== 0 && (
                                 <>
                                     <CornerstoneViewport
                                         className={cx(classes.viewport, {
