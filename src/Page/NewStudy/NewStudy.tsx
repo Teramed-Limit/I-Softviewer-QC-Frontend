@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { TextField } from '@mui/material';
 import Button from '@mui/material/Button';
@@ -12,11 +12,10 @@ import { http } from '../../api/axios';
 import { atomNotification } from '../../atoms/notification';
 import GridTable from '../../Components/GridTable/GridTable';
 import { define } from '../../constant/setting-define';
+import { GenerateStudyUniqueId } from '../../interface/generate-study-uniqueId';
 import { HISData } from '../../interface/his-data';
 import { MessageType } from '../../interface/notification';
 import { CreateStudyParams } from '../../interface/study-params';
-import { generateNewStudyInstanceUID } from '../../utils/dicom-utils';
-import { generateAccessionNum } from '../../utils/general';
 import classes from './NewStudy.module.scss';
 
 const NewStudy = () => {
@@ -26,7 +25,8 @@ const NewStudy = () => {
     const [selectedRow, setSelectedRow] = useState<HISData | null>(null);
     const [episodeNo, setEpisodeNo] = useState('');
     const [dept, setDept] = useState('');
-    const [randomAccessionNum] = useState(generateAccessionNum());
+    const [studyInstanceUID, setStudyInsUid] = useState('');
+    const [accessionNum, setAccessionNum] = useState('');
     const gridApiRef = useRef<GridApi | null>(null);
     const gridReady = (params: GridReadyEvent) => (gridApiRef.current = params.api);
 
@@ -51,9 +51,23 @@ const NewStudy = () => {
         });
     };
 
+    useEffect(() => {
+        http.get(`generateStudyUniqueId`).subscribe({
+            next: (res: AxiosResponse<GenerateStudyUniqueId>) => {
+                setStudyInsUid(res.data.studyInstanceUID);
+                setAccessionNum(res.data.accessionNumber);
+            },
+            error: (err) => {
+                setNotification({
+                    messageType: MessageType.Error,
+                    message: err.response?.data || 'Http request failed!',
+                });
+            },
+        });
+    }, [setNotification]);
+
     const onNext = () => {
         if (selectedRow === null) return;
-        const studyInstanceUID = generateNewStudyInstanceUID();
         history.push({
             pathname: '/newStudy/viewer',
             state: {
@@ -62,7 +76,7 @@ const NewStudy = () => {
                 otherPatientName: selectedRow.nameChinese,
                 birthdate: selectedRow.birthdate,
                 sex: selectedRow.sex,
-                accessionNum: randomAccessionNum,
+                accessionNum,
                 studyInstanceUID,
                 seriesInstanceUID: `${studyInstanceUID}.1`,
             },
@@ -80,7 +94,7 @@ const NewStudy = () => {
                         onChange={(e) => setEpisodeNo(e.target.value)}
                     />
                     <TextField label="Dept" size="small" value={dept} onChange={(e) => setDept(e.target.value)} />
-                    <TextField disabled label="Accession No." size="small" value={randomAccessionNum} />
+                    <TextField disabled label="Accession No." size="small" value={accessionNum} />
                     <Button variant="contained" onClick={() => queryHISData()}>
                         Query
                     </Button>
