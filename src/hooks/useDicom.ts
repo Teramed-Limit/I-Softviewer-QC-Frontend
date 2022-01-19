@@ -6,7 +6,7 @@ import { concatMap, from, tap, toArray } from 'rxjs';
 
 import { http } from '../api/axios';
 import { atomNotification } from '../atoms/notification';
-import { DicomImage, DicomIOD, DicomPatient, DicomSeries, DicomStudy } from '../interface/dicom-data';
+import { DicomImagePath, DicomIOD, DicomPatient, DicomSeries, DicomStudy } from '../interface/dicom-data';
 import { MessageType } from '../interface/notification';
 import { deepCopy } from '../utils/general';
 
@@ -23,7 +23,7 @@ export const useDicom = (studyInsUID: string) => {
     const [dcmUrlList, setDcmUrlList] = useState<string[]>([]);
     const [loading, setLoading] = useState(false);
 
-    const convertToCornerstoneSchemeUrl = (dicomImage: DicomImage[]): string[] => {
+    const convertToCornerstoneSchemeUrl = (dicomImage: DicomImagePath[]): string[] => {
         return dicomImage.map((images) => {
             if (images.dcmPath.includes('https')) {
                 return images.dcmPath.replace('https', 'dicomweb');
@@ -49,7 +49,7 @@ export const useDicom = (studyInsUID: string) => {
                 concatMap((seriesRes) => from(seriesRes.data.map((seriesData) => seriesData.seriesInstanceUID))),
                 // Image
                 concatMap((seriesInstanceUID) =>
-                    http.get<DicomImage[]>(`dicomDbQuery/seriesInstanceUID/${seriesInstanceUID}/images`),
+                    http.get<DicomImagePath[]>(`dicomDbQuery/seriesInstanceUID/${seriesInstanceUID}/imagePathList`),
                 ),
                 tap((imageRes) => (dicomIOD.dicomImage = [...dicomIOD.dicomImage, ...imageRes.data])),
                 toArray(),

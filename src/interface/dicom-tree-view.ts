@@ -1,4 +1,4 @@
-import { DicomImage, DicomSeries, DicomStudy } from './dicom-data';
+import { DicomImagePath, DicomSeries, DicomStudy } from './dicom-data';
 
 export interface TreeAttribute {
     isOpen: boolean;
@@ -14,4 +14,4 @@ export interface DicomStudyTree extends DicomStudy, TreeAttribute {}
 
 export interface DicomSeriesTree extends DicomSeries, TreeAttribute {}
 
-export interface DicomImageTree extends DicomImage, TreeAttribute {}
+export interface DicomImageTree extends DicomImagePath, TreeAttribute {}

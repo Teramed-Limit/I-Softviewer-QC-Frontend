@@ -48,15 +48,30 @@ const gridEditActionButton = (onClick: EditRowClick): ColDef[] => [
 ];
 
 interface Props<T> {
-    formDef: FormDef;
+    // base api scheme, corresponds to backend api controller
     apiPath: string;
+    // if api has different format, user can define their own api path
     externalUpdateRowApi?: (formData: any) => AxiosObservable<any>;
+    // use prop `enable` to control whether to get row data when the component renders
     enableApi: boolean;
+    // following restapi
+    // Create(Post) : {apiPath}/{identityId} e.g. api/role/name
+    // Read(Get)   : {apiPath}/{identityId} e.g. api/role/name
+    // Update(Post) : {apiPath}/{identityId}/{row identityId of value} e.g. api/role/name/admin
+    // Delete(Delete) : {apiPath}/{identityId}/{row identityId of value} e.g. api/role/name/admin
+    // each row of unique id and apiPath CRUD
     identityId: string;
+    // use `subIdentityId` if `identityId` is not
     subIdentityId: string;
+    // define of grid cell
     colDef: ColDef[];
+    // define of form editor
+    formDef: FormDef;
+    // init form data when insert new row
     initFormData: T;
+    // edit button cell visibility
     enableEdit: boolean;
+    // delete button cell visibility
     enableDelete: boolean;
     updateCallBack?: () => void;
     deleteCallBack?: () => void;
@@ -87,6 +102,7 @@ export const useGridTable = <T,>({
     const [saveType, setSaveType] = useState<string>('add');
     const [rowData, setRowData] = useState([]);
 
+    // get initial rowdata from api
     const getRowData = useCallback(
         () =>
             http.get(apiPath).subscribe({
@@ -105,18 +121,32 @@ export const useGridTable = <T,>({
         [apiPath, setNotification],
     );
 
+    // use prop `enable` to control whether to get row data when the component renders
     useEffect(() => {
         if (!enableApi) return;
         const subscription = getRowData();
         return subscription.unsubscribe;
     }, [apiPath, enableApi, getRowData, setNotification]);
 
+    // open form editor and initialize
     const openEditor = useCallback((formData, type: string) => {
         setEditFormData(formData);
         setOpen(true);
         setSaveType(type);
     }, []);
 
+    // each row of unique id, use on ag-grid grid rowdata CRUD, Filter etc...
+    const getRowNodeId = useCallback(
+        (data) => {
+            if (!isEmptyOrNil(subIdentityId)) {
+                return `${data[identityId]}_${data[subIdentityId]}`;
+            }
+            return data[identityId];
+        },
+        [identityId, subIdentityId],
+    );
+
+    // delete row api
     const deleteRow = useCallback(
         (cellRendererParams: ICellRendererParams) => {
             const id = cellRendererParams.data[identityId];
@@ -130,6 +160,7 @@ export const useGridTable = <T,>({
         [apiPath, deleteCallBack, identityId],
     );
 
+    // insert row api
     const addRow = useCallback(
         (formData) => {
             http.post(`${apiPath}/${identityId}`, formData).subscribe({
@@ -144,6 +175,7 @@ export const useGridTable = <T,>({
         [apiPath, identityId, initFormData, addCallBack],
     );
 
+    // update row api
     const updateRow = useCallback(
         (formData) => {
             const requestObs = externalUpdateRowApi
@@ -155,16 +187,17 @@ export const useGridTable = <T,>({
                     setOpen(false);
                     setEditFormData(initFormData);
                     gridApi?.current?.applyTransaction({ update: [formData] });
-                    const rowNode = gridApi?.current?.getRowNode(formData[identityId]);
+                    const rowNode = gridApi?.current?.getRowNode(getRowNodeId(formData));
                     if (!rowNode) return;
                     gridApi?.current?.refreshCells({ force: true, rowNodes: [rowNode] });
                     updateCallBack?.();
                 },
             });
         },
-        [apiPath, externalUpdateRowApi, identityId, initFormData, updateCallBack],
+        [apiPath, externalUpdateRowApi, getRowNodeId, identityId, initFormData, updateCallBack],
     );
 
+    // dispatch edit event and delete event on cell button
     useEffect(() => {
         let mutateColDef: ColDef[] = [...colDef];
 
@@ -179,19 +212,14 @@ export const useGridTable = <T,>({
         setColDefs(mutateColDef);
     }, [colDef, deleteRow, enableDelete, enableEdit, openEditor]);
 
-    const getRowNodeId = (data: T) => {
-        if (!isEmptyOrNil(subIdentityId)) {
-            return `${data[identityId]}_${data[subIdentityId]}`;
-        }
-        return data[identityId];
-    };
-
+    // callback when ag-grid all api are available
     const gridReady = (params: GridReadyEvent) => (gridApi.current = params.api);
 
     const updateFormData = (fieldId: string, value: string) => {
         setEditFormData((data) => ({ ...data, [fieldId]: value }));
     };
 
+    // component of form editor
     const rendererFormEditor = (): JSX.Element => {
         return (
             <BaseModal width="80%" maxHeight="80%" open={open} setOpen={setOpen}>

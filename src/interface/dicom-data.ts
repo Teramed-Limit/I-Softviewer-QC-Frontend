@@ -2,7 +2,7 @@ export interface DicomIOD {
     dicomPatient: Partial<DicomPatient>;
     dicomStudy: DicomStudy[];
     dicomSeries: DicomSeries[];
-    dicomImage: DicomImage[];
+    dicomImage: DicomImagePath[];
 }
 export interface DicomPatient {
     patientId: string;
@@ -82,4 +82,31 @@ export interface DicomImage {
     referencedSeriesInstanceUID: string;
     dcmPath: string;
     jpgPath: string;
+}
+
+export interface DicomImagePath {
+    dcmPath: string;
+    jpgPath: string;
+    imageFullPath: string;
+    sopInstanceUID: string;
+    sopClassUID: string;
+    imageNumber: string;
+    imageDate: string;
+    imageTime: string;
+    filePath: string;
+    storageDeviceID: string;
+    imageStatus: string;
+    patientId: string;
+    patientsName: string;
+    studyInstanceUID: string;
+    studyDate: string;
+    studyTime: string;
+    accessionNumber: string;
+    studyDescription: string;
+    seriesModality: string;
+    bodyPartExamined?: any;
+    patientPosition: string;
+    storagePath: string;
+    storageDescription: string;
+    seriesInstanceUID: string;
 }

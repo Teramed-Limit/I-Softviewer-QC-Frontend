@@ -137,8 +137,8 @@ export const define = {
                 cellRenderer: 'linkRenderer',
                 cellRendererParams: { clicked: () => {} },
             },
-            { field: 'patientName', headerName: 'Patient Name', width: 160 },
-            { field: 'accessionNumber', headerName: 'AccessionNumber', width: 160 },
+            { field: 'patientsName', headerName: 'Patient Name', width: 160 },
+            { field: 'accessionNumber', headerName: 'AccessionNumber', width: 170 },
             { field: 'studyID', headerName: 'studyID', hide: true, width: 120, pinned: 'left' },
             // {
             //     field: 'state',
@@ -161,8 +161,8 @@ export const define = {
                     label: 'Advanced',
                 },
             },
-            { field: 'patientSex', headerName: 'Sex', type: 'Text', width: 120 },
-            { field: 'patientBirthDate', headerName: 'BirthDate', width: 120 },
+            { field: 'patientsSex', headerName: 'Sex', type: 'Text', width: 120 },
+            { field: 'patientsBirthDate', headerName: 'BirthDate', width: 120 },
             { field: 'studyDate', headerName: 'Study Date', width: 120 },
             { field: 'studyDescription', headerName: 'StudyDescription', flex: 1, minWidth: 200 },
             { field: 'modality', headerName: 'Modality', width: 120 },
@@ -219,6 +219,21 @@ export const define = {
                 },
             ],
         },
+    },
+    log: {
+        colDef: [
+            { field: 'patientId', headerName: 'Patient Id', width: 160 },
+            { field: 'patientsName', headerName: 'Patient Name', width: 160 },
+            { field: 'accessionNumber', headerName: 'AccessionNumber', width: 160 },
+            { field: 'studyID', headerName: 'studyID', hide: true, width: 120 },
+            { field: 'patientsSex', headerName: 'Sex', width: 120 },
+            { field: 'patientsBirthDate', headerName: 'BirthDate', width: 120 },
+            { field: 'studyDate', headerName: 'Study Date', width: 120 },
+            { field: 'studyDescription', headerName: 'StudyDescription', flex: 1, minWidth: 200 },
+            { field: 'modality', headerName: 'Modality', width: 120 },
+            { field: 'referringPhysicianName', headerName: 'Referring Physician', width: 200 },
+            { field: 'studyInstanceUID', headerName: 'StudyInstanceUID', hide: true, width: 120 },
+        ],
     },
 };
 
