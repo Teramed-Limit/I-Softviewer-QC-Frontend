@@ -10,6 +10,7 @@ import { AxiosObservable } from 'axios-observable';
 import { useSetRecoilState } from 'recoil';
 
 import { http } from '../api/axios';
+import { loading } from '../atoms/loading';
 import { atomNotification } from '../atoms/notification';
 import BaseModal from '../Container/BaseModal/BaseModal';
 import { FormDef } from '../interface/form-define';
@@ -101,6 +102,7 @@ export const useGridTable = <T,>({
     const [editFormData, setEditFormData] = useState<T>(initFormData);
     const [saveType, setSaveType] = useState<string>('add');
     const [rowData, setRowData] = useState([]);
+    const setLoading = useSetRecoilState(loading);
 
     // get initial rowdata from api
     const getRowData = useCallback(
@@ -149,35 +151,54 @@ export const useGridTable = <T,>({
     // delete row api
     const deleteRow = useCallback(
         (cellRendererParams: ICellRendererParams) => {
+            setLoading(true);
             const id = cellRendererParams.data[identityId];
             http.delete(`${apiPath}/${identityId}/${id}`).subscribe({
                 next: () => {
                     gridApi?.current?.applyTransaction({ remove: [cellRendererParams.data] });
                     deleteCallBack?.();
+                    setLoading(false);
+                },
+                error: (err) => {
+                    setLoading(false);
+                    setNotification({
+                        messageType: MessageType.Error,
+                        message: err.response?.data || 'Http request failed!',
+                    });
                 },
             });
         },
-        [apiPath, deleteCallBack, identityId],
+        [apiPath, deleteCallBack, identityId, setLoading, setNotification],
     );
 
     // insert row api
     const addRow = useCallback(
         (formData) => {
+            setLoading(true);
             http.post(`${apiPath}/${identityId}`, formData).subscribe({
                 next: () => {
                     setOpen(false);
                     setEditFormData(initFormData);
                     gridApi?.current?.applyTransaction({ add: [formData], addIndex: 0 });
                     addCallBack?.();
+                    setLoading(false);
+                },
+                error: (err) => {
+                    setLoading(false);
+                    setNotification({
+                        messageType: MessageType.Error,
+                        message: err.response?.data || 'Http request failed!',
+                    });
                 },
             });
         },
-        [apiPath, identityId, initFormData, addCallBack],
+        [apiPath, identityId, initFormData, addCallBack, setLoading, setNotification],
     );
 
     // update row api
     const updateRow = useCallback(
         (formData) => {
+            setLoading(true);
             const requestObs = externalUpdateRowApi
                 ? externalUpdateRowApi(formData)
                 : http.post(`${apiPath}/${identityId}/${formData[identityId]}`, formData);
@@ -191,10 +212,27 @@ export const useGridTable = <T,>({
                     if (!rowNode) return;
                     gridApi?.current?.refreshCells({ force: true, rowNodes: [rowNode] });
                     updateCallBack?.();
+                    setLoading(false);
+                },
+                error: (err) => {
+                    setLoading(false);
+                    setNotification({
+                        messageType: MessageType.Error,
+                        message: err.response?.data || 'Http request failed!',
+                    });
                 },
             });
         },
-        [apiPath, externalUpdateRowApi, getRowNodeId, identityId, initFormData, updateCallBack],
+        [
+            apiPath,
+            externalUpdateRowApi,
+            getRowNodeId,
+            identityId,
+            initFormData,
+            setLoading,
+            setNotification,
+            updateCallBack,
+        ],
     );
 
     // dispatch edit event and delete event on cell button

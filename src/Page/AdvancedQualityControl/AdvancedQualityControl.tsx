@@ -23,7 +23,7 @@ const AdvancedQualityControl = () => {
     const [enableApi, setEnableApi] = useState(false);
     const [filterRow, setFilterRow] = useState(true);
     const activateFilterRef = useRef(true);
-    const { dicomData, loading } = useDicom(studyInsUID);
+    const { dicomData, loading: fetchTreeViewLoading } = useDicom(studyInsUID);
 
     useEffect(() => {
         if (isEmptyOrNil(sopInstanceUID)) return;
@@ -40,8 +40,22 @@ const AdvancedQualityControl = () => {
         return (data as DicomTagData).editable;
     };
 
-    const modifyTagRequest = (formData): AxiosObservable<any> => {
-        return http.post(`dicomTag/sopInstanceUID/${sopInstanceUID}`, {
+    // const modifyDcmTagRequest = (formData): AxiosObservable<any> => {
+    //     return http.post(`dicomTag/sopInstanceUID/${sopInstanceUID}`, {
+    //         ...formData,
+    //         dicomImage: dicomData.dicomImage,
+    //     });
+    // };
+
+    // const applyDicomTagOnSeries = (formData): AxiosObservable<any> => {
+    //     return http.post(`dicomTag/seriesInstanceUID/${seriesInstanceUID}`, {
+    //         ...formData,
+    //         dicomImage: dicomData.dicomImage,
+    //     });
+    // };
+
+    const applyDicomTagOnStudy = (formData): AxiosObservable<any> => {
+        return http.post(`dicomTag/studyInstanceUID/${studyInsUID}`, {
             ...formData,
             dicomImage: dicomData.dicomImage,
         });
@@ -53,7 +67,7 @@ const AdvancedQualityControl = () => {
                 <Typography className={classes.header} color="inherit" variant="h6" component="div">
                     Study information
                 </Typography>
-                {loading ? (
+                {fetchTreeViewLoading ? (
                     <DicomTreeViewSkeleton />
                 ) : (
                     <DicomTreeView
@@ -87,7 +101,7 @@ const AdvancedQualityControl = () => {
                     <div className={`ag-theme-dark ${classes.tableContainer}`}>
                         <GridTableEditor
                             apiPath={`dicomTag/sopInstanceUID/${sopInstanceUID}`}
-                            externalUpdateRowApi={modifyTagRequest}
+                            externalUpdateRowApi={applyDicomTagOnStudy}
                             enableApi={enableApi}
                             identityId="tag"
                             subIdentityId="id"
