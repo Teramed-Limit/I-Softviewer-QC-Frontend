@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import { AccountCircle } from '@mui/icons-material';
 import HomeIcon from '@mui/icons-material/Home';
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import LogoutIcon from '@mui/icons-material/Logout';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Tooltip, Typography } from '@mui/material';
@@ -39,15 +40,15 @@ function MenuAppBar() {
                             <HomeIcon />
                         </IconButton>
                     </Tooltip>
-                    {/* <WithElementVisibility */}
-                    {/*    wrappedComp={ */}
-                    {/*        <Tooltip id="menuAppbar__tooltip-log" title="Log"> */}
-                    {/*            <IconButton size="large" color="inherit" onClick={() => history.push('/log')}> */}
-                    {/*                <BugReportIcon /> */}
-                    {/*            </IconButton> */}
-                    {/*        </Tooltip> */}
-                    {/*    } */}
-                    {/* /> */}
+                    <WithElementVisibility
+                        wrappedComp={
+                            <Tooltip id="menuAppbar__tooltip-log" title="Log">
+                                <IconButton size="large" color="inherit" onClick={() => history.push('/log')}>
+                                    <LibraryBooksIcon />
+                                </IconButton>
+                            </Tooltip>
+                        }
+                    />
                     <WithElementVisibility
                         wrappedComp={
                             <Tooltip id="menuAppbar__tooltip-settings" title="Settings">

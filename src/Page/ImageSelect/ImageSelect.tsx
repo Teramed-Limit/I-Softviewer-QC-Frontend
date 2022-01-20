@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import BadgeIcon from '@mui/icons-material/Badge';
 import CakeIcon from '@mui/icons-material/Cake';
+import ContactPageIcon from '@mui/icons-material/ContactPage';
 import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
 import WcIcon from '@mui/icons-material/Wc';
@@ -183,7 +183,7 @@ const ImageSelect = () => {
                 <Stack direction="column" spacing={1} sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Stack direction="row" spacing={2}>
                         <span className={classes.iconText}>
-                            <BadgeIcon /> {location.state?.patientId}
+                            <ContactPageIcon /> {location.state?.patientId}
                         </span>
                         <span className={classes.iconText}>
                             <AiOutlineFieldNumber style={{ fontSize: '24px' }} /> {location.state?.accessionNum}

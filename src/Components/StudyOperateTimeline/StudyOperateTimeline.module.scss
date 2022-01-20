@@ -1,0 +1,20 @@
+.rowContainer {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: row;
+    overflow: hidden;
+
+    .tableContainer {
+        max-width: 70%;
+        margin-top: 10px;
+        flex: 3 1 auto;
+    }
+
+    .timelineContainer {
+        overflow: auto;
+        margin-top: 10px;
+        flex: 1 1 30%;
+    }
+}
