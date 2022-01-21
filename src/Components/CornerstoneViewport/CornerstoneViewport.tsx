@@ -138,16 +138,15 @@ function CornerstoneViewport({
 
     // image render
     const onNewImage = useCallback(
-        () =>
-            debounce((event) => {
-                if (!element.current) return;
+        debounce((event) => {
+            if (!element.current) return;
 
-                const newImageId = event.detail.image.imageId;
-                const currentImageIdIndex = imageIdList.indexOf(newImageId);
-                setImageIdIndex(currentImageIdIndex);
+            const newImageId = event.detail.image.imageId;
+            const currentImageIdIndex = imageIdList.indexOf(newImageId);
+            setImageIdIndex(currentImageIdIndex);
 
-                if (onNewImageCallBack) onNewImageCallBack(event, viewPortIndex);
-            }, onNewImageDebounceTime),
+            if (onNewImageCallBack) onNewImageCallBack(event, viewPortIndex);
+        }, onNewImageDebounceTime),
         [imageIdList, onNewImageCallBack, onNewImageDebounceTime, viewPortIndex],
     );
 

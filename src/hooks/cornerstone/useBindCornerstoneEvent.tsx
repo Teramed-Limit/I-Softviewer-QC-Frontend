@@ -17,7 +17,7 @@ export const useBindCornerstoneEvent = (
 
         // element enable/disable
         // Trigger on enable.js (cornerstone-master)
-        cornerstone.events.addEventListener(cornerstone.EVENTS.ELEMENT_ENABLED, onElementEnable);
+        cornerstone.events.addEventListener(cornerstone.EVENTS.ELEMENT_ENABLED, onElementEnable || nullVoid);
         // Trigger on disable.js (cornerstone-master)
         cornerstone.events.addEventListener(cornerstone.EVENTS.ELEMENT_DISABLED, nullVoid);
 
