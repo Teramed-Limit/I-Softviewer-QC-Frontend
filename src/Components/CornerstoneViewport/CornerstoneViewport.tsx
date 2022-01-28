@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import classNames from 'classnames';
 import { Viewport } from 'cornerstone-core';
@@ -137,16 +137,17 @@ function CornerstoneViewport({
     const onViewportActive = useCallback(() => setViewportActive(viewPortIndex), [setViewportActive, viewPortIndex]);
 
     // image render
-    const onNewImage = useCallback(
-        debounce((event) => {
-            if (!element.current) return;
+    const onNewImage = useMemo(
+        () =>
+            debounce((event) => {
+                if (!element.current) return;
 
-            const newImageId = event.detail.image.imageId;
-            const currentImageIdIndex = imageIdList.indexOf(newImageId);
-            setImageIdIndex(currentImageIdIndex);
+                const newImageId = event.detail.image.imageId;
+                const currentImageIdIndex = imageIdList.indexOf(newImageId);
+                setImageIdIndex(currentImageIdIndex);
 
-            if (onNewImageCallBack) onNewImageCallBack(event, viewPortIndex);
-        }, onNewImageDebounceTime),
+                if (onNewImageCallBack) onNewImageCallBack(event, viewPortIndex);
+            }, onNewImageDebounceTime),
         [imageIdList, onNewImageCallBack, onNewImageDebounceTime, viewPortIndex],
     );
 
@@ -248,6 +249,10 @@ function CornerstoneViewport({
             cornerstoneTools.playClip(viewPortElement, validFrameRate);
         }
     }, [viewPortElement, frameRate, isPlaying, isStackPrefetchEnabled]);
+
+    useEffect(() => {
+        return () => onNewImage.cancel();
+    }, [onNewImage]);
 
     return (
         <div style={style} className={classNames('viewport-wrapper', className)}>
