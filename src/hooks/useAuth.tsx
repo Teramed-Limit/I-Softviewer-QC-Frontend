@@ -95,8 +95,8 @@ export const useAuth = () => {
                 startTokenTimer();
                 history.replace(navigatePath);
             },
-            error: () => {
-                setMessage('UserId or password incorrect');
+            error: (err) => {
+                setMessage(err.response?.data);
             },
         });
     };
