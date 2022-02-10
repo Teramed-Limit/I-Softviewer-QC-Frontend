@@ -2,10 +2,10 @@ export interface DicomOperationNode {
     name: string;
     operationType: string;
     aeTitle: string;
-    sendingAETitle: string;
-    hostName: string;
+    remoteAETitle: string;
     ipAddress: string;
     port: number;
+    moveAETitle: string;
     description: string;
     createDateTime: string;
     createUser: string;

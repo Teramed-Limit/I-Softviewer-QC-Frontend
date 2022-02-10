@@ -10,6 +10,18 @@ import classes from './Setting.module.scss';
 
 const initFormData: Partial<DicomOperationNode> = {
     enable: 1,
+    name: '',
+    operationType: '',
+    aeTitle: '',
+    remoteAETitle: '',
+    ipAddress: '',
+    port: 200,
+    moveAETitle: 'N/A',
+    description: '',
+    createDateTime: '',
+    createUser: '',
+    modifiedDateTime: '',
+    modifiedUser: '',
 };
 
 const Setting = () => {
