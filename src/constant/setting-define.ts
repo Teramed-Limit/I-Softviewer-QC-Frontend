@@ -1,5 +1,5 @@
 export const define = {
-    dicomSend: {
+    dicomOperationNodes: {
         colDef: [
             { field: 'name', headerName: 'Name', width: 160 },
             { field: 'operationType', headerName: 'Type', width: 160 },
@@ -49,6 +49,185 @@ export const define = {
                         },
                         { field: 'description', label: 'Description', type: 'Text' },
                         { field: 'enable', label: 'Enable', type: 'Checkbox' },
+                    ],
+                },
+            ],
+        },
+    },
+    dicomClientNodes: {
+        colDef: [
+            { field: 'name', headerName: 'Name', width: 160 },
+            { field: 'aeTitle', headerName: 'AETitle', width: 160 },
+            { field: 'ipAddress', headerName: 'IP', width: 120 },
+            { field: 'portNumber', headerName: 'Port', width: 100 },
+            { field: 'remoteAETitle', headerName: 'Remote AETitle', width: 160 },
+            { field: 'description', headerName: 'Description', width: 160 },
+            { field: 'compressQuality', headerName: 'Compress Quality', width: 200 },
+            { field: 'enabledAutoRouting', headerName: 'Enabled AutoRouting', width: 200 },
+            { field: 'filterRulePattern', headerName: 'Filter Rule Pattern', width: 200 },
+            { field: 'imageCompression', headerName: 'Image Compression', width: 200 },
+            { field: 'needConfirmIPAddress', headerName: 'NeedConfirm IPAddress', width: 200 },
+            { field: 'priority', headerName: 'Priority', width: 160 },
+            { field: 'serviceJobTypes', headerName: 'ServiceJobTypes', width: 160 },
+            {
+                field: 'worklistMatchKeys',
+                headerName: 'Worklist MatchKeys',
+                width: 200,
+                cellRenderer: 'xmlViewerRenderer',
+            },
+            {
+                field: 'worklistReturnKeys',
+                headerName: 'Worklist ReturnKeys',
+                width: 200,
+                cellRenderer: 'xmlViewerRenderer',
+            },
+            { field: 'worklistQueryPattern', headerName: 'Worklist QueryPattern', width: 200 },
+            {
+                field: 'acceptedTransferSyntaxesCustomize',
+                headerName: 'Accepted TransferSyntaxes Customize',
+                width: 200,
+            },
+            { field: 'auotRoutingDestination', headerName: 'Auot Routing Destination', width: 200 },
+            { field: 'department', headerName: 'Department', width: 160 },
+        ],
+        formDef: {
+            sections: [
+                {
+                    fields: [
+                        {
+                            field: 'name',
+                            type: 'Text',
+                            label: 'Name',
+                            readOnly: true,
+                            validation: { type: 'Required' },
+                        },
+                        { field: 'aeTitle', type: 'Text', label: 'AETitle', validation: { type: 'Required' } },
+                        { field: 'ipAddress', type: 'Text', label: 'IP', validation: { type: 'Required' } },
+                        { field: 'portNumber', type: 'Number', label: 'Port', validation: { type: 'Required' } },
+                        {
+                            field: 'remoteAETitle',
+                            type: 'Text',
+                            label: 'Server AETitle',
+                            validation: { type: 'Required' },
+                        },
+                        { field: 'description', type: 'Text', label: 'Description' },
+                        {
+                            field: 'compressQuality',
+                            label: 'Compress Quality',
+                            type: 'SingleSelect',
+                            optionSource: {
+                                type: 'static',
+                                source: 'compressQuality',
+                            },
+                            validation: { type: 'Required' },
+                        },
+                        {
+                            field: 'enabledAutoRouting',
+                            label: 'Enabled AutoRouting',
+                            type: 'SingleSelect',
+                            optionSource: {
+                                type: 'static',
+                                source: 'booleanStringType',
+                            },
+                            validation: { type: 'Required' },
+                        },
+                        {
+                            field: 'imageCompression',
+                            label: 'Image Compression',
+                            type: 'SingleSelect',
+                            optionSource: {
+                                type: 'static',
+                                source: 'booleanStringType',
+                            },
+                            validation: { type: 'Required' },
+                        },
+                        {
+                            field: 'needConfirmIPAddress',
+                            label: 'NeedConfirm IPAddress',
+                            type: 'SingleSelect',
+                            optionSource: {
+                                type: 'static',
+                                source: 'booleanStringType',
+                            },
+                            validation: { type: 'Required' },
+                        },
+                        { field: 'priority', type: 'Number', label: 'Priority' },
+                        {
+                            field: 'serviceJobTypes',
+                            type: 'SingleSelect',
+                            label: 'ServiceJobTypes',
+                            optionSource: {
+                                type: 'static',
+                                source: 'cStoreJobType',
+                            },
+                            validation: { type: 'Required' },
+                        },
+                        { field: 'worklistMatchKeys', type: 'Text', label: 'Worklist MatchKeys' },
+                        { field: 'worklistReturnKeys', type: 'Text', label: 'Worklist ReturnKeys' },
+                        {
+                            field: 'worklistQueryPattern',
+                            type: 'SingleSelect',
+                            label: 'Worklist QueryPattern',
+                            optionSource: {
+                                type: 'static',
+                                source: 'wlmQryPattern',
+                            },
+                            validation: { type: 'Required' },
+                        },
+                        // { field: 'filterRulePattern', type: 'Text', label: 'Filter Rule Pattern' },
+                        {
+                            field: 'acceptedTransferSyntaxesCustomize',
+                            label: 'Accepted TransferSyntaxes Customize',
+                            type: 'SingleSelect',
+                            optionSource: {
+                                type: 'static',
+                                source: 'booleanStringType',
+                            },
+                            validation: { type: 'Required' },
+                        },
+                        // {
+                        //     field: 'auotRoutingDestination',
+                        //     type: 'Text',
+                        //     label: 'Auto Routing Destination',
+                        // },
+                        // { field: 'department', type: 'Text', label: 'Department' },
+                    ],
+                },
+            ],
+        },
+    },
+    dicomServiceProvider: {
+        colDef: [
+            { field: 'name', headerName: 'Name', width: 160 },
+            { field: 'dicomServiceType', headerName: 'Type', width: 160 },
+            { field: 'aeTitle', headerName: 'AETitle', width: 160 },
+            { field: 'port', headerName: 'Port', width: 100 },
+        ],
+        formDef: {
+            sections: [
+                {
+                    fields: [
+                        {
+                            field: 'name',
+                            label: 'Name',
+                            type: 'Text',
+                            readOnly: true,
+                            validation: { type: 'Required' },
+                        },
+                        {
+                            field: 'dicomServiceType',
+                            label: 'Type',
+                            type: 'SingleSelect',
+                            optionSource: {
+                                type: 'static',
+                                source: 'dicomServiceProviderType',
+                                labelKey: 'label',
+                                key: 'key',
+                            },
+                            validation: { type: 'Required' },
+                        },
+                        { field: 'aeTitle', label: 'AETitle', type: 'Text', validation: { type: 'Required' } },
+                        { field: 'port', label: 'Port', type: 'Number', validation: { type: 'Required' } },
                     ],
                 },
             ],

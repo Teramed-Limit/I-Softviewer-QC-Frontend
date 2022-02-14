@@ -53,7 +53,35 @@ const modalityOptions = [
 
 const dicomOperationTypeOptions = ['C-STORE', 'Query-Retrieve', 'Worklist'];
 
+const dicomServiceProviderTypeOptions = [
+    { key: 'Store SCP', label: 'Store SCP' },
+    { key: 'Worklist SCP', label: 'Worklist SCP' },
+    { key: 'QR Modal SCP', label: 'QR Modal SCP' },
+    { key: 'Storage Commitment SCP', label: 'Storage Commitment SCP' },
+];
+
+const cStoreJobTypeOptions = [
+    'None Job',
+    'CStoreFileSave',
+    'CStoreFileSave -> DicomToThumbnail',
+    'CStoreFileSave -> DicomToThumbnail -> RoutingDicom',
+    'RoutingDicom',
+    'RoutingDicomAfterDeleteFile',
+    'CUHKCustomzedPID -> RoutingDicomAfterDeleteFile',
+];
+
+const booleanStringOptions = ['True', 'False'];
+
+const compressQualityOptions = ['HIGH', 'MIDDLE', 'LOW'];
+
+const wlmQryPatternOptions = ['Database', 'HIS SDK'];
+
 export const StaticOptionMapper = {
     modality: modalityOptions,
     dicomOperationType: dicomOperationTypeOptions,
+    dicomServiceProviderType: dicomServiceProviderTypeOptions,
+    cStoreJobType: cStoreJobTypeOptions,
+    booleanStringType: booleanStringOptions,
+    compressQuality: compressQualityOptions,
+    wlmQryPattern: wlmQryPatternOptions,
 };
