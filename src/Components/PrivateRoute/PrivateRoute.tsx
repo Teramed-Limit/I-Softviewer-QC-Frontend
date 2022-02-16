@@ -3,7 +3,7 @@ import * as React from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
-import { authInfo } from '../../atoms/auth';
+import { isAuthorize } from '../../atoms/auth';
 
 interface Props {
     path: string;
@@ -11,7 +11,7 @@ interface Props {
 }
 
 function PrivateRoute({ children, ...rest }: Props) {
-    const auth = useRecoilValue(authInfo);
+    const auth = useRecoilValue(isAuthorize);
     return (
         <Route
             {...rest}

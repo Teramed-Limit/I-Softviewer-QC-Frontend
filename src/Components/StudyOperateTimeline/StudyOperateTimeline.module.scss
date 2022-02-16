@@ -18,3 +18,32 @@
         flex: 1 1 30%;
     }
 }
+
+.linkButton {
+    background: none !important;
+    border: none;
+    padding: 0 !important;
+    color: #36afee;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 16px;
+
+    &:hover {
+        color: hotpink;
+    }
+}
+
+.drawerContainer {
+    padding: 12px;
+    background: transparent;
+    width: 600px;
+}
+
+.details {
+    background: transparent;
+    color: white;
+    font-size: 18px;
+    width: 100%;
+    border: 0;
+    resize: none;
+}

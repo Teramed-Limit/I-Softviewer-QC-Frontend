@@ -17,6 +17,7 @@ export interface Field {
 
 export interface SelectField extends Field {
     optionSource: OptionSource;
+    defaultSelectFirstItem: boolean;
 }
 
 export interface OptionSource {

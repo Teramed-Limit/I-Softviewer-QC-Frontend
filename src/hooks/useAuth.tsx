@@ -3,11 +3,10 @@ import { useState } from 'react';
 import { AxiosResponse } from 'axios';
 import { useHistory } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
-import { delay, Observable, of, Subscription, tap } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { concatMap, delay, Observable, of, Subscription } from 'rxjs';
 
 import { http } from '../api/axios';
-import { authInfo } from '../atoms/auth';
+import { isAuthorize } from '../atoms/auth';
 import { userAvailableFunction } from '../atoms/user-available-function';
 import { LoginResult } from '../interface/user-account';
 import TokenService from '../services/TokenService';
@@ -17,7 +16,7 @@ let timer: Subscription;
 export const useAuth = () => {
     const history = useHistory();
     const [message, setMessage] = useState('');
-    const setAuth = useSetRecoilState(authInfo);
+    const setAuth = useSetRecoilState(isAuthorize);
     const setUserAvailableFunction = useSetRecoilState(userAvailableFunction);
 
     const getTokenRemainingTime = () => {
@@ -35,19 +34,17 @@ export const useAuth = () => {
         timer = of(true)
             .pipe(
                 delay(timeout),
-                tap(() =>
-                    refreshToken().subscribe({
-                        next: () => {},
-                        error: () => {
-                            TokenService.removeUser();
-                            setAuth(false);
-                            stopTokenTimer();
-                            history.replace({ pathname: '/login' });
-                        },
-                    }),
-                ),
+                concatMap(() => refreshToken()),
             )
-            .subscribe();
+            .subscribe({
+                next: () => {},
+                error: () => {
+                    TokenService.removeUser();
+                    setAuth(false);
+                    stopTokenTimer();
+                    history.replace({ pathname: '/login' });
+                },
+            });
     };
 
     const stopTokenTimer = () => {
@@ -63,15 +60,7 @@ export const useAuth = () => {
             return of(null);
         }
 
-        return http.post('userAccount/refreshtoken', { refreshToken: localRefreshToken }).pipe(
-            map((res: AxiosResponse<LoginResult>) => {
-                TokenService.setUser(res.data);
-                setAuth(TokenService.getUser());
-                setUserAvailableFunction(res.data.functionList);
-                startTokenTimer();
-                return of(res.data);
-            }),
-        );
+        return http.post('userAccount/refreshtoken', { refreshToken: localRefreshToken });
     };
 
     const logout = () => {
@@ -103,7 +92,20 @@ export const useAuth = () => {
 
     const initialAuth = () => {
         if (timer === undefined && TokenService.getUser()) {
-            refreshToken().subscribe();
+            refreshToken().subscribe({
+                next: (res) => {
+                    TokenService.setUser(res.data);
+                    setAuth(TokenService.getUser());
+                    setUserAvailableFunction(res.data.functionList);
+                    startTokenTimer();
+                },
+                error: () => {
+                    TokenService.removeUser();
+                    setAuth(false);
+                    stopTokenTimer();
+                    history.replace({ pathname: '/login' });
+                },
+            });
         }
     };
 

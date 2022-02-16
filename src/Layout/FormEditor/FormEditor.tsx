@@ -67,7 +67,7 @@ const FormEditor = ({ saveType, formDef, formData, formDataChanged, formInvalidC
                                 const value = formData[fieldDef.field] || '';
 
                                 return (
-                                    <Box key={fieldDef.field} sx={{ m: '8px' }}>
+                                    <Box key={fieldDef.field} sx={{ m: '8px 0' }}>
                                         <RenderComponent
                                             field={fieldDef}
                                             autoFocus={autoFocusIdx === idx}

@@ -17,3 +17,8 @@ export const atomStudyQueryResult = atom<any[]>({
     key: 'studyQueryResult',
     default: [],
 });
+
+export const atomUpToDateQueryResult = atom<boolean>({
+    key: 'upToDateQueryResult',
+    default: true,
+});

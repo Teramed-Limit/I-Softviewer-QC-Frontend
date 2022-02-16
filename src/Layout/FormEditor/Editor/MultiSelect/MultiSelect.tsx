@@ -62,7 +62,7 @@ const MultiSelect = ({ field, value, autoFocus, onValueChanged, readOnly = false
                 renderValue={(selected: string[]) => (
                     <div className={classes.chips}>
                         {selected.map((item) => (
-                            <Chip key={item} label={item} className={classes.chip} />
+                            <Chip size="small" key={item} label={item} className={classes.chip} />
                         ))}
                     </div>
                 )}

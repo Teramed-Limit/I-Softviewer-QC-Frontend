@@ -162,8 +162,8 @@ export const define = {
                             },
                             validation: { type: 'Required' },
                         },
-                        { field: 'worklistMatchKeys', type: 'Text', label: 'Worklist MatchKeys' },
-                        { field: 'worklistReturnKeys', type: 'Text', label: 'Worklist ReturnKeys' },
+                        { field: 'worklistMatchKeys', type: 'Textarea', label: 'Worklist MatchKeys' },
+                        { field: 'worklistReturnKeys', type: 'Textarea', label: 'Worklist ReturnKeys' },
                         {
                             field: 'worklistQueryPattern',
                             type: 'SingleSelect',
@@ -319,19 +319,19 @@ export const define = {
             { field: 'patientsName', headerName: 'Patient Name', width: 160 },
             { field: 'accessionNumber', headerName: 'AccessionNumber', width: 180 },
             { field: 'studyID', headerName: 'studyID', hide: true, width: 120, pinned: 'left' },
-            // {
-            //     field: 'state',
-            //     headerName: 'State',
-            //     width: 250,
-            //     pinned: 'left',
-            //     cellRenderer: 'qcChipRenderer',
-            // },
+            {
+                field: 'state',
+                headerName: 'State',
+                width: 270,
+                pinned: 'left',
+                cellRenderer: 'qcChipRenderer',
+            },
             {
                 field: 'advanced',
                 colId: 'qualityControl__gridCol-advanced',
                 headerName: 'Advanced',
                 width: 140,
-                pinned: 'left',
+                pinned: 'right',
                 cellRenderer: 'buttonRenderer',
                 cellRendererParams: {
                     clicked: () => {},
@@ -340,7 +340,7 @@ export const define = {
                     label: 'Advanced',
                 },
             },
-            { field: 'patientsSex', headerName: 'Sex', type: 'Text', width: 120 },
+            { field: 'patientsSex', headerName: 'Sex', width: 120 },
             { field: 'patientsBirthDate', headerName: 'BirthDate', width: 120 },
             { field: 'studyDate', headerName: 'Study Date', width: 120 },
             { field: 'studyDescription', headerName: 'StudyDescription', flex: 1, minWidth: 200 },
@@ -350,13 +350,28 @@ export const define = {
             { field: 'studyInstanceUID', headerName: 'StudyInstanceUID', hide: true, width: 120 },
         ],
     },
+    worklist: {
+        colDef: [
+            { field: 'patientID', headerName: 'Patient Id', width: 160 },
+            { field: 'patientName', headerName: 'Patient Name', width: 160 },
+            { field: 'otherPatientNames', headerName: 'Other Name', width: 160 },
+            { field: 'accessionNumber', headerName: 'AccessionNumber', width: 180 },
+            { field: 'scheduledProcedureStepStartDate', headerName: 'Study Date', width: 120 },
+            { field: 'patientSex', headerName: 'Sex', width: 120 },
+            { field: 'patientBirthDate', headerName: 'BirthDate', width: 120 },
+            { field: 'requestedProcedureDescription', headerName: 'StudyDescription', flex: 1, minWidth: 200 },
+            { field: 'modality', headerName: 'Modality', width: 120 },
+            { field: 'scheduledPerformingPhysicianName', headerName: 'Performing Physician', width: 200 },
+            { field: 'studyInstanceUID', headerName: 'StudyInstanceUID', hide: true, width: 120 },
+        ],
+    },
     qrStudy: {
         colDef: [
             { field: 'patientID', headerName: 'Patient Id', width: 160 },
             { field: 'patientName', headerName: 'Patient Name', width: 160 },
             { field: 'accessionNumber', headerName: 'AccessionNumber', width: 160 },
             { field: 'studyID', headerName: 'studyID', hide: true, width: 120, pinned: 'left' },
-            { field: 'patientSex', headerName: 'Sex', type: 'Text', width: 120 },
+            { field: 'patientSex', headerName: 'Sex', width: 120 },
             { field: 'patientBirthDate', headerName: 'BirthDate', width: 120 },
             { field: 'studyDate', headerName: 'Study Date', width: 120 },
             { field: 'studyDescription', headerName: 'StudyDescription', flex: 1, minWidth: 200 },
@@ -408,7 +423,7 @@ export const define = {
             { field: 'studyDate', headerName: 'Study Date', width: 120 },
             { field: 'modality', headerName: 'Modality', width: 120 },
             { field: 'studyDescription', headerName: 'StudyDescription', flex: 1, minWidth: 200 },
-            { field: 'studyInstanceUID', headerName: 'StudyInstanceUID', hide: true, width: 120 },
+            { field: 'qcGuid', hide: true, width: 120 },
         ],
     },
     logByUser: {
@@ -418,7 +433,7 @@ export const define = {
             { field: 'studyDate', headerName: 'StudyDate', width: 140 },
             { field: 'modality', headerName: 'Modality', width: 100 },
             { field: 'studyDescription', headerName: 'StudyDescription', flex: 1, minWidth: 200 },
-            { field: 'studyInstanceUID', headerName: 'StudyInstanceUID', hide: true, width: 120 },
+            { field: 'qcGuid', hide: true, width: 120 },
         ],
     },
 };
@@ -452,9 +467,30 @@ export const qrQueryField = [
             label: 'Query Target',
             type: 'SingleSelect',
             disabled: true,
+            defaultSelectFirstItem: true,
             optionSource: {
                 type: 'http',
                 source: 'configuration/dicomOperationNode/operationType/Query-Retrieve',
+                key: 'name',
+                labelKey: 'name',
+            },
+        },
+    ],
+];
+
+export const defaultWorklistQueryFields = ['patientId', 'accessionNumber', 'modality', 'studyDate', 'queryName'];
+export const worklistQueryFields = [
+    ...dbQueryField,
+    ...[
+        {
+            field: 'queryName',
+            label: 'Query Target',
+            type: 'SingleSelect',
+            disabled: true,
+            defaultSelectFirstItem: true,
+            optionSource: {
+                type: 'http',
+                source: 'configuration/dicomOperationNode/operationType/Worklist',
                 key: 'name',
                 labelKey: 'name',
             },

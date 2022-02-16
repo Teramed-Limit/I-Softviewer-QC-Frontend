@@ -2,11 +2,11 @@ import { useEffect } from 'react';
 
 import { useSetRecoilState } from 'recoil';
 
-import { authInfo } from '../atoms/auth';
+import { isAuthorize } from '../atoms/auth';
 import { setupInterceptors } from './axios';
 
 function InjectAxiosInterceptors() {
-    const setAuth = useSetRecoilState(authInfo);
+    const setAuth = useSetRecoilState(isAuthorize);
 
     useEffect(() => {
         setupInterceptors(() => setAuth(false));

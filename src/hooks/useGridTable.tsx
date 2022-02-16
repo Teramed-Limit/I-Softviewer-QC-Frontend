@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Button } from '@mui/material';
 import { ColDef } from 'ag-grid-community';
 import { GridReadyEvent } from 'ag-grid-community/dist/lib/events';
 import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
@@ -16,7 +15,6 @@ import BaseModal from '../Container/BaseModal/BaseModal';
 import { FormDef } from '../interface/form-define';
 import { MessageType } from '../interface/notification';
 import FormEditor from '../Layout/FormEditor/FormEditor';
-import classes from '../Layout/GridTableEditor/GridTableEditor.module.scss';
 import { isEmptyOrNil } from '../utils/general';
 
 export type DeleteRowClick = (cellRendererParams: ICellRendererParams) => void;
@@ -96,7 +94,7 @@ export const useGridTable = <T,>({
 }: Props<T>) => {
     const gridApi = useRef<GridApi | null>(null);
     const setNotification = useSetRecoilState(atomNotification);
-    const [formIsValid, setFormIsValid] = useState(false);
+    const [, setFormIsValid] = useState(false);
     const [open, setOpen] = useState(false);
     const [colDefs, setColDefs] = useState<ColDef[]>([]);
     const [editFormData, setEditFormData] = useState<T>(initFormData);
@@ -253,14 +251,22 @@ export const useGridTable = <T,>({
     // callback when ag-grid all api are available
     const gridReady = (params: GridReadyEvent) => (gridApi.current = params.api);
 
-    const updateFormData = (fieldId: string, value: string) => {
+    const updateFormData = useCallback((fieldId: string, value: string) => {
         setEditFormData((data) => ({ ...data, [fieldId]: value }));
-    };
+    }, []);
 
     // component of form editor
     const rendererFormEditor = (): JSX.Element => {
         return (
-            <BaseModal width="80%" maxHeight="80%" open={open} setOpen={setOpen}>
+            <BaseModal
+                width="80%"
+                maxHeight="80%"
+                open={open}
+                setOpen={setOpen}
+                footer={{
+                    actionHandler: () => (saveType === 'add' ? addRow(editFormData) : updateRow(editFormData)),
+                }}
+            >
                 <FormEditor
                     saveType={saveType}
                     formDef={formDef}
@@ -268,26 +274,6 @@ export const useGridTable = <T,>({
                     formDataChanged={updateFormData}
                     formInvalidChanged={setFormIsValid}
                 />
-                <div className={classes.footer}>
-                    <Button
-                        variant="outlined"
-                        color="primary"
-                        onClick={() => {
-                            setEditFormData(initFormData);
-                            setOpen(false);
-                        }}
-                    >
-                        Cancel
-                    </Button>
-                    <Button
-                        disabled={!formIsValid}
-                        variant="contained"
-                        color="primary"
-                        onClick={() => (saveType === 'add' ? addRow(editFormData) : updateRow(editFormData))}
-                    >
-                        Save
-                    </Button>
-                </div>
             </BaseModal>
         );
     };

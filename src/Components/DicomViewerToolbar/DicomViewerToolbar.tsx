@@ -33,7 +33,7 @@ interface Props {
     setActiveTool: (tool: string) => void;
 }
 
-const DicomViewerToolbar = ({ row, col, activeTool, changeLayout, resetViewport, openModal, setActiveTool }: Props) => {
+const DicomViewerToolbar = ({ row, col, activeTool, changeLayout, resetViewport, setActiveTool }: Props) => {
     return (
         <Box className={classes.toolBar}>
             <PopoverButton

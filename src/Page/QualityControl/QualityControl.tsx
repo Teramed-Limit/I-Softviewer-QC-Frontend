@@ -13,10 +13,11 @@ import { useHistory } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 
 import { http } from '../../api/axios';
-import { atomStudyQueryCondition, atomStudyQueryResult } from '../../atoms/study-query';
+import { atomStudyQueryCondition, atomStudyQueryResult, atomUpToDateQueryResult } from '../../atoms/study-query';
 import ConditionQuerier from '../../Components/ConditonQuerier/ConditionQuerier';
 import DicomQueryRetrieve from '../../Components/DicomQueryRetrieve/DicomQueryRetrieve';
 import GridTable from '../../Components/GridTable/GridTable';
+import GridTableToolbar from '../../Components/GridTableToolbar/GridTableToolbar';
 import { dbQueryField, defaultQueryFields, define } from '../../constant/setting-define';
 import BaseModal from '../../Container/BaseModal/BaseModal';
 import WithElementVisibility from '../../HOC/WithElementVisiblity/WithElementVisibility';
@@ -26,14 +27,18 @@ import classes from './QualityControl.module.scss';
 
 const QualityControl = () => {
     const history = useHistory();
+    // query state management
     const [queryPairData, setQueryPairData] = useRecoilState(atomStudyQueryCondition);
-    const { checkAvailable } = useRoleFunctionAvailable();
-    const { dispatchCellEvent, assignCellVisibility } = useGridColDef();
+    const [needRefreshQuery, setNeedRefreshQuery] = useRecoilState(atomUpToDateQueryResult);
     const [rowData, setRowData] = useRecoilState(atomStudyQueryResult);
+    // function available
+    const { checkAvailable } = useRoleFunctionAvailable();
+    // dispatch event for cell event
+    const { dispatchCellEvent, assignCellVisibility } = useGridColDef();
     const [colDefs, setColDefs] = useState<ColDef[]>([]);
-    const gridApiRef = useRef<GridApi | null>(null);
     const [openQRModal, setOpenQRModal] = useState(false);
-    const [, setSelectedRow] = useState<any[]>([]);
+    const [selectedRow, setSelectedRow] = useState<any[]>([]);
+    const gridApiRef = useRef<GridApi | null>(null);
 
     const onValueChanged = (value: any, fieldId: string) => {
         setQueryPairData((data) => ({ ...data, [fieldId]: value }));
@@ -41,18 +46,19 @@ const QualityControl = () => {
 
     const gridReady = (params: GridReadyEvent) => (gridApiRef.current = params.api);
 
-    const onQuery = () => {
+    const onQuery = useCallback(() => {
         gridApiRef.current?.showLoadingOverlay();
         http.get(`dicomDbQuery`, { params: { ...queryPairData } }).subscribe({
             next: (res) => {
                 setRowData(res.data);
+                gridApiRef.current?.deselectAll();
                 gridApiRef.current?.hideOverlay();
             },
             error: () => {
                 gridApiRef.current?.hideOverlay();
             },
         });
-    };
+    }, [queryPairData, setRowData]);
 
     const onAdvancedClick = useCallback(
         (param: ICellRendererParams) => {
@@ -86,6 +92,14 @@ const QualityControl = () => {
         mutateColDef = assignCellVisibility(mutateColDef, 'advanced', checkAvailable);
         setColDefs(mutateColDef);
     }, [onViewerClick, onAdvancedClick, checkAvailable, dispatchCellEvent, assignCellVisibility]);
+
+    // triggering query to refresh (e.g. mapping, merge, qr)
+    useEffect(() => {
+        if (needRefreshQuery) {
+            onQuery();
+            setNeedRefreshQuery(false);
+        }
+    }, [needRefreshQuery, onQuery, setNeedRefreshQuery]);
 
     return (
         <div className={classes.container}>
@@ -132,6 +146,7 @@ const QualityControl = () => {
                 onQuery={onQuery}
                 onQueryPairDataChanged={onValueChanged}
             />
+
             <div className={`${classes.tableContainer} ag-theme-dark`}>
                 <GridTable
                     checkboxSelect={false}
@@ -142,7 +157,7 @@ const QualityControl = () => {
                 />
             </div>
 
-            {/* <GridTableToolbar selectedRow={selectedRow} /> */}
+            <GridTableToolbar selectedRow={selectedRow} />
 
             <BaseModal width="80%" height="80%" open={openQRModal} setOpen={setOpenQRModal}>
                 <DicomQueryRetrieve />

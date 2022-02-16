@@ -3,6 +3,8 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 
+import ModalFooter from './ModalFooter/ModalFooter';
+
 interface Props {
     open: boolean;
     setOpen: (isOpen: boolean) => void;
@@ -10,9 +12,27 @@ interface Props {
     width?: string;
     height?: string;
     maxHeight?: string;
+    footer?: {
+        // action string
+        actionLabel?: string;
+        // cancel string
+        cancelLabel?: string;
+        // action callback
+        actionHandler?: () => void;
+        // cancel callback
+        cancelActionHandler?: () => void;
+    };
 }
 
-const BaseModal = ({ open, setOpen, children, width = '70%', height = 'auto', maxHeight }: Props) => {
+const BaseModal = ({
+    open,
+    setOpen,
+    children,
+    width = '70%',
+    height = 'auto',
+    maxHeight,
+    footer = undefined,
+}: Props) => {
     return (
         <Modal open={open} onClose={() => setOpen(false)}>
             <Box
@@ -29,10 +49,21 @@ const BaseModal = ({ open, setOpen, children, width = '70%', height = 'auto', ma
                     overflow: 'auto',
                     bgcolor: 'background.paper',
                     boxShadow: 24,
+                    border: '2px solid white',
+                    borderRadius: '6px',
                     p: 4,
                 }}
             >
                 {children}
+                {footer && (
+                    <ModalFooter
+                        setOpen={setOpen}
+                        actionLabel={footer.actionLabel}
+                        cancelLabel={footer.cancelLabel}
+                        actionHandler={footer.actionHandler}
+                        cancelActionHandler={footer.cancelActionHandler}
+                    />
+                )}
             </Box>
         </Modal>
     );

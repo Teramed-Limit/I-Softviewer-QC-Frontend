@@ -10,68 +10,30 @@ import { useSetRecoilState } from 'recoil';
 
 import { http } from '../../api/axios';
 import { atomNotification } from '../../atoms/notification';
-import { initQueryParams } from '../../atoms/study-query';
 import { defaultQRQueryFields, define, qrQueryField } from '../../constant/setting-define';
+import { useDicomQuery } from '../../hooks/useDicomQuery';
 import { useGridColDef } from '../../hooks/useGridColDef';
-import { DicomQRResult } from '../../interface/dicom-dataset';
 import { MessageType } from '../../interface/notification';
-import { parseDicomTagResult } from '../../utils/dicom-utils';
-import { isEmptyOrNil } from '../../utils/general';
 import ConditionQuerier from '../ConditonQuerier/ConditionQuerier';
 import GridTable from '../GridTable/GridTable';
 import classes from './DicomQueryRetrieve.module.scss';
 import '../../styles/ag-grid/ag-theme-custom-dark.scss';
 
-interface QueryField {
-    queryName: string;
-    [prop: string]: string;
-}
-
 const DicomQueryRetrieve = () => {
+    const gridApiRef = useRef<GridApi | null>(null);
     const setNotification = useSetRecoilState(atomNotification);
     const { dispatchCellEvent } = useGridColDef();
-    const [queryPairData, setQueryPairData] = useState<QueryField>({ ...initQueryParams(qrQueryField), queryName: '' });
-    const [rowData, setRowData] = useState<any[]>([]);
+    const { onQuery, onValueChanged, validateQRRequest, rowData, queryPairData } = useDicomQuery(
+        `searchDcmService/qrfind`,
+        gridApiRef,
+    );
     const [colDefs, setColDefs] = useState<ColDef[]>([]);
-    const gridApiRef = useRef<GridApi | null>(null);
+
     const gridReady = (params: GridReadyEvent) => (gridApiRef.current = params.api);
-
-    const onValueChanged = (value: any, fieldId: string) => {
-        setQueryPairData((data) => ({ ...data, [fieldId]: value }));
-    };
-
-    const invalidateQRRequest = useCallback(() => {
-        return isEmptyOrNil(queryPairData.queryName);
-    }, [queryPairData.queryName]);
-
-    const onQuery = () => {
-        if (invalidateQRRequest()) {
-            setNotification({
-                messageType: MessageType.Error,
-                message: 'Query Target must be selected',
-            });
-            return;
-        }
-
-        gridApiRef.current?.showLoadingOverlay();
-        http.get<DicomQRResult>(`searchDcmService/qrfind`, { params: { ...queryPairData } }).subscribe({
-            next: (res) => {
-                setRowData(parseDicomTagResult(res));
-                gridApiRef.current?.hideOverlay();
-            },
-            error: (err) => {
-                setNotification({
-                    messageType: MessageType.Error,
-                    message: err.response?.data || 'Http request failed!',
-                });
-                gridApiRef.current?.hideOverlay();
-            },
-        });
-    };
 
     const onMoveStudy = useCallback(
         (param: ICellRendererParams) => {
-            if (invalidateQRRequest()) {
+            if (validateQRRequest()) {
                 setNotification({
                     messageType: MessageType.Error,
                     message: 'Query Target must be selected',
@@ -100,7 +62,7 @@ const DicomQueryRetrieve = () => {
                 },
             });
         },
-        [queryPairData.queryName, setNotification, invalidateQRRequest],
+        [queryPairData.queryName, setNotification, validateQRRequest],
     );
 
     useEffect(() => {

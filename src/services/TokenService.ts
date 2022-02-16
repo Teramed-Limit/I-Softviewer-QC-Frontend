@@ -1,3 +1,5 @@
+import { LoginResult } from '../interface/user-account';
+
 const getLocalRefreshToken = () => {
     const user = JSON.parse(<string>localStorage.getItem('user'));
     return user?.refreshToken;
@@ -20,6 +22,13 @@ const updateLocalAccessToken = (token) => {
 };
 
 const getUser = (): boolean => {
+    if (!localStorage.getItem('user') || localStorage.getItem('user') === undefined) {
+        return false;
+    }
+    return JSON.parse(<string>localStorage.getItem('user'));
+};
+
+const getUserInfo = (): LoginResult => {
     return JSON.parse(<string>localStorage.getItem('user'));
 };
 
@@ -37,6 +46,7 @@ const TokenService = {
     getLocalAccessToken,
     updateLocalAccessToken,
     getUser,
+    getUserInfo,
     setUser,
     removeUser,
 };

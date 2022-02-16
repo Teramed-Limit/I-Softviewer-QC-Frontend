@@ -1,10 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
 
-import EditIcon from '@mui/icons-material/Edit';
-import ImportExportIcon from '@mui/icons-material/ImportExport';
-import SaveIcon from '@mui/icons-material/Save';
-import SendIcon from '@mui/icons-material/Send';
 import Timeline from '@mui/lab/Timeline';
 import TimelineConnector from '@mui/lab/TimelineConnector';
 import TimelineContent from '@mui/lab/TimelineContent';
@@ -12,6 +8,7 @@ import TimelineDot from '@mui/lab/TimelineDot';
 import TimelineItem from '@mui/lab/TimelineItem';
 import TimelineOppositeContent from '@mui/lab/TimelineOppositeContent';
 import TimelineSeparator from '@mui/lab/TimelineSeparator';
+import { Drawer, TextareaAutosize } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { ColDef } from 'ag-grid-community';
 import { GridReadyEvent } from 'ag-grid-community/dist/lib/events';
@@ -19,16 +16,16 @@ import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
 
 import { http } from '../../api/axios';
 import { StudyOperationRecord } from '../../interface/study-operation-record';
-import { StudyQueryResult } from '../../interface/study-query-result';
+import { StudyQueryData } from '../../interface/study-query-data';
 import GridTable from '../GridTable/GridTable';
 import classes from './StudyOperateTimeline.module.scss';
 
-const OperationType = {
-    ImportStudy: <SaveIcon />,
-    RetrieveStudy: <ImportExportIcon />,
-    ModifyTag: <EditIcon />,
-    SendToPacs: <SendIcon />,
-};
+// const OperationType = {
+//     ImportStudy: <SaveIcon />,
+//     RetrieveStudy: <ImportExportIcon />,
+//     ModifyTag: <EditIcon />,
+//     SendToPacs: <SendIcon />,
+// };
 
 interface Props {
     queryConditionComponent: JSX.Element;
@@ -46,6 +43,8 @@ const StudyOperateTimeline = ({
     gridReady,
 }: Props) => {
     const [operationRecordList, setOperationRecordList] = useState<StudyOperationRecord[]>([]);
+    const [drawerOpen, setDrawerOpen] = React.useState(false);
+    const [drawerDetails, setDrawerDetails] = React.useState('');
 
     const onSelectionChanged = (gridApi: GridApi) => {
         if (gridApi.getSelectedNodes().length === 0) {
@@ -53,11 +52,17 @@ const StudyOperateTimeline = ({
             return;
         }
 
-        const { studyInstanceUID } = gridApi.getSelectedNodes()[0].data as StudyQueryResult;
-        http.get(`log/studyInstanceUID/${studyInstanceUID}`).subscribe({
+        const { qcGuid } = gridApi.getSelectedNodes()[0].data as StudyQueryData;
+        http.get(`log/qcGuid/${qcGuid}`).subscribe({
             next: (res) => setOperationRecordList(res.data),
             error: () => {},
         });
+    };
+
+    const onDrawerOpen = (index: number) => {
+        setDrawerOpen(true);
+        setDrawerDetails(operationRecordList[index].description);
+        return true;
     };
 
     return (
@@ -95,15 +100,45 @@ const StudyOperateTimeline = ({
                                     <TimelineSeparator>
                                         <TimelineConnector />
                                         <TimelineDot color={color}>
-                                            {OperationType[operationRecord.operation]}
+                                            {/* {OperationType[operationRecord.operation]} */}
                                         </TimelineDot>
                                         <TimelineConnector />
                                     </TimelineSeparator>
                                     <TimelineContent sx={{ py: '12px', px: 2 }}>
-                                        <Typography variant="h6" component="span">
+                                        <Typography variant="h6" component="div">
                                             {operationRecord.operationName}
                                         </Typography>
-                                        <Typography>{operationRecord.description}</Typography>
+                                        {operationRecord.description.length > 120 ? (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    className={classes.linkButton}
+                                                    onClick={() => onDrawerOpen(index)}
+                                                >
+                                                    Details
+                                                </button>
+                                                <Drawer
+                                                    anchor="right"
+                                                    open={drawerOpen}
+                                                    onClose={() => setDrawerOpen(false)}
+                                                >
+                                                    <div className={classes.drawerContainer}>
+                                                        <Typography variant="h3" component="div">
+                                                            Details
+                                                        </Typography>
+                                                        {drawerOpen && (
+                                                            <TextareaAutosize
+                                                                className={classes.details}
+                                                                disabled
+                                                                value={drawerDetails}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </Drawer>
+                                            </>
+                                        ) : (
+                                            <Typography>{operationRecord.description}</Typography>
+                                        )}
                                     </TimelineContent>
                                 </TimelineItem>
                             );

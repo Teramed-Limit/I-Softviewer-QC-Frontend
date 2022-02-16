@@ -1,11 +1,11 @@
 export interface DicomQRResult {
-    datasets: Tag[][];
-    fileSetIDs: Tag[];
+    datasets: DicomDataset[][];
+    fileSetIDs: DicomDataset[];
 }
 
-interface Tag {
-    group: string;
-    element: string;
+export interface DicomDataset {
+    group: number;
+    elem: number;
     value: string;
     name: string;
     keyword: string;

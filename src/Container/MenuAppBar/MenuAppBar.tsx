@@ -30,7 +30,7 @@ function MenuAppBar() {
                 <div className={classes.logoContainer}>
                     {/* <img src={logo} alt="" /> */}
                     <Typography variant="h6" component="div">
-                        I-Software QC
+                        I-Software QC WebImporter
                     </Typography>
                 </div>
 

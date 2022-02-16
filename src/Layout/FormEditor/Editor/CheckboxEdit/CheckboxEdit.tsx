@@ -15,6 +15,7 @@ interface Props {
 const CheckboxEdit = ({ field, value, onValueChanged, readOnly = false }: Props) => {
     return (
         <FormControlLabel
+            sx={{ margin: '0px' }}
             control={
                 <Checkbox
                     size="small"

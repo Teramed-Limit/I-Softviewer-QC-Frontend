@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { MenuItem, MenuProps, TextField } from '@mui/material';
 
@@ -32,38 +32,54 @@ const SingleSelect = ({ field, value, autoFocus, isValid, onValueChanged, readOn
     const [validationMsg] = useState(field.validation ? `- ${ValidationMessage[field.validation?.type]}` : '');
     const { options } = useSelectOptions(field.optionSource.type, field.optionSource.source);
 
+    const hasSetDefaultOptionsWhenFirstRender = useRef(false);
+
+    // initDefaultOptions
+    useEffect(() => {
+        if (hasSetDefaultOptionsWhenFirstRender.current) return;
+        if (field.defaultSelectFirstItem && options.length > 0) {
+            const defaultOption = field.optionSource.key ? options[0][field.optionSource.key] : options[0];
+            onValueChanged(defaultOption, field.field);
+            hasSetDefaultOptionsWhenFirstRender.current = true;
+        }
+    }, [field, onValueChanged, options]);
+
     const handleChange = (event) => {
         setDirty(true);
         onValueChanged(event.target.value, field.field);
     };
 
     return (
-        <TextField
-            disabled={readOnly}
-            autoFocus={autoFocus}
-            fullWidth
-            size="small"
-            label={`${field.label} ${validationMsg}`}
-            select
-            value={value}
-            error={!isValid && isDirty}
-            onChange={handleChange}
-            SelectProps={{ MenuProps: menuProps }}
-        >
-            <MenuItem value="">
-                <em>- None -</em>
-            </MenuItem>
-            {options.map((item) => {
-                const optionLabel = field.optionSource.labelKey ? item[field.optionSource.labelKey] : item;
-                const optionKey = field.optionSource.key ? item[field.optionSource.key] : item;
-                return (
-                    <MenuItem key={optionKey} value={optionKey}>
-                        {optionLabel}
+        <>
+            {options.length > 0 && (
+                <TextField
+                    disabled={readOnly}
+                    autoFocus={autoFocus}
+                    fullWidth
+                    size="small"
+                    label={`${field.label} ${validationMsg}`}
+                    select
+                    value={value}
+                    error={!isValid && isDirty}
+                    onChange={handleChange}
+                    SelectProps={{ MenuProps: menuProps }}
+                >
+                    <MenuItem value="">
+                        <em>- None -</em>
                     </MenuItem>
-                );
-            })}
-        </TextField>
+                    {options.map((item) => {
+                        const optionLabel = field.optionSource.labelKey ? item[field.optionSource.labelKey] : item;
+                        const optionKey = field.optionSource.key ? item[field.optionSource.key] : item;
+                        return (
+                            <MenuItem key={optionKey} value={optionKey}>
+                                {optionLabel}
+                            </MenuItem>
+                        );
+                    })}
+                </TextField>
+            )}
+        </>
     );
 };
 
-export default SingleSelect;
+export default React.memo(SingleSelect);

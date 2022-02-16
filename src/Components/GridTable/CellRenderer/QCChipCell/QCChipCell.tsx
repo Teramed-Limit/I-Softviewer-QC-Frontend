@@ -1,17 +1,33 @@
-import React, { useImperativeHandle } from 'react';
+import React, { useImperativeHandle, useRef, useState } from 'react';
 
 import AutorenewIcon from '@mui/icons-material/Autorenew';
+import { Tooltip } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRenderers/iCellRenderer';
 import { AgReactComponent } from 'ag-grid-react/lib/interfaces';
 
+import ConfirmModal from '../../../../Container/Modal/ConfirmModal/ConfirmModal';
+import WithElementVisibility from '../../../../HOC/WithElementVisiblity/WithElementVisibility';
+import { useDicomStudyQC } from '../../../../hooks/useDicomQC';
+import { StudyQueryData } from '../../../../interface/study-query-data';
+
 interface Props extends ICellRendererParams {
     label: string;
     value: string[];
+    data: StudyQueryData;
 }
 
+type ConfirmModalHandle = React.ElementRef<typeof ConfirmModal>;
+
 const QCChipCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
+    const [isMerged] = useState(props.data?.merged || false);
+    const [isMapped] = useState(props.data?.mapped || false);
+    const [noQCOperation] = useState(!props.data?.merged && !props.data?.mapped);
+    const { unMappingStudy, spiltStudy } = useDicomStudyQC();
+    const unMappingModalRef = useRef<ConfirmModalHandle>(null);
+    const spiltModalRef = useRef<ConfirmModalHandle>(null);
+
     useImperativeHandle(ref, () => ({
         getReactContainerStyle() {
             return {
@@ -22,36 +38,83 @@ const QCChipCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
         },
     }));
 
+    const onUnMapping = () => {
+        unMappingStudy({
+            patientId: props.data?.patientId,
+            studyInstanceUID: props.data?.studyInstanceUID,
+        });
+    };
+
+    const onSpilt = () => {
+        spiltStudy({
+            studyInstanceUID: props.data?.studyInstanceUID,
+            afterSplitStudyToDeleteOldFiles: true,
+        });
+    };
+
+    const rollBackComp = () => {
+        return (
+            <Tooltip title="Rollback">
+                <AutorenewIcon
+                    sx={{
+                        color: ' rgba(0, 0, 0, 0.87) !important',
+                        '& :hover': {
+                            color: 'rgba(255, 255, 255) !important',
+                        },
+                    }}
+                />
+            </Tooltip>
+        );
+    };
+
     return (
         <Stack direction="row" spacing={1}>
-            <Chip
-                label="Merged"
-                sx={{
-                    bgcolor: 'rgba(84, 214, 44, 0.16)',
-                    color: 'rgb(34, 154, 22)',
-                    '&:hover': {
-                        cursor: 'pointer',
-                        bgcolor: 'rgba(84, 214, 44, 0.4)',
-                    },
-                }}
-                onClick={() => {}}
-                onDelete={() => {}}
-                deleteIcon={<AutorenewIcon />}
-            />
-            <Chip
-                label="Matched"
-                sx={{
-                    bgcolor: 'rgba(255, 72, 66, 0.16)',
-                    color: 'rgb(183, 33, 54)',
-                    '&:hover': {
-                        cursor: 'pointer',
-                        bgcolor: 'rgba(255, 72, 66, 0.4)',
-                    },
-                }}
-                onClick={() => {}}
-                onDelete={() => {}}
-                deleteIcon={<AutorenewIcon />}
-            />
+            {noQCOperation && <Chip sx={{ width: '120px' }} label="Not Edited" />}
+            {isMerged && (
+                <>
+                    <WithElementVisibility
+                        wrappedComp={
+                            <Chip
+                                id="qcChipCell__chip-spilt"
+                                sx={{ width: '120px' }}
+                                label="Merged"
+                                color="warning"
+                                onDelete={() => spiltModalRef?.current?.openModal()}
+                                deleteIcon={rollBackComp()}
+                            />
+                        }
+                    />
+                    <ConfirmModal
+                        ref={spiltModalRef}
+                        confirmMessage="Are you sure you want to spilt study?"
+                        onConfirmCallback={onSpilt}
+                    />
+                </>
+            )}
+            {isMapped && (
+                <>
+                    <WithElementVisibility
+                        wrappedComp={
+                            <Chip
+                                id="qcChipCell__chip-unmapping"
+                                sx={{
+                                    bgcolor: (theme) => theme.palette.primary.light,
+                                    width: '120px',
+                                }}
+                                label="Mapped"
+                                color="info"
+                                onDelete={() => unMappingModalRef?.current?.openModal()}
+                                deleteIcon={rollBackComp()}
+                            />
+                        }
+                    />
+                    <ConfirmModal
+                        ref={unMappingModalRef}
+                        confirmMessage="Are you sure you want to unmapping study?"
+                        onConfirmCallback={onUnMapping}
+                    />
+                </>
+            )}
         </Stack>
     );
 });

@@ -79,6 +79,19 @@ export const rootTheme = createTheme({
                 },
             },
         },
+        MuiChip: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
+                },
+                sizeMedium: {
+                    padding: '8px',
+                    fontSize: '0.8125rem',
+                    color: '#fff',
+                    fontWeight: 700,
+                },
+            },
+        },
         MuiContainer: {
             styleOverrides: {
                 root: {
@@ -226,28 +239,11 @@ export const rootTheme = createTheme({
     palette: {
         mode: 'dark',
         primary: {
-            // main: '#2196f3',
             main: '#5090D3',
-            light: 'rgb(77, 171, 245)',
-            dark: 'rgb(23, 105, 170)',
             contrastText: '#fff',
         },
         divider: '#132F4C',
-        // primaryDark: {
-        //     '50': '#E2EDF8',
-        //     '100': '#CEE0F3',
-        //     '200': '#91B9E3',
-        //     '300': '#5090D3',
-        //     '400': '#265D97',
-        //     '500': '#1E4976',
-        //     '600': '#173A5E',
-        //     '700': '#132F4C',
-        //     '800': '#001E3C',
-        //     '900': '#0A1929',
-        //     main: '#5090D3',
-        // },
         background: {
-            // default: '#001E3C',
             default: 'rgb(62 ,66 ,94)',
             paper: '#0A1929',
         },
@@ -319,7 +315,7 @@ export const rootTheme = createTheme({
             '700': '#AB6800',
             '800': '#8C5800',
             '900': '#5A3600',
-            main: '#AB6800',
+            main: '#DEA500',
             light: '#FFDC48',
             dark: '#AB6800',
             contrastText: '#fff',
