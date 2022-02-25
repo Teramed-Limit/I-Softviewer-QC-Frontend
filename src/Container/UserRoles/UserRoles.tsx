@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
-import { Checkbox, FormControlLabel } from '@mui/material';
+import { Divider } from '@mui/material';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import Switch from '@mui/material/Switch';
 import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
 import { AxiosResponse } from 'axios';
 import { map } from 'rxjs/operators';
@@ -104,26 +109,35 @@ const UserRoles = () => {
                 onSelectionChanged={onSelectionChanged}
             />
             {/* Function List */}
-            <h2>Function List</h2>
             <div className={classes.functionContent}>
-                {selectedRoleFunctionList.map((data) => {
-                    return (
-                        <div key={data.functionName} className={classes.functionList}>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox
+                <List
+                    sx={{ width: '100%', bgcolor: 'background.paper', borderRadius: '8px' }}
+                    subheader={<ListSubheader sx={{ borderRadius: '8px' }}>Functions</ListSubheader>}
+                >
+                    {selectedRoleFunctionList.map((data) => {
+                        return (
+                            <>
+                                <ListItem>
+                                    <ListItemText primary={data.functionName} secondary={data.description} />
+                                    <Switch
                                         disabled={selectedRole === ''}
-                                        size="small"
-                                        checked={data.checked}
-                                        name={data.functionName}
+                                        edge="end"
                                         onChange={(e) => onFunctionChecked(e, data, selectedRole)}
+                                        checked={data.checked}
                                     />
-                                }
-                                label={data.functionName}
-                            />
-                        </div>
-                    );
-                })}
+                                </ListItem>
+                                <Divider
+                                    sx={{
+                                        marginLeft: '0',
+                                        borderColor: 'rgb(88 86 82 / 50%)',
+                                    }}
+                                    variant="inset"
+                                    component="li"
+                                />
+                            </>
+                        );
+                    })}
+                </List>
             </div>
         </div>
     );

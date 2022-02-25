@@ -1,7 +1,7 @@
 .container {
     display: flex;
-    flex-direction: column;
-    height: calc(100% - 49px);
+    flex-direction: row;
+    height: calc(100% - 60px);
     overflow: auto;
     padding: 0 20px;
     margin-top: 8px;
@@ -10,13 +10,11 @@
 .functionContent {
     display: flex;
     flex-direction: row;
-    max-height: 300px;
     flex-wrap: wrap;
-    padding-left: 36px;
-    padding-right: 36px;
-
-    .functionList {
-        flex: 1 1 33%;
-        max-width: 33.3%;
-    }
+    margin-top: 32px;
+    padding-left: 12px;
+    padding-right: 12px;
+    max-height: 100%;
+    overflow: auto;
+    flex: 1 1 100%;
 }
