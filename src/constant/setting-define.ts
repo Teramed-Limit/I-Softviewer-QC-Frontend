@@ -258,7 +258,6 @@ export const define = {
     userAccount: {
         colDef: [
             { field: 'userID', headerName: 'User Id', width: 200 },
-            { field: 'userPassword', headerName: 'Password', width: 200 },
             { field: 'doctorCName', headerName: 'Doctor CName', width: 200 },
             { field: 'doctorEName', headerName: 'Doctor EName', width: 200 },
             { field: 'roleList', headerName: 'Role Group', width: 200, cellRenderer: 'chipRenderer', flex: 1 },
@@ -274,7 +273,6 @@ export const define = {
                             readOnly: true,
                             validation: { type: 'Required' },
                         },
-                        { field: 'userPassword', label: 'Password', type: 'Text', validation: { type: 'Required' } },
                         { field: 'doctorCName', label: 'Doctor CName', type: 'Text' },
                         { field: 'doctorEName', label: 'Doctor EName', type: 'Text' },
                         {
