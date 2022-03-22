@@ -71,7 +71,7 @@ const NewStudy = () => {
         history.push({
             pathname: '/newStudy/viewer',
             state: {
-                patientId: selectedRow.episodeNo,
+                patientId: selectedRow.documentNumber,
                 patientName: selectedRow.nameEng,
                 otherPatientName: selectedRow.nameChinese,
                 birthdate: selectedRow.birthdate,
