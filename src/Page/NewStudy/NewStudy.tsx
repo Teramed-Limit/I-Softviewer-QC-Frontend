@@ -10,6 +10,7 @@ import { useSetRecoilState } from 'recoil';
 
 import { http } from '../../api/axios';
 import { atomNotification } from '../../atoms/notification';
+import FreeCreateSelection from '../../Components/FreeCreateSelection/FreeCreateSelection';
 import GridTable from '../../Components/GridTable/GridTable';
 import { define } from '../../constant/setting-define';
 import { GenerateStudyUniqueId } from '../../interface/generate-study-uniqueId';
@@ -21,6 +22,7 @@ import classes from './NewStudy.module.scss';
 const NewStudy = () => {
     const setNotification = useSetRecoilState(atomNotification);
     const history = useHistory<CreateStudyParams>();
+
     const [rowData, setRowData] = useState<HISData[]>([]);
     const [selectedRow, setSelectedRow] = useState<HISData | null>(null);
     const [episodeNo, setEpisodeNo] = useState('');
@@ -88,12 +90,18 @@ const NewStudy = () => {
             <div className={classes.content}>
                 <div className={classes.header}>
                     <TextField
+                        sx={{ minWidth: 210 }}
                         label="EpisodeNo"
                         value={episodeNo}
                         size="small"
                         onChange={(e) => setEpisodeNo(e.target.value)}
                     />
-                    <TextField label="Dept" size="small" value={dept} onChange={(e) => setDept(e.target.value)} />
+                    <FreeCreateSelection
+                        label="Operation Location"
+                        type="Dept"
+                        value={dept}
+                        onChange={(value) => setDept(value)}
+                    />
                     <TextField disabled label="Accession No." size="small" value={accessionNum} />
                     <Button variant="contained" onClick={() => queryHISData()}>
                         Query

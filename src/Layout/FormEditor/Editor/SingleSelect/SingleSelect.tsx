@@ -6,18 +6,6 @@ import { useSelectOptions } from '../../../../hooks/useSelectOptions';
 import { SelectField } from '../../../../interface/form-define';
 import { ValidationMessage } from '../validationMapper';
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const menuProps: Partial<MenuProps> = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-    transitionDuration: 0,
-};
-
 interface Props {
     field: SelectField;
     value: string;
@@ -30,7 +18,7 @@ interface Props {
 const SingleSelect = ({ field, value, autoFocus, isValid, onValueChanged, readOnly = false }: Props) => {
     const [isDirty, setDirty] = useState(false);
     const [validationMsg] = useState(field.validation ? `- ${ValidationMessage[field.validation?.type]}` : '');
-    const { options } = useSelectOptions(field.optionSource.type, field.optionSource.source);
+    const { menuProps, options } = useSelectOptions(field.optionSource.type, field.optionSource.source);
 
     const hasSetDefaultOptionsWhenFirstRender = useRef(false);
 

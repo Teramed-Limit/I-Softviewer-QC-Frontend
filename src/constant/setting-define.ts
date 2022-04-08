@@ -258,8 +258,8 @@ export const define = {
     userAccount: {
         colDef: [
             { field: 'userID', headerName: 'User Id', width: 200 },
-            { field: 'doctorCName', headerName: 'Doctor CName', width: 200 },
-            { field: 'doctorEName', headerName: 'Doctor EName', width: 200 },
+            { field: 'doctorCName', headerName: 'User CName', width: 200 },
+            { field: 'doctorEName', headerName: 'User EName', width: 200 },
             { field: 'roleList', headerName: 'Role Group', width: 200, cellRenderer: 'chipRenderer', flex: 1 },
         ],
         formDef: {
@@ -273,8 +273,8 @@ export const define = {
                             readOnly: true,
                             validation: { type: 'Required' },
                         },
-                        { field: 'doctorCName', label: 'Doctor CName', type: 'Text' },
-                        { field: 'doctorEName', label: 'Doctor EName', type: 'Text' },
+                        { field: 'doctorCName', label: 'User CName', type: 'Text' },
+                        { field: 'doctorEName', label: 'User EName', type: 'Text' },
                         {
                             field: 'roleList',
                             label: 'Role Group',
@@ -295,13 +295,13 @@ export const define = {
         colDef: [
             { field: 'cumcNo', headerName: 'Cumc No', width: 120 },
             { field: 'episodeNo', headerName: 'EpisodeNo', width: 180 },
-            { field: 'documentNumber', headerName: 'Document Number', width: 160 },
+            { field: 'documentNumber', headerName: 'Document Number', width: 200 },
             { field: 'nameChinese', headerName: 'Chinese Name', width: 160 },
             { field: 'nameEng', headerName: 'Eng Name', width: 160 },
             { field: 'birthdate', headerName: 'Birthdate', width: 120 },
             // { field: 'admissionDate', headerName: 'admissionDate', width: 120 },
             { field: 'documentType', headerName: 'Document Type', width: 180 },
-            { field: 'dept', headerName: 'Dept', width: 120 },
+            { field: 'dept', headerName: 'Current Location', width: 200 },
         ],
     },
     patientStudy: {
