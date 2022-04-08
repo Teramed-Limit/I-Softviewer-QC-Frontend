@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { MenuItem, MenuProps, TextField } from '@mui/material';
+import { MenuItem, TextField } from '@mui/material';
 
 import { useSelectOptions } from '../../../../hooks/useSelectOptions';
 import { SelectField } from '../../../../interface/form-define';

@@ -5,8 +5,8 @@ import { concatMap, Observable, of, tap } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { http } from '../api/axios';
-import { StaticOptionMapper } from '../services/StaticOptionService';
 import { Option } from '../interface/options';
+import { StaticOptionMapper } from '../services/StaticOptionService';
 
 export interface OptionRetriever {
     retrieve: (source) => Observable<any[]>;
