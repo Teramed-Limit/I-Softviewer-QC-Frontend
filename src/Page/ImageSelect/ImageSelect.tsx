@@ -132,14 +132,9 @@ const ImageSelect = () => {
             imageInfos: [] as ImageBufferAndData[],
         };
 
-        datasetList.forEach(({ dcmDataset, buffer }) => {
-            const studyInstanceUID = dcmDataset.string('x0020000d');
-            const seriesInstanceUID = dcmDataset.string('x0020000e');
-            const sopInstanceUID = dcmDataset.string('x00080018');
+        datasetList.forEach(({ dcmDataset, buffer }, index) => {
             const sopClassUID = dcmDataset.string('x00080016');
             const modality = dcmDataset.string('x00080060');
-            // const windowWidth = dcmDataset.string('x00281051');
-            // const windowCenter = dcmDataset.string('x00281050');
 
             const addInstanceInfo = (key, value, list) => {
                 const uid = R.path([key], value);
@@ -150,8 +145,8 @@ const ImageSelect = () => {
             };
 
             const imageInfo: ImageBufferAndData = {
-                sopInstanceUID,
-                seriesInstanceUID,
+                sopInstanceUID: `${location.state.seriesInstanceUID}.${index + 1}`,
+                seriesInstanceUID: location.state.seriesInstanceUID,
                 sopClassUID,
                 buffer,
                 type: BufferType['.dcm'],
@@ -159,8 +154,8 @@ const ImageSelect = () => {
             addInstanceInfo('sopInstanceUID', imageInfo, createStudy.imageInfos);
 
             const seriesInfo: SeriesInfo = {
-                seriesInstanceUID,
-                studyInstanceUID,
+                seriesInstanceUID: location.state.seriesInstanceUID,
+                studyInstanceUID: location.state.studyInstanceUID,
             };
             addInstanceInfo('seriesInstanceUID', seriesInfo, createStudy.seriesInfo);
 
@@ -168,7 +163,7 @@ const ImageSelect = () => {
                 patientId: location.state.patientId,
                 accessionNumber: location.state.accessionNum,
                 modality,
-                studyInstanceUID,
+                studyInstanceUID: location.state.studyInstanceUID,
             };
             addInstanceInfo('studyInstanceUID', studyInfo, createStudy.studyInfo);
         });
