@@ -8,15 +8,24 @@ interface Props {
     size?: 'small' | 'medium' | 'large';
     variant?: 'text' | 'outlined' | 'contained';
     accept?: string;
+    disabled?: boolean;
     onChange: (e) => void;
 }
 
-const FileSelect = ({ label = 'select', size = 'small', accept = '*', variant = 'contained', onChange }: Props) => {
+const FileSelect = ({
+    label = 'select',
+    size = 'small',
+    accept = '*',
+    variant = 'contained',
+    disabled = false,
+    onChange,
+}: Props) => {
     const fileInput = React.useRef<HTMLInputElement>(null);
 
     return (
         <>
             <Button
+                disabled={disabled}
                 variant={variant}
                 size={size}
                 startIcon={<ImFolderOpen />}

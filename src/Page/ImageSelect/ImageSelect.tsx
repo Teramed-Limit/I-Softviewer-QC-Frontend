@@ -6,7 +6,9 @@ import ContactPageIcon from '@mui/icons-material/ContactPage';
 import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
 import WcIcon from '@mui/icons-material/Wc';
-import { Button, Stack } from '@mui/material';
+import { DatePicker, LocalizationProvider } from '@mui/lab';
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
+import { Button, Stack, TextField, Tooltip } from '@mui/material';
 import Box from '@mui/material/Box';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { DataSet } from 'dicom-parser';
@@ -41,6 +43,8 @@ const ImageSelect = () => {
     const location = useLocation<CreateStudyParams>();
     const history = useHistory();
     const [imageIds, setImageIds] = useState<string[]>([]);
+    const [studyDate, setStudyDate] = useState<Date>(new Date());
+    const [isDateError, setIsDateError] = useState<boolean>(false);
     const [createStudyData, setCreateStudyData] = useState<CreateAndModifyStudy<ImageBufferAndData>>({
         patientInfo: undefined,
         imageInfos: [],
@@ -97,7 +101,7 @@ const ImageSelect = () => {
                     modality: 'SC',
                     accessionNumber: location.state.accessionNum,
                     studyInstanceUID: location.state.studyInstanceUID,
-                    studyDate: dateToStr(new Date()),
+                    studyDate: dateToStr(studyDate),
                 },
             ],
             seriesInfo: [
@@ -162,8 +166,9 @@ const ImageSelect = () => {
             const studyInfo: StudyInfo = {
                 patientId: location.state.patientId,
                 accessionNumber: location.state.accessionNum,
-                modality,
                 studyInstanceUID: location.state.studyInstanceUID,
+                studyDate: dateToStr(studyDate),
+                modality,
             };
             addInstanceInfo('studyInstanceUID', studyInfo, createStudy.studyInfo);
         });
@@ -177,36 +182,85 @@ const ImageSelect = () => {
             <Box sx={{ display: 'flex', alignContent: 'space-between', width: '100%', margin: '8px 0' }}>
                 <Stack direction="column" spacing={1} sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Stack direction="row" spacing={2}>
-                        <span className={classes.iconText}>
-                            <ContactPageIcon /> {location.state?.patientId}
-                        </span>
-                        <span className={classes.iconText}>
-                            <AiOutlineFieldNumber style={{ fontSize: '24px' }} /> {location.state?.accessionNum}
-                        </span>
+                        <Tooltip title="Patient Id">
+                            <span className={classes.iconText}>
+                                <ContactPageIcon /> {location.state?.patientId}
+                            </span>
+                        </Tooltip>
+                        <Tooltip title="Accession Number">
+                            <span className={classes.iconText}>
+                                <AiOutlineFieldNumber style={{ fontSize: '24px' }} /> {location.state?.accessionNum}
+                            </span>
+                        </Tooltip>
+                        <Tooltip title="Study Date">
+                            <span className={classes.iconText}>
+                                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                        views={['day']}
+                                        value={studyDate}
+                                        onChange={(newValue) => {
+                                            if (newValue !== null) setStudyDate(newValue);
+                                        }}
+                                        InputProps={{
+                                            classes: { root: classes.rowReverse },
+                                        }}
+                                        onError={(reason) => {
+                                            if (reason) setIsDateError(true);
+                                            else setIsDateError(false);
+                                        }}
+                                        renderInput={(params) => <TextField {...params} variant="standard" />}
+                                    />
+                                </LocalizationProvider>
+                            </span>
+                        </Tooltip>
                     </Stack>
                     <Stack direction="row" spacing={2}>
-                        <span className={classes.iconText}>
-                            <AccountCircleIcon /> {location.state?.patientName}
-                        </span>
-                        <span className={classes.iconText}>
-                            <CakeIcon /> {location.state?.birthdate}
-                        </span>
-                        <span className={classes.iconText}>
-                            <WcIcon /> {location.state?.sex}
-                        </span>
+                        <Tooltip title="Patient Name">
+                            <span className={classes.iconText}>
+                                <AccountCircleIcon /> {location.state?.patientName}
+                            </span>
+                        </Tooltip>
+                        <Tooltip title="Birth">
+                            <span className={classes.iconText}>
+                                <CakeIcon /> {location.state?.birthdate}
+                            </span>
+                        </Tooltip>
+                        <Tooltip title="Sex">
+                            <span className={classes.iconText}>
+                                <WcIcon /> {location.state?.sex}
+                            </span>
+                        </Tooltip>
                     </Stack>
                 </Stack>
                 <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'end', width: '100%' }}>
                     <FileSelect
+                        disabled={isDateError}
                         label="Open Image Files"
                         accept="image/bmp, image/png, image/jpeg"
                         onChange={onAddImageFile}
                     />
-                    <FileSelect label="Open DICOM Files" accept=".dcm" onChange={onAddDicomFile} />
-                    <Button variant="contained" color="success" onClick={onSaveToOwnPacs} startIcon={<SaveIcon />}>
+                    <FileSelect
+                        disabled={isDateError}
+                        label="Open DICOM Files"
+                        accept=".dcm"
+                        onChange={onAddDicomFile}
+                    />
+                    <Button
+                        disabled={isDateError}
+                        variant="contained"
+                        color="success"
+                        onClick={onSaveToOwnPacs}
+                        startIcon={<SaveIcon />}
+                    >
                         Save Order
                     </Button>
-                    <Button variant="contained" color="error" onClick={onSaveToAllEnablePacs} startIcon={<SendIcon />}>
+                    <Button
+                        disabled={isDateError}
+                        variant="contained"
+                        color="error"
+                        onClick={onSaveToAllEnablePacs}
+                        startIcon={<SendIcon />}
+                    >
                         Send DICOM
                     </Button>
                 </Stack>

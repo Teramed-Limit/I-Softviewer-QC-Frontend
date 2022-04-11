@@ -1,9 +1,18 @@
 .iconText {
     display: flex;
     align-items: center;
-    min-width: 160px;
+    min-width: 200px;
 
     svg {
         margin-right: 3px;
+    }
+}
+
+.rowReverse {
+    flex-direction: row-reverse;
+
+    button {
+        padding: 0 !important;
+        margin: 0 0 0 -8px !important;
     }
 }
