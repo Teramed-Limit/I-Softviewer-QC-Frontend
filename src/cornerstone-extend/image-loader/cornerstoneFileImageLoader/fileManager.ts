@@ -2,6 +2,10 @@ import { generateUUID } from '../../../utils/general';
 
 let files: Blob[] = [];
 
+function init() {
+    files = [];
+}
+
 function setSelectedFiles(selectFiles: FileList) {
     files = [];
     const imageIds: string[] = [];
@@ -13,11 +17,18 @@ function setSelectedFiles(selectFiles: FileList) {
     return imageIds;
 }
 
+function setFile(file: File | undefined, index: number) {
+    files.push(file as Blob);
+    return `imagefile:${index}_${generateUUID()}`;
+}
+
 function get(index) {
     return files[index];
 }
 
 export default {
+    init,
     setSelectedFiles,
+    setFile,
     get,
 };

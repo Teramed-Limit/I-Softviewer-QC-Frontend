@@ -56,8 +56,8 @@ export interface ImageInfo {
 }
 
 export interface ImageBufferAndData extends ImageInfo {
-    buffer?: any;
-    type?: number;
+    buffer: any;
+    type: number;
 }
 
 export interface CreateAndModifyStudy<T extends ImageInfo> {
@@ -65,5 +65,4 @@ export interface CreateAndModifyStudy<T extends ImageInfo> {
     studyInfo?: StudyInfo[];
     seriesInfo?: SeriesInfo[];
     imageInfos?: T[];
-    sendOtherEnableNodes: boolean;
 }

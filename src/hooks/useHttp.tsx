@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
 import { AxiosError, AxiosResponse } from 'axios';
 import { AxiosObservable } from 'axios-observable/lib/axios-observable.interface';
@@ -9,7 +9,6 @@ import { atomNotification } from '../atoms/notification';
 import { MessageType } from '../interface/notification';
 
 export interface HttpRequestOptions<T> {
-    callOnComponentLoad?: boolean;
     showNotification?: boolean;
     whenSuccess?: (data: T) => void;
     whenError?: (err: AxiosError) => void;
@@ -17,14 +16,11 @@ export interface HttpRequestOptions<T> {
 }
 
 const defaultOptions = {
-    callOnComponentLoad: false,
     showNotification: true,
 };
 
 export const useHttp = <T extends any>(
-    request$: AxiosObservable<T>,
     options: HttpRequestOptions<T> = {
-        callOnComponentLoad: false,
         showNotification: true,
     },
 ) => {
@@ -32,9 +28,8 @@ export const useHttp = <T extends any>(
     const setLoading = useSetRecoilState(loading);
     const [response, setResponse] = useState<T>();
     const [requestOptions] = useState({ ...defaultOptions, ...options });
-    const loaded = useRef(false);
 
-    const requestFun = useCallback(() => {
+    const httpReq = (request$: AxiosObservable<T>) => {
         setLoading(true);
         const subscription = request$.subscribe({
             next: (res: AxiosResponse) => {
@@ -60,14 +55,7 @@ export const useHttp = <T extends any>(
         return () => {
             subscription.unsubscribe();
         };
-    }, [request$, requestOptions, setLoading, setNotification]);
+    };
 
-    useEffect(() => {
-        if (!requestOptions?.callOnComponentLoad) return;
-        if (loaded.current) return;
-        loaded.current = true;
-        requestFun();
-    }, [requestOptions, requestFun]);
-
-    return { response, requestFun };
+    return { response, httpReq };
 };
