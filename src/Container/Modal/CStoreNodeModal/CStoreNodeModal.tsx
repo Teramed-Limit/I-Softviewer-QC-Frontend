@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { forwardRef, useEffect } from 'react';
+import { forwardRef, useEffect, useRef } from 'react';
 
 import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 import { AxiosError } from 'axios';
@@ -14,8 +14,10 @@ import { DicomOperationNode } from '../../../interface/dicom-node';
 import { MessageType } from '../../../interface/notification';
 import { StudyQueryData } from '../../../interface/study-query-data';
 import BaseModal from '../../BaseModal/BaseModal';
+import ConfirmModal from '../ConfirmModal/ConfirmModal';
 
 type CStoreNodeModalProps = { selectedRow: StudyQueryData[] };
+type MessageModalHandle = React.ElementRef<typeof ConfirmModal>;
 
 const CStoreNodeModal = forwardRef<BaseModalHandle, CStoreNodeModalProps>((props, ref) => {
     const setNotification = useSetRecoilState(atomNotification);
@@ -23,11 +25,16 @@ const CStoreNodeModal = forwardRef<BaseModalHandle, CStoreNodeModalProps>((props
     const { modalOpen, setModalOpen } = useModal(ref);
     const [nodeName, setNodeName] = React.useState('');
     const [nodeOptions, setNodeOptions] = React.useState<DicomOperationNode[]>([]);
+    const messageModalRef = useRef<MessageModalHandle>(null);
 
     const onCStore = () => {
+        if (!nodeName) return;
         setLoading(true);
         const observableList = props.selectedRow.map((selectedRow) => {
-            return http.post(`storeDcmService/studyInstanceUID/${selectedRow.studyInstanceUID}/sendTo/${nodeName}`);
+            return http.post(`storeDcmService/studyInstanceUID/${selectedRow.studyInstanceUID}`, {
+                nodeName,
+                createNewStudy: true,
+            });
         });
 
         forkJoin(observableList).subscribe({
@@ -69,7 +76,7 @@ const CStoreNodeModal = forwardRef<BaseModalHandle, CStoreNodeModalProps>((props
             setOpen={setModalOpen}
             footer={{
                 actionLabel: 'Send',
-                actionHandler: onCStore,
+                actionHandler: () => messageModalRef?.current?.openModal(),
             }}
         >
             <FormControl fullWidth size="small" margin="dense" variant="outlined">
@@ -83,6 +90,11 @@ const CStoreNodeModal = forwardRef<BaseModalHandle, CStoreNodeModalProps>((props
                     ))}
                 </Select>
             </FormControl>
+            <ConfirmModal
+                ref={messageModalRef}
+                confirmMessage="Anything submitted to VNA will not be able to be edited or deleted. Are you sure to continue?"
+                onConfirmCallback={onCStore}
+            />
         </BaseModal>
     );
 });

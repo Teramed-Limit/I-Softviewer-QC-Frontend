@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import CakeIcon from '@mui/icons-material/Cake';
@@ -18,12 +18,15 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { http } from '../../api/axios';
 import DicomViewer from '../../Components/DicomViewer/DicomViewer';
 import FileSelect from '../../Components/FileSelect/FileSelect';
+import ConfirmModal from '../../Container/Modal/ConfirmModal/ConfirmModal';
 import cornerstoneFileImageLoader from '../../cornerstone-extend/image-loader/cornerstoneFileImageLoader';
 import { DicomFile, useDicomImport } from '../../hooks/useDicomImport';
 import { useHttp } from '../../hooks/useHttp';
 import { CreateAndModifyStudy, ImageBufferAndData } from '../../interface/create-and-modify-study-params';
 import { CreateStudyParams } from '../../interface/study-params';
 import classes from './ImageSelect.module.scss';
+
+type MessageModalHandle = React.ElementRef<typeof ConfirmModal>;
 
 const ImageSelect = () => {
     const location = useLocation<CreateStudyParams>();
@@ -34,6 +37,7 @@ const ImageSelect = () => {
     const [studyDate, setStudyDate] = useState<Date>(new Date());
     const [isDateError, setIsDateError] = useState<boolean>(false);
     const [imageFileList, setImageFileList] = useState<DicomFile[]>([]);
+    const messageModalRef = useRef<MessageModalHandle>(null);
 
     useEffect(() => {
         if (!location.state) history.push('/');
@@ -177,7 +181,7 @@ const ImageSelect = () => {
                         onChange={onAddDicomFile}
                     />
                     <Button
-                        disabled={isDateError}
+                        disabled={isDateError || imageFileList.length === 0}
                         variant="contained"
                         color="success"
                         onClick={onSaveToOwnPacs}
@@ -185,15 +189,22 @@ const ImageSelect = () => {
                     >
                         Save Order
                     </Button>
-                    <Button
-                        disabled={isDateError}
-                        variant="contained"
-                        color="error"
-                        onClick={onSaveToAllEnablePacs}
-                        startIcon={<SendIcon />}
-                    >
-                        Send DICOM
-                    </Button>
+                    <>
+                        <Button
+                            disabled={isDateError || imageFileList.length === 0}
+                            variant="contained"
+                            color="error"
+                            onClick={() => messageModalRef?.current?.openModal()}
+                            startIcon={<SendIcon />}
+                        >
+                            Send DICOM
+                        </Button>
+                        <ConfirmModal
+                            ref={messageModalRef}
+                            confirmMessage="Anything submitted to VNA will not be able to be edited or deleted. Are you sure to continue?"
+                            onConfirmCallback={onSaveToAllEnablePacs}
+                        />
+                    </>
                 </Stack>
             </Box>
             <DicomViewer imageIds={imageIds} />
