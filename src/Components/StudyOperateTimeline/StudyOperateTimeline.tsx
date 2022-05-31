@@ -105,7 +105,7 @@ const StudyOperateTimeline = ({
                                         <TimelineConnector />
                                     </TimelineSeparator>
                                     <TimelineContent sx={{ py: '12px', px: 2 }}>
-                                        <Typography variant="h6" component="div">
+                                        <Typography sx={{ color: '#ffb860' }} variant="h2" component="div">
                                             {operationRecord.operationName}
                                         </Typography>
                                         {operationRecord.description.length > 120 ? (
@@ -137,7 +137,9 @@ const StudyOperateTimeline = ({
                                                 </Drawer>
                                             </>
                                         ) : (
-                                            <Typography>{operationRecord.description}</Typography>
+                                            <Typography variant="body1" component="div">
+                                                {operationRecord.description}
+                                            </Typography>
                                         )}
                                     </TimelineContent>
                                 </TimelineItem>

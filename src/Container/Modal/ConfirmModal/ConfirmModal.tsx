@@ -27,7 +27,7 @@ const ConfirmModal = forwardRef<BaseModalHandle, ConfirmModalProps>((props, ref)
                 actionHandler: onConfirm,
             }}
         >
-            <Typography variant="h6" gutterBottom component="div">
+            <Typography variant="h3" gutterBottom component="div">
                 {props.confirmMessage}
             </Typography>
         </BaseModal>

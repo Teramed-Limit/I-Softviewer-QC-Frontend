@@ -62,9 +62,9 @@ const AdvancedQualityControl = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex', height: '100%' }}>
-            <Stack sx={{ display: 'flex', flexDirection: 'column', height: '100%', flex: '1 1 50%' }}>
-                <Typography className={classes.header} color="inherit" variant="h6" component="div">
+        <Box sx={{ display: 'flex', height: '100%', p: '8px' }}>
+            <Stack sx={{ display: 'flex', flexDirection: 'column', height: '100%', flex: '1 1 35%' }}>
+                <Typography className={classes.header} variant="subtitle1" component="div">
                     Study information
                 </Typography>
                 {fetchTreeViewLoading ? (
@@ -79,10 +79,10 @@ const AdvancedQualityControl = () => {
                     />
                 )}
             </Stack>
-            <Stack sx={{ display: 'flex', flexDirection: 'column', height: '100%', flex: '1 1 50%', ml: '16px' }}>
+            <Stack sx={{ display: 'flex', flexDirection: 'column', height: '100%', flex: '1 1 65%', ml: '16px' }}>
                 <div className={classes.body}>
                     <div>
-                        <Typography className={classes.header} color="inherit" variant="h6" component="div">
+                        <Typography className={classes.header} variant="subtitle1" component="div">
                             Image tags
                             <FormControlLabel
                                 label="Only Editable"
@@ -118,8 +118,7 @@ const AdvancedQualityControl = () => {
                     <Typography
                         sx={{ marginTop: '8px' }}
                         className={classes.header}
-                        color="inherit"
-                        variant="h6"
+                        variant="subtitle1"
                         component="div"
                     >
                         Image thumbnail

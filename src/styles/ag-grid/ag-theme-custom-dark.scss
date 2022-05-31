@@ -4,17 +4,43 @@
 .ag-theme-dark {
     @include ag-theme-alpine-dark(
         (
-            borders: true,
-            border-radius: 6px,
             border-color: transparent,
-            font-size: 14px,
-            header-foreground-color: #e09247,
-            background-color: #181e3b,
-            header-background-color: #112b47,
+            background-color: #102740,
+            foreground-color: #b6b6b6,
+            secondary-foreground-color: ag-derived(foreground-color),
+            data-color: ag-derived(foreground-color),
+            disabled-foreground-color: ag-derived(foreground-color, $opacity: 0.5),
+            header-foreground-color: #ffb860,
+            header-background-color: #10335b,
+            header-height: 61px,
+            row-height: 61px,
+            selected-row-background-color: #1e3e62,
+            row-hover-color: ag-derived(background-color, $mix: foreground-color 25%),
+            odd-row-background-color: null,
+            header-column-resize-handle-height: 50%,
+            header-column-resize-handle-width: 4px,
+            header-column-resize-handle-color: #494949,
         )
     );
 
     .ag-root-wrapper {
-        border-radius: 20px;
+    }
+
+    .ag-header-cell-text {
+        font-family: 'Source Sans 3', sans-serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 25px;
+        color: #ffb860;
+    }
+
+    .ag-cell {
+        font-family: 'Noto Sans', serif;
+        font-style: normal;
+        font-weight: 700;
+        font-size: 18px;
+        line-height: 25px;
+        padding: 18px;
     }
 }

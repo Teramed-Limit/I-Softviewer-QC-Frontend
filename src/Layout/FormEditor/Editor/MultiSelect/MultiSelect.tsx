@@ -47,7 +47,7 @@ const MultiSelect = ({ field, value, autoFocus, onValueChanged, readOnly = false
     };
 
     return (
-        <FormControl fullWidth variant="outlined" className={classes.formControl}>
+        <FormControl fullWidth variant="outlined">
             <InputLabel className={classes.label}>{field.label}</InputLabel>
             <Select
                 label={field.label}
@@ -62,7 +62,7 @@ const MultiSelect = ({ field, value, autoFocus, onValueChanged, readOnly = false
                 renderValue={(selected: string[]) => (
                     <div className={classes.chips}>
                         {selected.map((item) => (
-                            <Chip size="small" key={item} label={item} className={classes.chip} />
+                            <Chip size="medium" key={item} label={item} className={classes.chip} />
                         ))}
                     </div>
                 )}

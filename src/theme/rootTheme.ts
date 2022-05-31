@@ -1,4 +1,40 @@
+import React from 'react';
+
+import { lighten } from '@mui/material';
 import { createTheme } from '@mui/material/styles';
+
+declare module '@mui/material/styles/createPalette' {
+    interface Palette {
+        neutral: Palette['primary'];
+    }
+    interface PaletteOptions {
+        neutral: PaletteOptions['primary'];
+    }
+}
+
+declare module '@mui/material/styles' {
+    interface TypographyVariants {
+        body1Bold: React.CSSProperties;
+        body3Bold: React.CSSProperties;
+        button2: React.CSSProperties;
+    }
+
+    // allow configuration using `createTheme`
+    interface TypographyVariantsOptions {
+        body1Bold?: React.CSSProperties;
+        body3Bold?: React.CSSProperties;
+        button2?: React.CSSProperties;
+    }
+}
+
+// Update the Typography's variant prop options
+declare module '@mui/material/Typography' {
+    interface TypographyPropsVariantOverrides {
+        body1Bold: true;
+        body3Bold: true;
+        button2: true;
+    }
+}
 
 export const rootTheme = createTheme({
     breakpoints: {
@@ -14,6 +50,42 @@ export const rootTheme = createTheme({
     },
     direction: 'ltr',
     components: {
+        MuiFormControl: {
+            styleOverrides: {
+                root: {
+                    background: '#1E3E62',
+                    '& label': {
+                        fontWeight: 700,
+                        background: 'linear-gradient(143.56deg, #91EAE4 -24.45%, #86A8E7 41.76%, #7F7FD5 110.97%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text',
+                    },
+                    '& label.Mui-focused': {
+                        WebkitTextFillColor: '#DBDBDB',
+                    },
+                    '& label.MuiInputLabel-shrink': {
+                        WebkitTextFillColor: '#DBDBDB',
+                    },
+                    '& input': {
+                        color: '#DBDBDB',
+                    },
+                    '& .MuiOutlinedInput-root': {
+                        '& fieldset': {
+                            borderWidth: 2,
+                            borderColor: '#494949',
+                        },
+                        '&:hover fieldset': {
+                            borderColor: lighten('#494949', 0.5),
+                        },
+                        '&.Mui-focused fieldset': {
+                            borderColor: '#DBDBDB',
+                            borderLeftWidth: '6px',
+                        },
+                    },
+                },
+            },
+        },
         MuiInput: {
             defaultProps: {
                 size: 'small',
@@ -24,31 +96,7 @@ export const rootTheme = createTheme({
                 size: 'small',
             },
             styleOverrides: {
-                root: {
-                    // color: 'white',
-                    // 'label + &': {
-                    //     marginTop: '8px',
-                    // },
-                    // '& .Mui-focused': {
-                    //     color: 'white !important',
-                    // },
-                    '& input + fieldset': {
-                        // borderColor: 'rgb(9,68,179)',
-                        borderWidth: 2,
-                    },
-                    '& fieldset': {
-                        // borderColor: 'rgb(9,68,179)',
-                        borderWidth: 2,
-                    },
-                    // '& input:hover + fieldset': {
-                    //     borderColor: 'rgb(160,174,192)',
-                    // },
-                    '& input:focus + fieldset': {
-                        // borderColor: 'rgb(160,174,192) !important',
-                        borderLeftWidth: '6px !important',
-                        padding: '4px !important',
-                    },
-                },
+                root: {},
             },
         },
         MuiButtonBase: {
@@ -59,21 +107,12 @@ export const rootTheme = createTheme({
         MuiButton: {
             defaultProps: {
                 disableElevation: true,
-                size: 'small',
+                variant: 'contained',
             },
             styleOverrides: {
-                root: {
-                    textTransform: 'none',
-                },
-                sizeLarge: {
-                    padding: '1rem 1.25rem',
-                    fontSize: '1rem',
-                    lineHeight: 1.3125,
-                    letterSpacing: 0,
-                    fontFamily:
-                        '"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
-                    fontWeight: 700,
-                },
+                sizeSmall: { height: '44px' },
+                sizeMedium: { height: '56px' },
+                sizeLarge: { height: '68px' },
                 containedPrimary: {
                     color: '#fff',
                 },
@@ -83,13 +122,12 @@ export const rootTheme = createTheme({
             styleOverrides: {
                 root: {
                     textTransform: 'none',
-                },
-                sizeMedium: {
                     padding: '8px',
-                    fontSize: '0.8125rem',
                     color: '#fff',
                     fontWeight: 700,
                 },
+                sizeSmall: { fontSize: '14px' },
+                sizeMedium: { fontSize: '18px' },
             },
         },
         MuiContainer: {
@@ -244,7 +282,7 @@ export const rootTheme = createTheme({
         },
         divider: '#132F4C',
         background: {
-            default: 'rgb(62 ,66 ,94)',
+            default: '#0C4079',
             paper: '#0A1929',
         },
         common: {
@@ -332,6 +370,10 @@ export const rootTheme = createTheme({
             dark: '#0288d1',
             contrastText: 'rgba(0, 0, 0, 0.87)',
         },
+        neutral: {
+            main: '#ffb860',
+            contrastText: '#fff',
+        },
         contrastThreshold: 3,
         tonalOffset: 0.2,
         action: {
@@ -348,92 +390,91 @@ export const rootTheme = createTheme({
             activatedOpacity: 0.24,
         },
     },
-    // shape: {
-    //     borderRadius: 10,
-    // },
     unstable_strictMode: true,
     typography: {
-        fontFamily:
-            '"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
+        fontFamily: "'PT Sans Narrow', sans-serif",
+        htmlFontSize: 16,
+        fontSize: 14,
+        fontWeightLight: 300,
+        fontWeightRegular: 400,
+        fontWeightMedium: 500,
+        fontWeightBold: 700,
         h1: {
-            fontFamily:
-                '"PlusJakartaSans-ExtraBold",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
-            fontSize: 'clamp(2.625rem, 1.2857rem + 3.5714vw, 4rem)',
-            fontWeight: 800,
-            lineHeight: 1.1142857142857143,
+            fontSize: '40px',
+            fontStyle: 'normal',
+            fontWeight: 700,
+            lineHeight: '52px',
         },
         h2: {
-            fontFamily:
-                '"PlusJakartaSans-ExtraBold",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
-            fontSize: 'clamp(1.5rem, 0.9643rem + 1.4286vw, 2.25rem)',
-            fontWeight: 800,
-            lineHeight: 1.2222222222222223,
-            color: '#E7EBF0',
+            fontSize: '28px',
+            fontWeight: 700,
+            fontStyle: 'normal',
+            lineHeight: '36px',
         },
         h3: {
-            fontFamily:
-                '"PlusJakartaSans-Bold",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
-            fontSize: '2.25rem',
-            lineHeight: 1.2222222222222223,
-            letterSpacing: 0.2,
-            fontWeight: 400,
+            fontSize: '24px',
+            fontWeight: 700,
         },
         h4: {
-            fontFamily:
-                '"PlusJakartaSans-Bold",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
-            fontSize: '1.75rem',
-            lineHeight: 1.5,
-            letterSpacing: 0.2,
+            fontSize: '20px',
             fontWeight: 400,
         },
         h5: {
-            fontFamily:
-                '"PlusJakartaSans-Bold",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
-            fontSize: '1.5rem',
-            lineHeight: 1.5,
-            letterSpacing: 0.1,
-            color: '#66B2FF',
+            fontSize: '16px',
             fontWeight: 400,
         },
         h6: {
-            fontSize: '1.25rem',
-            lineHeight: 1.5,
-            fontFamily:
-                '"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
-            fontWeight: 500,
+            fontSize: '12px',
+            fontWeight: 400,
         },
         button: {
-            textTransform: 'initial',
+            textTransform: 'none',
+            fontSize: '20px',
             fontWeight: 700,
-            letterSpacing: 0,
-            fontFamily:
-                '"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
-            fontSize: '0.875rem',
-            lineHeight: 1.75,
+            fontStyle: 'normal',
+            lineHeight: '26px',
+        },
+        button2: {
+            textTransform: 'none',
+            fontSize: '14px',
+            fontWeight: 700,
+            fontStyle: 'normal',
+            lineHeight: '18px',
         },
         subtitle1: {
-            fontSize: '1.125rem',
-            lineHeight: 1.3333333333333333,
-            letterSpacing: 0,
-            fontWeight: 500,
-            fontFamily:
-                '"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
+            fontStyle: 'normal',
+            fontWeight: 700,
+            fontSize: '24px',
+            lineHeight: '31px',
+            color: '#b6b6b6',
         },
         body1: {
-            fontSize: '1rem',
-            lineHeight: 1.5,
-            letterSpacing: 0,
-            fontFamily:
-                '"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
+            fontFamily: "'Noto Sans', sans-serif",
+            fontSize: '18px',
             fontWeight: 400,
+            fontStyle: 'normal',
+            lineHeight: '25px',
+        },
+        body1Bold: {
+            fontFamily: "'Noto Sans', sans-serif",
+            fontSize: '18px',
+            fontWeight: 700,
+            fontStyle: 'normal',
+            lineHeight: '25px',
         },
         body2: {
-            fontSize: '0.875rem',
-            lineHeight: 1.5,
-            letterSpacing: 0,
-            fontFamily:
-                '"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
+            fontFamily: "'Noto Sans', sans-serif",
+            fontSize: '16px',
             fontWeight: 400,
+            fontStyle: 'normal',
+            lineHeight: '21px',
+        },
+        body3Bold: {
+            fontFamily: "'Noto Sans', sans-serif",
+            fontSize: '12px',
+            fontWeight: 700,
+            fontStyle: 'normal',
+            lineHeight: '16px',
         },
         caption: {
             display: 'inline-block',
@@ -441,25 +482,13 @@ export const rootTheme = createTheme({
             lineHeight: 1.5,
             letterSpacing: 0,
             fontWeight: 700,
-            fontFamily:
-                '"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
         },
-        htmlFontSize: 16,
-        fontSize: 14,
-        fontWeightLight: 300,
-        fontWeightRegular: 400,
-        fontWeightMedium: 500,
-        fontWeightBold: 700,
         subtitle2: {
-            fontFamily:
-                '"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
             fontWeight: 500,
             fontSize: '0.875rem',
             lineHeight: 1.57,
         },
         overline: {
-            fontFamily:
-                '"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol"',
             fontWeight: 400,
             fontSize: '0.75rem',
             lineHeight: 2.66,

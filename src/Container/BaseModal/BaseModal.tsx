@@ -49,8 +49,8 @@ const BaseModal = ({
                     overflow: 'auto',
                     bgcolor: 'background.paper',
                     boxShadow: 24,
-                    border: '2px solid white',
-                    borderRadius: '6px',
+                    border: '2px solid #444444',
+                    borderRadius: '4px',
                     p: 4,
                 }}
             >

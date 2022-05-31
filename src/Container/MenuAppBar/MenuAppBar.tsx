@@ -1,22 +1,39 @@
 import * as React from 'react';
+import { useState } from 'react';
 
-import { AccountCircle } from '@mui/icons-material';
-import HomeIcon from '@mui/icons-material/Home';
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
-import LogoutIcon from '@mui/icons-material/Logout';
-import SettingsIcon from '@mui/icons-material/Settings';
-import { Tooltip, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
-import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import { useHistory } from 'react-router-dom';
 
+import MenuAppButton from '../../Components/MenuAppButton/MenuAppButton';
 import WithElementVisibility from '../../HOC/WithElementVisiblity/WithElementVisibility';
 import { useAuth } from '../../hooks/useAuth';
+import { SVG } from '../../icon';
 import classes from './MenuAppBar.module.scss';
+
+function getRandom(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+const randomDecorate = () => {
+    const list: React.ReactNode[] = [];
+    for (let i = 0; i < 20; i++) {
+        list.push(
+            <SVG.MedicalDecorate
+                key={i}
+                style={{ top: `${getRandom(0, 92)}px`, left: `${getRandom(350, 1200)}px` }}
+                className={classes.decorate}
+            />,
+        );
+    }
+    return list;
+};
 
 function MenuAppBar() {
     const history = useHistory();
+    const [decorates] = useState<React.ReactNode[]>(randomDecorate());
+
     const { logout } = useAuth();
 
     const handleLogout = (event) => {
@@ -25,56 +42,64 @@ function MenuAppBar() {
     };
 
     return (
-        <AppBar position="static">
-            <Toolbar>
-                <div className={classes.logoContainer}>
-                    {/* <img src={logo} alt="" /> */}
-                    <Typography variant="h6" component="div">
-                        I-Software QC WebImporter
-                    </Typography>
-                </div>
+        <>
+            <AppBar className={classes.header} position="static">
+                <div className={classes.headerCover}>{decorates}</div>
+                <Toolbar>
+                    <div className={classes.logoContainer}>
+                        <Typography className={classes.logo} variant="h2" component="div">
+                            <SVG.Medical style={{ marginRight: '8px' }} /> I-Software QC WebImporter
+                        </Typography>
+                    </div>
 
-                <div>
-                    <Tooltip title="Home">
-                        <IconButton size="large" color="inherit" onClick={() => history.push('/qualityControl')}>
-                            <HomeIcon />
-                        </IconButton>
-                    </Tooltip>
-                    <WithElementVisibility
-                        wrappedComp={
-                            <Tooltip id="menuAppbar__tooltip-log" title="Log">
-                                <IconButton size="large" color="inherit" onClick={() => history.push('/log')}>
-                                    <LibraryBooksIcon />
-                                </IconButton>
-                            </Tooltip>
-                        }
-                    />
-                    <WithElementVisibility
-                        wrappedComp={
-                            <Tooltip id="menuAppbar__tooltip-settings" title="Settings">
-                                <IconButton size="large" color="inherit" onClick={() => history.push('/setting')}>
-                                    <SettingsIcon />
-                                </IconButton>
-                            </Tooltip>
-                        }
-                    />
-                    <WithElementVisibility
-                        wrappedComp={
-                            <Tooltip id="menuAppbar__tooltip-user" title="User">
-                                <IconButton size="large" color="inherit" onClick={() => history.push('/user')}>
-                                    <AccountCircle />
-                                </IconButton>
-                            </Tooltip>
-                        }
-                    />
-                    <Tooltip title="Logout">
-                        <IconButton size="large" color="inherit" onClick={(e) => handleLogout(e)}>
-                            <LogoutIcon />
-                        </IconButton>
-                    </Tooltip>
-                </div>
-            </Toolbar>
-        </AppBar>
+                    <div className={classes.menuContainer}>
+                        <div className={classes.gutter}>
+                            <MenuAppButton onClick={() => history.push('/qualityControl')}>
+                                <SVG.Home />
+                                Home
+                            </MenuAppButton>
+                        </div>
+
+                        <WithElementVisibility
+                            wrappedComp={
+                                <div id="menuAppbar__tooltip-log" className={classes.gutter}>
+                                    <MenuAppButton onClick={() => history.push('/log')}>
+                                        <SVG.Log />
+                                        Log
+                                    </MenuAppButton>
+                                </div>
+                            }
+                        />
+                        <WithElementVisibility
+                            wrappedComp={
+                                <div id="menuAppbar__tooltip-settings" className={classes.gutter}>
+                                    <MenuAppButton onClick={() => history.push('/setting')}>
+                                        <SVG.Setting />
+                                        Setting
+                                    </MenuAppButton>
+                                </div>
+                            }
+                        />
+                        <WithElementVisibility
+                            wrappedComp={
+                                <div id="menuAppbar__tooltip-user" className={classes.gutter}>
+                                    <MenuAppButton onClick={() => history.push('/user')}>
+                                        <SVG.Profile />
+                                        Profile
+                                    </MenuAppButton>
+                                </div>
+                            }
+                        />
+                        <div className={classes.gutter}>
+                            <MenuAppButton onClick={(e) => handleLogout(e)}>
+                                <SVG.Logout />
+                                Logout
+                            </MenuAppButton>
+                        </div>
+                    </div>
+                </Toolbar>
+            </AppBar>
+        </>
     );
 }
 

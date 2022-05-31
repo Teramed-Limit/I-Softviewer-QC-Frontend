@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 
-import { Button } from '@mui/material';
 import { ColDef, RowNode } from 'ag-grid-community';
 import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
 import { AxiosObservable } from 'axios-observable';
 
 import GridTable from '../../Components/GridTable/GridTable';
+import SecondaryButton from '../../Components/SecondaryButton/SecondaryButton';
 import { useGridTable } from '../../hooks/useGridTable';
 import { FormDef } from '../../interface/form-define';
 import classes from './GridTableEditor.module.scss';
@@ -76,9 +76,13 @@ const GridTableEditor = ({
             <div className={`ag-theme-dark ${classes.gridContainer}`}>
                 <div className={classes.buttonGroup}>
                     {enableButtonBar && (
-                        <Button variant="text" onClick={() => openEditor(initFormData, 'add')}>
+                        <SecondaryButton
+                            sx={{ width: 'auto' }}
+                            variant="text"
+                            onClick={() => openEditor(initFormData, 'add')}
+                        >
                             Add Row
-                        </Button>
+                        </SecondaryButton>
                     )}
                 </div>
                 <GridTable

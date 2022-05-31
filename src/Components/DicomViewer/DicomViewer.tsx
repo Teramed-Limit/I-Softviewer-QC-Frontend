@@ -135,7 +135,7 @@ function DicomViewer({ imageIds }: Props) {
                                 minHeight: `${viewerHeight / row}px`,
                                 maxHeight: `${viewerHeight / row}px`,
                                 flex: `1 1 auto`,
-                                padding: '4px',
+                                padding: '2px',
                             }}
                         >
                             {viewerRef.current && viewerHeight !== 0 && (
@@ -146,8 +146,7 @@ function DicomViewer({ imageIds }: Props) {
                                         })}
                                         style={{
                                             height: '100%',
-                                            border: '3px rgb(32,165,214,0.3) solid',
-                                            borderRadius: '6px',
+                                            border: '2px #666060 solid',
                                         }}
                                         viewerElement={viewerRef.current}
                                         viewPortIndex={viewportIndex}

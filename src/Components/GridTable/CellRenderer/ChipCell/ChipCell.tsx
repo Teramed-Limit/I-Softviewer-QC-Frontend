@@ -25,7 +25,7 @@ const ChipCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
             {props.value.map((label) => {
                 return (
                     <Box key={label} sx={{ mr: '2px', display: 'flex', alignItems: 'center ' }}>
-                        <Chip size="small" label={label} />
+                        <Chip label={label} />
                     </Box>
                 );
             })}

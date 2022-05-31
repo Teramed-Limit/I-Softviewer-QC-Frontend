@@ -1,12 +1,82 @@
+$menubarHeight: 92px;
+
+.header {
+    background: linear-gradient(3.11deg, #0a325e 1.24%, #0c4079 41.44%) !important;
+    position: relative !important;
+    height: $menubarHeight;
+    display: flex;
+    justify-content: center;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    border-bottom: 2px solid #266592;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 191px;
+        height: $menubarHeight;
+        background: url('../../asserts/menubar-cover.png') no-repeat 0 0 !important;
+        background-size: auto 100%;
+    }
+
+    .headerCover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 798px;
+        height: $menubarHeight;
+        background: url('../../asserts/union.png') no-repeat 0 0 !important;
+        background-size: auto 100%;
+
+        .decorate {
+            position: absolute;
+            font-size: 25px;
+            z-index: 2;
+        }
+    }
+}
+
 .logoContainer {
-    padding: 12px 0;
+    position: relative;
     display: flex;
     align-items: center;
     flex-grow: 1;
+}
 
-    img {
-        margin-right: 4px;
-        max-width: 48px;
-        max-height: 48px;
+.menuContainer {
+    display: flex;
+}
+
+.gutter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    &::before {
+        content: '';
+        width: 1px;
+        height: 56px;
+        display: flex;
+        align-self: center;
+        border: 1px solid rgba(89, 193, 198, 0.3);
     }
+}
+
+.logoImg {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.logo {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 348px;
+    height: 60px;
+    background: rgba(16, 36, 58, 0.6);
+    border-radius: 103px;
 }

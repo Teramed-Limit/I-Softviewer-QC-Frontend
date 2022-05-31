@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
 import { TextField } from '@mui/material';
-import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import { GridReadyEvent } from 'ag-grid-community/dist/lib/events';
 import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
 import { AxiosResponse } from 'axios';
@@ -10,9 +10,11 @@ import { useSetRecoilState } from 'recoil';
 
 import { http } from '../../api/axios';
 import { atomNotification } from '../../atoms/notification';
-import FreeCreateSelection from '../../Components/FreeCreateSelection/FreeCreateSelection';
 import GridTable from '../../Components/GridTable/GridTable';
+import PrimaryButton from '../../Components/PrimaryButton/PrimaryButton';
+import SecondaryButton from '../../Components/SecondaryButton/SecondaryButton';
 import { define } from '../../constant/setting-define';
+import { SVG } from '../../icon';
 import { GenerateStudyUniqueId } from '../../interface/generate-study-uniqueId';
 import { HISData } from '../../interface/his-data';
 import { MessageType } from '../../interface/notification';
@@ -26,7 +28,6 @@ const NewStudy = () => {
     const [rowData, setRowData] = useState<HISData[]>([]);
     const [selectedRow, setSelectedRow] = useState<HISData | null>(null);
     const [episodeNo, setEpisodeNo] = useState('');
-    const [dept, setDept] = useState('');
     const [studyInstanceUID, setStudyInsUid] = useState('');
     const [accessionNum, setAccessionNum] = useState('');
     const gridApiRef = useRef<GridApi | null>(null);
@@ -38,7 +39,7 @@ const NewStudy = () => {
 
     const queryHISData = () => {
         gridApiRef.current?.showLoadingOverlay();
-        http.get(`hisWell/queryHIS`, { params: { episodeNo, dept } }).subscribe({
+        http.get(`hisWell/queryHIS`, { params: { episodeNo } }).subscribe({
             next: (res: AxiosResponse<HISData[]>) => {
                 setRowData(res.data);
                 gridApiRef.current?.hideOverlay();
@@ -69,7 +70,7 @@ const NewStudy = () => {
     }, [setNotification]);
 
     const onNext = () => {
-        if (selectedRow === null) return;
+        if (!selectedRow) return;
         history.push({
             pathname: '/newStudy/viewer',
             state: {
@@ -87,8 +88,11 @@ const NewStudy = () => {
 
     return (
         <div className={classes.container}>
+            <Typography classes={{ root: classes.header }} variant="subtitle1" component="div">
+                Import Study
+            </Typography>
             <div className={classes.content}>
-                <div className={classes.header}>
+                <div className={classes.query}>
                     <TextField
                         sx={{ minWidth: 210 }}
                         label="EpisodeNo"
@@ -96,18 +100,13 @@ const NewStudy = () => {
                         size="small"
                         onChange={(e) => setEpisodeNo(e.target.value)}
                     />
-                    <FreeCreateSelection
-                        label="Operation Location"
-                        type="Dept"
-                        value={dept}
-                        onChange={(value) => setDept(value)}
-                    />
                     <TextField disabled label="Accession No." size="small" value={accessionNum} />
-                    <Button variant="contained" onClick={() => queryHISData()}>
-                        Query
-                    </Button>
+                    <PrimaryButton size="small" startIcon={<SVG.Query2 />} onClick={queryHISData}>
+                        <Typography variant="button" component="span">
+                            Query
+                        </Typography>
+                    </PrimaryButton>
                 </div>
-
                 <div className={`ag-theme-dark ${classes.body}`}>
                     <GridTable
                         rowSelection="single"
@@ -117,12 +116,17 @@ const NewStudy = () => {
                         gridReady={gridReady}
                     />
                 </div>
-
-                <div className={classes.footer}>
-                    <Button disabled={selectedRow === null} variant="contained" onClick={() => onNext()}>
-                        Next
-                    </Button>
-                </div>
+            </div>
+            <div className={classes.footer}>
+                <SecondaryButton
+                    variant="contained"
+                    color="primary"
+                    disabled={!selectedRow}
+                    size="small"
+                    onClick={onNext}
+                >
+                    Next
+                </SecondaryButton>
             </div>
         </div>
     );

@@ -1,9 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import SendIcon from '@mui/icons-material/Send';
-import { Box, Button } from '@mui/material';
-import Chip from '@mui/material/Chip';
+import { Box } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
@@ -12,7 +9,9 @@ import CStoreNodeModal from '../../Container/Modal/CStoreNodeModal/CStoreNodeMod
 import MergeModal from '../../Container/Modal/MergeModal/MergeModal';
 import WorklistModal from '../../Container/Modal/WorklistModal/WorklistModal';
 import WithElementVisibility from '../../HOC/WithElementVisiblity/WithElementVisibility';
+import { SVG } from '../../icon';
 import { StudyQueryData } from '../../interface/study-query-data';
+import SecondaryButton from '../SecondaryButton/SecondaryButton';
 
 interface Props {
     selectedRow: StudyQueryData[];
@@ -40,67 +39,68 @@ const GridTableToolbar = ({ selectedRow }: Props) => {
     return (
         <>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
-                <Typography sx={{ flex: '1 1 100%' }} color="inherit" variant="subtitle1" component="div">
-                    {selectedRow.length} selected
-                </Typography>
+                <Box sx={{ flex: '1 1 100%' }} component="div">
+                    <Typography sx={{ color: '#FF940F' }} variant="body1Bold" component="span">
+                        {`${selectedRow.length}`}&nbsp;
+                    </Typography>
+                    <Typography variant="body1Bold" component="span">
+                        selected
+                    </Typography>
+                </Box>
 
                 <Stack sx={{ flex: 'none' }} direction="row" spacing={1}>
                     <WithElementVisibility
                         wrappedComp={
-                            <Chip
+                            <SecondaryButton
                                 id="qualityControlToolbar__chip-merge"
-                                sx={{ minWidth: 120 }}
                                 disabled={selectedRow.length !== 2}
-                                label="Merge"
-                                color="warning"
+                                startIcon={<SVG.Merge />}
                                 onClick={() => mergeModalRef?.current?.openModal()}
-                            />
+                            >
+                                Merge
+                            </SecondaryButton>
                         }
                     />
                     <WithElementVisibility
                         wrappedComp={
-                            <Chip
+                            <SecondaryButton
                                 id="qualityControlToolbar__chip-mapping"
-                                sx={{
-                                    minWidth: 120,
-                                    bgcolor: (theme) => theme.palette.primary.light,
-                                }}
+                                variant="contained"
                                 disabled={selectedRow.length !== 1}
-                                label="Mapping"
-                                color="info"
+                                startIcon={<SVG.Mapping />}
                                 onClick={() => worklistModalRef?.current?.openModal()}
-                            />
+                            >
+                                Mapping
+                            </SecondaryButton>
                         }
                     />
                     <WithElementVisibility
                         wrappedComp={
-                            <Button
+                            <SecondaryButton
                                 id="qualityControlToolbar__button-sendPacs"
                                 disabled={selectedRow.length === 0}
                                 variant="contained"
-                                color="error"
                                 onClick={() => storeNodeModalRef?.current?.openModal()}
-                                startIcon={<SendIcon />}
+                                startIcon={<SVG.Send />}
                             >
                                 Send DICOM
-                            </Button>
+                            </SecondaryButton>
                         }
                     />
                     <WithElementVisibility
                         wrappedComp={
-                            <Button
+                            <SecondaryButton
                                 id="qualityControlToolbar__button-export"
-                                disabled={selectedRow.length !== 1}
                                 variant="contained"
-                                color="success"
+                                startIcon={<SVG.Export />}
+                                disabled={selectedRow.length === 0}
                                 onClick={() => downloadLinkRef?.current?.click()}
-                                startIcon={<FileDownloadIcon />}
                             >
                                 Export
                                 <a style={{ display: 'none' }} ref={downloadLinkRef} href={studyDownloadUrl} download>
                                     download
                                 </a>
-                            </Button>
+                            </SecondaryButton>
                         }
                     />
                 </Stack>

@@ -1,5 +1,6 @@
 import React from 'react';
 
+import { Typography } from '@mui/material';
 import cx from 'classnames';
 
 import classes from './IconButton.module.scss';
@@ -14,16 +15,20 @@ interface Props {
 
 const IconButton = ({ IconComp, isActive, label, children, onClick }: Props) => {
     return (
-        <div
-            className={cx(classes.toolbarButton, {
-                [classes.active]: isActive,
-            })}
-            onClick={onClick}
-        >
-            {IconComp}
-            <div className={classes.label}>{label}</div>
-            {children}
-        </div>
+        <>
+            <div
+                className={cx(classes.toolbarButton, {
+                    [classes.active]: isActive,
+                })}
+                onClick={onClick}
+            >
+                {IconComp}
+                <Typography variant="button2" component="div">
+                    {label}
+                </Typography>
+                {children}
+            </div>
+        </>
     );
 };
 

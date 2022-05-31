@@ -1,0 +1,14 @@
+.gutter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    &::before {
+        content: '';
+        width: 1px;
+        height: 56px;
+        display: flex;
+        align-self: center;
+        border: 1px solid rgba(89, 193, 198, 0.3);
+    }
+}

@@ -8,7 +8,7 @@ import SendIcon from '@mui/icons-material/Send';
 import WcIcon from '@mui/icons-material/Wc';
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import { Button, Stack, TextField, Tooltip } from '@mui/material';
+import { Stack, TextField, Tooltip } from '@mui/material';
 import Box from '@mui/material/Box';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { format } from 'date-fns';
@@ -18,6 +18,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { http } from '../../api/axios';
 import DicomViewer from '../../Components/DicomViewer/DicomViewer';
 import FileSelect from '../../Components/FileSelect/FileSelect';
+import PrimaryButton from '../../Components/PrimaryButton/PrimaryButton';
 import ConfirmModal from '../../Container/Modal/ConfirmModal/ConfirmModal';
 import cornerstoneFileImageLoader from '../../cornerstone-extend/image-loader/cornerstoneFileImageLoader';
 import { DicomFile, useDicomImport } from '../../hooks/useDicomImport';
@@ -113,8 +114,8 @@ const ImageSelect = () => {
     };
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <Box sx={{ display: 'flex', alignContent: 'space-between', width: '100%', margin: '8px 0' }}>
+        <Box className={classes.container}>
+            <Box className={classes.headerInfo}>
                 <Stack direction="column" spacing={1} sx={{ display: 'flex', flexDirection: 'column' }}>
                     <Stack direction="row" spacing={2}>
                         <Tooltip title="Patient Id">
@@ -180,25 +181,23 @@ const ImageSelect = () => {
                         accept=".dcm"
                         onChange={onAddDicomFile}
                     />
-                    <Button
+                    <PrimaryButton
                         disabled={isDateError || imageFileList.length === 0}
                         variant="contained"
-                        color="success"
                         onClick={onSaveToOwnPacs}
-                        startIcon={<SaveIcon />}
+                        startIcon={<SaveIcon sx={{ fontSize: '24px' }} />}
                     >
                         Save Order
-                    </Button>
+                    </PrimaryButton>
                     <>
-                        <Button
+                        <PrimaryButton
                             disabled={isDateError || imageFileList.length === 0}
                             variant="contained"
-                            color="error"
                             onClick={() => messageModalRef?.current?.openModal()}
-                            startIcon={<SendIcon />}
+                            startIcon={<SendIcon sx={{ fontSize: '24px' }} />}
                         >
                             Send DICOM
-                        </Button>
+                        </PrimaryButton>
                         <ConfirmModal
                             ref={messageModalRef}
                             confirmMessage="Anything submitted to VNA will not be able to be edited or deleted. Are you sure to continue?"

@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import AddIcon from '@mui/icons-material/Add';
 import { Stack } from '@mui/material';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { ColDef } from 'ag-grid-community';
 import { GridReadyEvent } from 'ag-grid-community/dist/lib/events';
@@ -18,11 +16,13 @@ import ConditionQuerier from '../../Components/ConditonQuerier/ConditionQuerier'
 import DicomQueryRetrieve from '../../Components/DicomQueryRetrieve/DicomQueryRetrieve';
 import GridTable from '../../Components/GridTable/GridTable';
 import GridTableToolbar from '../../Components/GridTableToolbar/GridTableToolbar';
+import PrimaryButton from '../../Components/PrimaryButton/PrimaryButton';
 import { dbQueryField, defaultQueryFields, define } from '../../constant/setting-define';
 import BaseModal from '../../Container/BaseModal/BaseModal';
 import WithElementVisibility from '../../HOC/WithElementVisiblity/WithElementVisibility';
 import { useGridColDef } from '../../hooks/useGridColDef';
 import { useRoleFunctionAvailable } from '../../hooks/useRoleFunctionAvailable';
+import { SVG } from '../../icon';
 import classes from './QualityControl.module.scss';
 
 const QualityControl = () => {
@@ -103,58 +103,60 @@ const QualityControl = () => {
 
     return (
         <div className={classes.container}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: '64px' }}>
-                <Typography color="inherit" variant="h4" component="div">
+            <Box sx={{ display: 'flex', alignItems: 'center', minHeight: '64px' }}>
+                <Typography sx={{ paddingLeft: '25px', paddingRight: '34px' }} variant="subtitle1" component="div">
                     Study List
                 </Typography>
                 <Stack direction="row" spacing={1}>
                     <WithElementVisibility
                         wrappedComp={
-                            <Button
+                            <PrimaryButton
                                 id="qualityControl__button-qrStudy"
-                                className={classes.toolbarBtn}
-                                variant="contained"
-                                color="secondary"
-                                startIcon={<AddIcon />}
+                                size="small"
+                                startIcon={<SVG.Query />}
                                 onClick={() => setOpenQRModal(true)}
                             >
-                                Query-Retrieve Study
-                            </Button>
+                                <Typography variant="button" component="span">
+                                    Query-Retrieve Study
+                                </Typography>
+                            </PrimaryButton>
                         }
                     />
                     <WithElementVisibility
                         wrappedComp={
-                            <Button
+                            <PrimaryButton
                                 id="qualityControl__button-newStudy"
-                                className={classes.toolbarBtn}
-                                variant="contained"
-                                color="secondary"
-                                startIcon={<AddIcon />}
+                                size="small"
+                                startIcon={<SVG.Import />}
                                 onClick={onNewStudy}
                             >
-                                Import Study
-                            </Button>
+                                <Typography variant="button" component="span">
+                                    Import Study
+                                </Typography>
+                            </PrimaryButton>
                         }
                     />
                 </Stack>
             </Box>
 
-            <ConditionQuerier
-                fields={dbQueryField}
-                defaultQueryFields={defaultQueryFields}
-                queryPairData={queryPairData}
-                onQuery={onQuery}
-                onQueryPairDataChanged={onValueChanged}
-            />
-
-            <div className={`${classes.tableContainer} ag-theme-dark`}>
-                <GridTable
-                    checkboxSelect={false}
-                    columnDefs={colDefs}
-                    rowData={rowData}
-                    onSelectionChanged={onSelectionChanged}
-                    gridReady={gridReady}
+            <div className={classes.content}>
+                <ConditionQuerier
+                    fields={dbQueryField}
+                    defaultQueryFields={defaultQueryFields}
+                    queryPairData={queryPairData}
+                    onQuery={onQuery}
+                    onQueryPairDataChanged={onValueChanged}
                 />
+
+                <div className={`${classes.tableContainer} ag-theme-dark`}>
+                    <GridTable
+                        checkboxSelect={false}
+                        columnDefs={colDefs}
+                        rowData={rowData}
+                        onSelectionChanged={onSelectionChanged}
+                        gridReady={gridReady}
+                    />
+                </div>
             </div>
 
             <GridTableToolbar selectedRow={selectedRow} />

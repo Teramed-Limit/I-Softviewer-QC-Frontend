@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { Button } from '@mui/material';
 import { ImFolderOpen } from 'react-icons/all';
+
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 
 interface Props {
     label?: string;
@@ -14,7 +15,7 @@ interface Props {
 
 const FileSelect = ({
     label = 'select',
-    size = 'small',
+    size = 'medium',
     accept = '*',
     variant = 'contained',
     disabled = false,
@@ -24,15 +25,15 @@ const FileSelect = ({
 
     return (
         <>
-            <Button
+            <PrimaryButton
                 disabled={disabled}
                 variant={variant}
                 size={size}
-                startIcon={<ImFolderOpen />}
+                startIcon={<ImFolderOpen style={{ fontSize: '24px' }} />}
                 onClick={() => fileInput?.current?.click()}
             >
                 {label}
-            </Button>
+            </PrimaryButton>
             <input
                 multiple
                 ref={fileInput}

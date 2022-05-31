@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 
-import SettingsIcon from '@mui/icons-material/Settings';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 
+import SettingsIcon from '../../asserts/svg/setting.svg';
 import BaseModal from '../../Container/BaseModal/BaseModal';
+import { SVG } from '../../icon';
 import { Field } from '../../interface/form-define';
 import { TransferItem } from '../../interface/transfer-item';
 import { EditorDefaultValue, EditorMapper } from '../../Layout/FormEditor/Editor/editorMapper';
+import PrimaryButton from '../PrimaryButton/PrimaryButton';
 import TransferList from '../TransferList/TransferList';
 import classes from './ConditionQuerier.module.scss';
 
@@ -49,7 +51,7 @@ const ConditionQuerier = ({ fields, queryPairData, defaultQueryFields, onQuery, 
         <>
             <div className={classes.queryCondition}>
                 <IconButton size="small" onClick={() => setOpen(true)}>
-                    <SettingsIcon />
+                    <img className={classes.icon} src={SettingsIcon} alt="settings" />
                 </IconButton>
                 {queryFields.map((field) => {
                     const RenderComponent = EditorMapper[field.type];
@@ -61,9 +63,11 @@ const ConditionQuerier = ({ fields, queryPairData, defaultQueryFields, onQuery, 
                         </Box>
                     );
                 })}
-                <Button variant="contained" color="primary" onClick={onQuery}>
-                    Query
-                </Button>
+                <PrimaryButton size="small" startIcon={<SVG.Query2 />} onClick={onQuery}>
+                    <Typography variant="button" component="span">
+                        Query
+                    </Typography>
+                </PrimaryButton>
             </div>
             <BaseModal width="auto" maxHeight="auto" open={open} setOpen={setOpen}>
                 <TransferList

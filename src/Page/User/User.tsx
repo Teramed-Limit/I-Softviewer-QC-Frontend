@@ -1,5 +1,7 @@
 import React from 'react';
 
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import GroupIcon from '@mui/icons-material/Group';
 import Box from '@mui/material/Box';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
@@ -27,11 +29,11 @@ const User = () => {
     };
 
     return (
-        <Box sx={{ width: '100%', height: '100%' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', padding: '6px' }}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                 <Tabs value={value} onChange={handleChange}>
-                    <Tab label="User Account" />
-                    <Tab label="User Roles" />
+                    <Tab icon={<GroupIcon />} label="User Account" />
+                    <Tab icon={<AdminPanelSettingsIcon />} label="User Roles" />
                 </Tabs>
             </Box>
             <TabPanel value={value} index={0}>

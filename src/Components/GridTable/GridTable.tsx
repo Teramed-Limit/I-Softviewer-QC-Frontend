@@ -1,10 +1,10 @@
-import React, { useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
 import { ColDef, RowNode } from 'ag-grid-community';
 import { GetRowNodeIdFunc } from 'ag-grid-community/dist/lib/entities/gridOptions';
-import { GridReadyEvent } from 'ag-grid-community/dist/lib/events';
+import { FirstDataRenderedEvent, GridReadyEvent, SelectionChangedEvent } from 'ag-grid-community/dist/lib/events';
 import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 
@@ -65,6 +65,25 @@ function GridTable({
         gridReady?.(params);
     };
 
+    const handleFirstDataRendered = useCallback(
+        (event: FirstDataRenderedEvent) => {
+            const allColumnIds: string[] = [];
+            event.columnApi.getAllColumns()?.forEach((column) => {
+                if (!column.getColDef().cellRenderer) allColumnIds.push(column.getId());
+            });
+            event.columnApi.autoSizeColumns(allColumnIds, false);
+            onFirstDataRendered?.(event.api);
+        },
+        [onFirstDataRendered],
+    );
+
+    const handleSelectionChanged = useCallback(
+        (event: SelectionChangedEvent) => {
+            onSelectionChanged?.(event.api);
+        },
+        [onSelectionChanged],
+    );
+
     return (
         <AgGridReact
             className={classes.grid}
@@ -78,8 +97,8 @@ function GridTable({
             rowMultiSelectWithClick={checkboxSelect}
             rowSelection={rowSelection}
             frameworkComponents={frameworkComponents}
-            onFirstDataRendered={(event) => (onFirstDataRendered ? onFirstDataRendered(event.api) : null)}
-            onSelectionChanged={(event) => (onSelectionChanged ? onSelectionChanged(event.api) : null)}
+            onFirstDataRendered={(event) => handleFirstDataRendered(event)}
+            onSelectionChanged={(event) => handleSelectionChanged(event)}
             getRowNodeId={getRowNodeId}
             context={context}
         >

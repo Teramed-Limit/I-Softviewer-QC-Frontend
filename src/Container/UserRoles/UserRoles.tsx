@@ -6,6 +6,7 @@ import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListSubheader from '@mui/material/ListSubheader';
 import Switch from '@mui/material/Switch';
+import Typography from '@mui/material/Typography';
 import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
 import { AxiosResponse } from 'axios';
 import { map } from 'rxjs/operators';
@@ -111,12 +112,18 @@ const UserRoles = () => {
             {/* Function List */}
             <div className={classes.functionContent}>
                 <List
-                    sx={{ width: '100%', bgcolor: 'background.paper', borderRadius: '8px' }}
-                    subheader={<ListSubheader sx={{ borderRadius: '8px' }}>Functions</ListSubheader>}
+                    sx={{ width: '100%', bgcolor: 'background.paper' }}
+                    subheader={
+                        <ListSubheader sx={{ padding: '14px' }}>
+                            <Typography variant="subtitle1" component="div">
+                                Functions
+                            </Typography>
+                        </ListSubheader>
+                    }
                 >
                     {selectedRoleFunctionList.map((data) => {
                         return (
-                            <>
+                            <div key={data.functionName}>
                                 <ListItem>
                                     <ListItemText primary={data.functionName} secondary={data.description} />
                                     <Switch
@@ -134,7 +141,7 @@ const UserRoles = () => {
                                     variant="inset"
                                     component="li"
                                 />
-                            </>
+                            </div>
                         );
                     })}
                 </List>

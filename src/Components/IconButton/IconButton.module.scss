@@ -2,7 +2,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    color: #9ccef9;
+    color: white;
     text-align: center;
     padding: 8px;
     height: fit-content;
@@ -12,9 +12,10 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    min-width: 70px;
 
     &:hover {
-        color: #fff !important;
+        opacity: 0.6;
     }
 
     svg {
@@ -28,5 +29,6 @@
 }
 
 .active {
+    opacity: 1 !important;
     color: rgb(0, 255, 0) !important;
 }

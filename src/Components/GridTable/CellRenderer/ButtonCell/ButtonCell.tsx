@@ -1,8 +1,9 @@
 import React, { useImperativeHandle } from 'react';
 
-import { Button } from '@mui/material';
 import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRenderers/iCellRenderer';
 import { AgReactComponent } from 'ag-grid-react/lib/interfaces';
+
+import PrimaryButton from '../../../PrimaryButton/PrimaryButton';
 
 interface Props extends ICellRendererParams {
     clicked: (...params) => void;
@@ -23,14 +24,9 @@ const ButtonCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
     }));
 
     return (
-        <Button
-            sx={{ fontSize: '0.8125rem !important' }}
-            variant={props.variant}
-            color={props.color}
-            onClick={() => props.clicked(props)}
-        >
+        <PrimaryButton size="medium" sx={{ height: '36px' }} onClick={() => props.clicked(props)}>
             {props.label}
-        </Button>
+        </PrimaryButton>
     );
 });
 

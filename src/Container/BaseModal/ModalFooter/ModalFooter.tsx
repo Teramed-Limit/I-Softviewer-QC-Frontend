@@ -1,7 +1,6 @@
 import * as React from 'react';
 
-import { Button } from '@mui/material';
-
+import SecondaryButton from '../../../Components/SecondaryButton/SecondaryButton';
 import classes from './ModalFooter.module.scss';
 
 interface Props {
@@ -21,7 +20,7 @@ const ModalFooter = ({
 }: Props) => {
     return (
         <div className={classes.footer}>
-            <Button
+            <SecondaryButton
                 variant="outlined"
                 color="primary"
                 onClick={() => {
@@ -30,8 +29,8 @@ const ModalFooter = ({
                 }}
             >
                 {cancelLabel}
-            </Button>
-            <Button
+            </SecondaryButton>
+            <SecondaryButton
                 variant="contained"
                 color="primary"
                 onClick={() => {
@@ -39,7 +38,7 @@ const ModalFooter = ({
                 }}
             >
                 {actionLabel}
-            </Button>
+            </SecondaryButton>
         </div>
     );
 };

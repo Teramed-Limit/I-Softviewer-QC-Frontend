@@ -73,7 +73,15 @@ const DicomQueryRetrieve = () => {
     }, [dispatchCellEvent, onMoveStudy]);
 
     return (
-        <Box sx={{ display: 'flex', height: '100%', flexDirection: 'column' }}>
+        <Box
+            sx={{
+                display: 'flex',
+                height: '100%',
+                flexDirection: 'column',
+                border: '2px solid #265568',
+                borderRadius: '6px',
+            }}
+        >
             <ConditionQuerier
                 fields={qrQueryField}
                 defaultQueryFields={defaultQRQueryFields}

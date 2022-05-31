@@ -1,6 +1,25 @@
+.content {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    height: 100%;
+    border: 2px #265568 solid;
+    border-radius: 4px;
+	overflow: hidden;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    min-height: 64px;
+    padding-left: 25px;
+    padding-right: 34px;
+}
+
 .container {
     display: flex;
     flex-direction: column;
     height: 100%;
-    padding: 10px 20px;
+    overflow: hidden;
+	padding: 6px;
 }

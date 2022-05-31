@@ -11,7 +11,7 @@ const ViewerQualityControl = () => {
     const { dcmUrlList } = useDicom(studyInsUID);
 
     return (
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', background: '#0f2742', p: '6px' }}>
             <DicomViewer imageIds={dcmUrlList} />
         </Box>
     );

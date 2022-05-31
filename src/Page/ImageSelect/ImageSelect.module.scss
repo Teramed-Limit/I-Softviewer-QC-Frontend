@@ -16,3 +16,20 @@
         margin: 0 0 0 -8px !important;
     }
 }
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+	background: #0f2742;
+}
+
+.headerInfo {
+    display: flex;
+    flex-direction: row;
+    align-content: space-between;
+    width: 100%;
+    background: #102740;
+    padding: 20px;
+    border-bottom: 2px solid #494949;
+}

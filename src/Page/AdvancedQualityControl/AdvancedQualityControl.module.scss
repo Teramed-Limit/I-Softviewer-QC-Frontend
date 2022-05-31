@@ -1,9 +1,5 @@
 .header {
     min-height: 38px;
-    font-weight: 700 !important;
-    line-height: 1.55556 !important;
-    font-size: 1.125rem !important;
-    font-family: 'Public Sans', sans-serif !important;
     display: flex !important;
     justify-content: space-between;
     align-items: center;
@@ -13,20 +9,12 @@
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
-    //border: 1px solid rgba(207, 207, 207, 0.5);
-    //background-color: white;
 }
 
 .content {
     display: flex;
     flex-direction: column;
     flex: 1 1 auto;
-}
-
-.halfContent {
-    display: flex;
-    flex-direction: column;
-    flex: 1 1 50%;
 }
 
 .tableContainer {
@@ -41,7 +29,6 @@
     align-items: center;
     justify-content: center;
     border: 1px black solid;
-    border-radius: 10px;
     background-color: black;
 
     img {

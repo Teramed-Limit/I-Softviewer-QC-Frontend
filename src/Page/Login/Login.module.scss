@@ -1,4 +1,63 @@
+.main {
+    position: relative;
+    height: 100%;
+    width: 100%;
+    background-image: linear-gradient(90deg, #0c4079 14.42%, rgba(12, 64, 121, 0) 52.42%),
+        url('../../asserts/login-cover.png');
+    background-size: auto 100%;
+    background-repeat: no-repeat;
+    background-position: center right;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.content {
+    display: flex;
+    width: 600px;
+    flex-direction: column;
+}
+
+.label {
+    margin-bottom: 14px !important;
+
+    &::before {
+        content: '*';
+        color: #eb5757;
+    }
+}
+
+.field {
+    width: 600px;
+    border: none;
+    height: 44px;
+    background: #ececec;
+    border-radius: 4px;
+    padding: 8px;
+    font-family: 'Noto Sans', sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 25px;
+    margin-bottom: 38px;
+}
+
+.logo {
+    position: absolute;
+    top: 15px;
+    left: 24px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 348px;
+    height: 60px;
+    background: rgba(16, 36, 58, 0.6);
+    border-radius: 103px;
+}
+
 .message {
+    margin: 14px 0 !important;
     color: red;
-    font-size: 12px;
 }

@@ -1,8 +1,5 @@
 import React, { useImperativeHandle, useRef, useState } from 'react';
 
-import AutorenewIcon from '@mui/icons-material/Autorenew';
-import { Tooltip } from '@mui/material';
-import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
 import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRenderers/iCellRenderer';
 import { AgReactComponent } from 'ag-grid-react/lib/interfaces';
@@ -10,7 +7,9 @@ import { AgReactComponent } from 'ag-grid-react/lib/interfaces';
 import ConfirmModal from '../../../../Container/Modal/ConfirmModal/ConfirmModal';
 import WithElementVisibility from '../../../../HOC/WithElementVisiblity/WithElementVisibility';
 import { useDicomStudyQC } from '../../../../hooks/useDicomQC';
+import { SVG } from '../../../../icon';
 import { StudyQueryData } from '../../../../interface/study-query-data';
+import SecondaryButton from '../../../SecondaryButton/SecondaryButton';
 
 interface Props extends ICellRendererParams {
     label: string;
@@ -52,36 +51,35 @@ const QCChipCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
         });
     };
 
-    const rollBackComp = () => {
-        return (
-            <Tooltip title="Rollback">
-                <AutorenewIcon
-                    sx={{
-                        color: ' rgba(0, 0, 0, 0.87) !important',
-                        '& :hover': {
-                            color: 'rgba(255, 255, 255) !important',
-                        },
-                    }}
-                />
-            </Tooltip>
-        );
-    };
-
     return (
         <Stack direction="row" spacing={1}>
-            {noQCOperation && <Chip sx={{ width: '120px' }} label="Not Edited" />}
+            {noQCOperation && (
+                <SecondaryButton
+                    disabled
+                    sx={{
+                        '&:disabled': {
+                            color: '#B6B6B6',
+                            background: 'rgba(109, 109, 109, 0.2)',
+                            border: '1px solid rgba(182, 182, 182, 0.2)',
+                            opacity: '1',
+                        },
+                    }}
+                >
+                    Not Edited
+                </SecondaryButton>
+            )}
             {isMerged && (
                 <>
                     <WithElementVisibility
                         wrappedComp={
-                            <Chip
+                            <SecondaryButton
                                 id="qcChipCell__chip-spilt"
-                                sx={{ width: '120px' }}
-                                label="Merged"
-                                color="warning"
-                                onDelete={() => spiltModalRef?.current?.openModal()}
-                                deleteIcon={rollBackComp()}
-                            />
+                                variant="contained"
+                                startIcon={<SVG.Spilt />}
+                                onClick={() => spiltModalRef?.current?.openModal()}
+                            >
+                                Spilt
+                            </SecondaryButton>
                         }
                     />
                     <ConfirmModal
@@ -95,17 +93,14 @@ const QCChipCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
                 <>
                     <WithElementVisibility
                         wrappedComp={
-                            <Chip
+                            <SecondaryButton
                                 id="qcChipCell__chip-unmapping"
-                                sx={{
-                                    bgcolor: (theme) => theme.palette.primary.light,
-                                    width: '120px',
-                                }}
-                                label="Mapped"
-                                color="info"
-                                onDelete={() => unMappingModalRef?.current?.openModal()}
-                                deleteIcon={rollBackComp()}
-                            />
+                                variant="contained"
+                                startIcon={<SVG.UnMapping />}
+                                onClick={() => unMappingModalRef?.current?.openModal()}
+                            >
+                                UnMapping
+                            </SecondaryButton>
                         }
                     />
                     <ConfirmModal

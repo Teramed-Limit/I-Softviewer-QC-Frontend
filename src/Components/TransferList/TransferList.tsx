@@ -12,6 +12,7 @@ import Paper from '@mui/material/Paper';
 import * as R from 'ramda';
 
 import { TransferItem } from '../../interface/transfer-item';
+import SecondaryButton from '../SecondaryButton/SecondaryButton';
 import classes from './TransferList.module.scss';
 
 function not(a: readonly TransferItem[], b: readonly TransferItem[]) {
@@ -159,7 +160,7 @@ function TransferList({ itemList, selectItemList, onTransferListChanged }: Props
                 <Grid item>{customList(right)}</Grid>
             </Grid>
             <div className={classes.footer}>
-                <Button
+                <SecondaryButton
                     variant="contained"
                     color="primary"
                     onClick={() => {
@@ -167,7 +168,7 @@ function TransferList({ itemList, selectItemList, onTransferListChanged }: Props
                     }}
                 >
                     Save
-                </Button>
+                </SecondaryButton>
             </div>
         </>
     );
