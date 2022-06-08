@@ -1,4 +1,4 @@
-import { EnabledElementLayer, Image, LUT, vec2, VOI } from 'cornerstone-core';
+import cornerstone, { EnabledElementLayer, Image, LUT, vec2, VOI } from 'cornerstone-core';
 
 export interface CornerstoneViewportEvent<T> extends Event {
     detail: T;
@@ -101,4 +101,12 @@ export interface EnableWebGLOption {
     renderer: 'webgl';
     desynchronized: boolean;
     preserveDrawingBuffer: boolean;
+}
+
+export interface RenderImage {
+    viewportIndex: number;
+    element: HTMLElement;
+    canvas: HTMLCanvasElement;
+    image: cornerstone.Image;
+    viewport: Viewport;
 }

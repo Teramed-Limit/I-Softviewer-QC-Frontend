@@ -1,15 +1,12 @@
-import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import React, { useCallback, useLayoutEffect, useState } from 'react';
 
 import cx from 'classnames';
-import cornerstone, { Viewport } from 'cornerstone-core';
+import { Viewport } from 'cornerstone-core';
 
 // import cornerstoneTools from 'cornerstone-tools';
-import BaseModal from '../../Container/BaseModal/BaseModal';
 import { useResize } from '../../hooks/useResize';
-import { CornerstoneViewportEvent, NewImageEvent } from '../../interface/cornerstone-viewport-event';
-import { ViewPortElement } from '../../interface/dicom-viewport';
+import { CornerstoneViewportEvent, NewImageEvent, RenderImage } from '../../interface/cornerstone-viewport-event';
 import CornerstoneViewport from '../CornerstoneViewport/CornerstoneViewport';
-import DicomTag from '../DicomTag/DicomTag';
 import DicomViewerToolbar from '../DicomViewerToolbar/DicomViewerToolbar';
 import classes from './DicomViewer.module.scss';
 
@@ -48,18 +45,14 @@ const tools = [
 function DicomViewer({ imageIds }: Props) {
     const viewerRef = React.useRef<HTMLDivElement>(null);
 
-    const [initViewport] = useState<Viewport>({});
-    const [renderImages, setRenderImages] = useState({});
-    const [activeViewportIndex, setActiveViewportIndex] = useState(0);
-    const [activeTool, setActiveTool] = useState('Wwwc');
-    const [viewerHeight, setViewerHeight] = useState(0);
     const [row, setRow] = useState(2);
     const [col, setCol] = useState(2);
-    const [openModal, setModalOpen] = React.useState(false);
-
-    useEffect(() => {
-        setRenderImages({});
-    }, [imageIds]);
+    const [initViewport] = useState<Viewport>({});
+    const [renderImages, setRenderImages] = useState<{ [keys: string]: RenderImage }>({});
+    const [activeViewportIndex, setActiveViewportIndex] = useState(0);
+    const [activeViewport, setActiveViewport] = useState<RenderImage>();
+    const [activeTool, setActiveTool] = useState('Wwwc');
+    const [viewerHeight, setViewerHeight] = useState(0);
 
     useResize(() => {
         if (viewerRef.current === null) return;
@@ -77,20 +70,15 @@ function DicomViewer({ imageIds }: Props) {
     const changeLayout = (selRow: number, selCol: number) => {
         setRow(selRow);
         setCol(selCol);
-
-        if (viewerRef.current === null) return;
-        setViewerHeight(viewerRef.current.offsetHeight);
     };
 
-    const resetViewport = () => {
-        const renderImage = renderImages[activeViewportIndex] as ViewPortElement;
-        if (renderImage === undefined) return;
-        cornerstone.reset(renderImage.element);
-    };
-
-    const onViewportActive = useCallback((index) => {
-        setActiveViewportIndex(index);
-    }, []);
+    const onViewportActive = useCallback(
+        (index) => {
+            setActiveViewportIndex(index);
+            if (renderImages[index]) setActiveViewport(renderImages[index]);
+        },
+        [renderImages],
+    );
 
     const onNewImage = useCallback((event: CornerstoneViewportEvent<NewImageEvent>, viewportIndex) => {
         // wwwcSynchronizer.add(viewPortElement.element);
@@ -103,7 +91,7 @@ function DicomViewer({ imageIds }: Props) {
                     canvas: event.detail.enabledElement.canvas,
                     image: event.detail.image,
                     viewport: event.detail.viewport,
-                },
+                } as RenderImage,
             };
         });
     }, []);
@@ -113,10 +101,9 @@ function DicomViewer({ imageIds }: Props) {
             <DicomViewerToolbar
                 row={row}
                 col={col}
+                activeImage={activeViewport}
                 activeTool={activeTool}
                 changeLayout={changeLayout}
-                resetViewport={resetViewport}
-                openModal={setModalOpen}
                 setActiveTool={setActiveTool}
             />
             <div className={classes.viewer} ref={viewerRef}>
@@ -166,9 +153,6 @@ function DicomViewer({ imageIds }: Props) {
                     ))}
                 </div>
             </div>
-            <BaseModal open={openModal} setOpen={setModalOpen}>
-                <DicomTag image={renderImages[activeViewportIndex]?.image} />
-            </BaseModal>
         </>
     );
 }

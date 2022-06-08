@@ -4,6 +4,7 @@ import InvertColorsIcon from '@mui/icons-material/InvertColors';
 import RotateLeftIcon from '@mui/icons-material/RotateLeft';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
 import Box from '@mui/material/Box';
+import cornerstone from 'cornerstone-core';
 import {
     AiFillFileText,
     BiRectangle,
@@ -17,6 +18,7 @@ import {
     RiRulerFill,
 } from 'react-icons/all';
 
+import { RenderImage } from '../../interface/cornerstone-viewport-event';
 import IconButton from '../IconButton/IconButton';
 import IconMenuButton from '../IconMenuButton/IconMenuButton';
 import LayoutTool from '../LayoutTool/LayoutTool';
@@ -26,14 +28,20 @@ import classes from './DicomViewerToolbar.module.scss';
 interface Props {
     row: number;
     col: number;
+    activeImage?: RenderImage;
     activeTool: string;
-    changeLayout: (selRow: number, selCol: number) => void;
-    resetViewport: () => void;
-    openModal: (open: boolean) => void;
     setActiveTool: (tool: string) => void;
+    changeLayout: (selRow: number, selCol: number) => void;
 }
 
-const DicomViewerToolbar = ({ row, col, activeTool, changeLayout, resetViewport, setActiveTool }: Props) => {
+const DicomViewerToolbar = ({ row, col, activeImage = undefined, activeTool, setActiveTool, changeLayout }: Props) => {
+    // const [openModal, setModalOpen] = React.useState(false);
+
+    const resetViewport = () => {
+        if (activeImage === undefined) return;
+        cornerstone.reset(activeImage.element);
+    };
+
     return (
         <Box className={classes.toolBar}>
             <PopoverButton
@@ -104,12 +112,19 @@ const DicomViewerToolbar = ({ row, col, activeTool, changeLayout, resetViewport,
                 />
             </IconMenuButton>
             <IconButton isActive={false} onClick={() => resetViewport()} IconComp={<RotateLeftIcon />} label="Reset" />
-            {/* <IconButton */}
-            {/*    isActive={false} */}
-            {/*    onClick={() => openModal(true)} */}
-            {/*    IconComp={<AiFillFileText />} */}
-            {/*    label="DICOM Tag" */}
-            {/* /> */}
+            {/* <> */}
+            {/*    <IconButton */}
+            {/*        isActive={false} */}
+            {/*        onClick={() => setModalOpen(true)} */}
+            {/*        IconComp={<AiFillFileText />} */}
+            {/*        label="DICOM Tag" */}
+            {/*    /> */}
+            {/*    {activeImage && ( */}
+            {/*        <BaseModal open={openModal} setOpen={setModalOpen}> */}
+            {/*            <DicomTag image={activeImage.image} /> */}
+            {/*        </BaseModal> */}
+            {/*    )} */}
+            {/* </> */}
         </Box>
     );
 };
