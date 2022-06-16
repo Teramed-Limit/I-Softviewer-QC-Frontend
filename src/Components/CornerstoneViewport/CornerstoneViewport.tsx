@@ -6,6 +6,7 @@ import cornerstoneTools from 'cornerstone-tools';
 import debounce from 'lodash.debounce';
 import ReactResizeDetector from 'react-resize-detector';
 
+import { ViewerSessionMode } from '../../cornerstone-extend/tools';
 import { useBindCornerstoneElementEvent } from '../../hooks/cornerstone/useBindCornerstoneElementEvent';
 import { useBindCornerstoneEvent } from '../../hooks/cornerstone/useBindCornerstoneEvent';
 import { useCornerstoneLoadImage } from '../../hooks/cornerstone/useCornerstoneLoadImage';
@@ -71,6 +72,8 @@ interface Props {
     children?: React.ReactNode;
     loadIndicatorDelay?: number;
     onNewImageDebounceTime?: number;
+    // session mode
+    viewerSessionMode: ViewerSessionMode;
 }
 
 function CornerstoneViewport({
@@ -100,6 +103,7 @@ function CornerstoneViewport({
     className,
     orientationMarkers = ['top', 'left'],
     isOverlayVisible = true,
+    viewerSessionMode,
 }: Props) {
     const element = useRef<HTMLDivElement>(null);
     // Viewport state
@@ -189,30 +193,8 @@ function CornerstoneViewport({
         cornerstone.resize(element.current);
     }, []);
 
-    // Enable element
-    useEffect(() => {
-        if (element.current === null || element.current === viewPortElement) return;
-
-        cornerstone.enable(element.current, enableWebgl ? { renderer: 'webgl' } : {});
-        setEnableElement(element.current);
-
-        return () => {
-            if (!viewPortElement) return;
-
-            if (isStackPrefetchEnabled) {
-                cornerstoneTools.stackPrefetch.disable(viewPortElement);
-            }
-
-            cornerstoneTools.clearToolState(viewPortElement, 'stackPrefetch');
-            cornerstoneTools.stopClip(viewPortElement);
-            cornerstone.imageLoadPoolManager.clearRequestStack(requestType);
-            cornerstone.imageLoadPoolManager.destroy();
-            cornerstone.disable(viewPortElement);
-        };
-    }, [enableWebgl, isStackPrefetchEnabled, viewPortElement]);
-
     // Binding event
-    useBindCornerstoneElementEvent(viewPortElement, onNewImage, onImageRendered, onViewportActive, onCanvasWheel);
+    useBindCornerstoneElementEvent(viewPortElement, onNewImage, onImageRendered, onCanvasWheel, onViewportActive);
     useBindCornerstoneEvent(
         viewPortElement,
         onElementEnabled,
@@ -233,7 +215,15 @@ function CornerstoneViewport({
     const { error } = useCornerstoneLoadImage(viewPortElement, initialViewport, imageIdList, imageId, imageIdIndex);
 
     // Register using tools
-    useRegisterCornerstoneTools(viewPortElement, tools, activeTool);
+    useRegisterCornerstoneTools(viewPortElement, viewerSessionMode, tools, activeTool);
+
+    // Enable element
+    useEffect(() => {
+        if (element.current === null || element.current === viewPortElement) return;
+
+        cornerstone.enable(element.current, enableWebgl ? { renderer: 'webgl' } : {});
+        setEnableElement(element.current);
+    }, [enableWebgl, isStackPrefetchEnabled, viewPortElement]);
 
     // Update when StackPrefetch enabled
     useEffect(() => {
@@ -254,6 +244,24 @@ function CornerstoneViewport({
         return () => onNewImage.cancel();
     }, [onNewImage]);
 
+    // Clean up
+    useEffect(() => {
+        const elementRef = element.current;
+        return () => {
+            if (!elementRef) return;
+
+            if (isStackPrefetchEnabled) {
+                cornerstoneTools.stackPrefetch.disable(elementRef);
+            }
+
+            cornerstoneTools.clearToolState(elementRef, 'stackPrefetch');
+            cornerstoneTools.stopClip(elementRef);
+            cornerstone.imageLoadPoolManager.clearRequestStack(requestType);
+            cornerstone.imageLoadPoolManager.destroy();
+            cornerstone.disable(elementRef);
+        };
+    }, [isStackPrefetchEnabled]);
+
     return (
         <div style={style} className={classNames('viewport-wrapper', className)}>
             {enableResizeDetector && element.current != null && (
@@ -267,12 +275,7 @@ function CornerstoneViewport({
                     targetDomEl={element.current}
                 />
             )}
-            <div
-                ref={element}
-                className="viewport-element"
-                onContextMenu={(e) => e.preventDefault()}
-                onMouseDown={(e) => e.preventDefault()}
-            >
+            <div ref={element} className="viewport-element" onMouseDown={(e) => e.preventDefault()}>
                 {(isLoading || error) && <LoadingIndicator error={error} percentComplete={imageProgress} />}
                 {/* This classname is important in that it tells `cornerstone` to not
                  * create a new canvas element when we "enable" the `viewport-element`

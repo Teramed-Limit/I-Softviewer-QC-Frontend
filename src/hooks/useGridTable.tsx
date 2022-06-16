@@ -47,7 +47,7 @@ const gridEditActionButton = (onClick: EditRowClick): ColDef[] => [
 ];
 
 interface Props<T> {
-    // base api scheme, corresponds to backend api controller
+    // utils api scheme, corresponds to backend api controller
     apiPath: string;
     // if api has different format, user can define their own api path
     externalUpdateRowApi?: (formData: any) => AxiosObservable<any>;

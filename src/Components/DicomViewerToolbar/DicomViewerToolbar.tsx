@@ -4,7 +4,6 @@ import InvertColorsIcon from '@mui/icons-material/InvertColors';
 import RotateLeftIcon from '@mui/icons-material/RotateLeft';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
 import Box from '@mui/material/Box';
-import cornerstone from 'cornerstone-core';
 import {
     AiFillFileText,
     BiRectangle,
@@ -32,16 +31,11 @@ interface Props {
     activeTool: string;
     setActiveTool: (tool: string) => void;
     changeLayout: (selRow: number, selCol: number) => void;
+    resetViewport: () => void;
+    children?: React.ReactNode;
 }
 
-const DicomViewerToolbar = ({ row, col, activeImage = undefined, activeTool, setActiveTool, changeLayout }: Props) => {
-    // const [openModal, setModalOpen] = React.useState(false);
-
-    const resetViewport = () => {
-        if (activeImage === undefined) return;
-        cornerstone.reset(activeImage.element);
-    };
-
+const DicomViewerToolbar = ({ row, col, activeTool, setActiveTool, changeLayout, resetViewport, children }: Props) => {
     return (
         <Box className={classes.toolBar}>
             <PopoverButton
@@ -112,6 +106,7 @@ const DicomViewerToolbar = ({ row, col, activeImage = undefined, activeTool, set
                 />
             </IconMenuButton>
             <IconButton isActive={false} onClick={() => resetViewport()} IconComp={<RotateLeftIcon />} label="Reset" />
+            {children}
             {/* <> */}
             {/*    <IconButton */}
             {/*        isActive={false} */}

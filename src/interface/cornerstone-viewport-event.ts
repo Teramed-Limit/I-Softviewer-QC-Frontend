@@ -1,4 +1,4 @@
-import cornerstone, { EnabledElementLayer, Image, LUT, vec2, VOI } from 'cornerstone-core';
+import { EnabledElementLayer, Image, LUT, vec2, VOI } from 'cornerstone-core';
 
 export interface CornerstoneViewportEvent<T> extends Event {
     detail: T;
@@ -47,6 +47,21 @@ export interface CanvasMouseWheelEvent {
     pixelY: number;
     spinX: number;
     spinY: number;
+}
+
+export interface ViewportToolMouseMoveEvent {
+    buttons: number;
+    ctrlKey: boolean;
+    currentPoints: ElementPoint;
+    deltaPoints: ElementPoint;
+    element: HTMLElement;
+    image: Image;
+    lastPoints: ElementPoint;
+    metaKey: boolean;
+    shiftKey: boolean;
+    startPoints: ElementPoint;
+    type: string;
+    viewport: Viewport;
 }
 
 export interface Viewport {
@@ -107,6 +122,18 @@ export interface RenderImage {
     viewportIndex: number;
     element: HTMLElement;
     canvas: HTMLCanvasElement;
-    image: cornerstone.Image;
-    viewport: Viewport;
+    // image: cornerstone.Image;
+    // viewport: Viewport;
+}
+
+export interface ElementPoint {
+    canvas: Point;
+    client: Point;
+    image: Point;
+    page: Point;
+}
+
+export interface Point {
+    x: number;
+    y: number;
 }

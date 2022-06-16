@@ -7,6 +7,7 @@ import QualityControl from '../Page/QualityControl/QualityControl';
 import Setting from '../Page/Setting/Setting';
 import User from '../Page/User/User';
 import ViewerQualityControl from '../Page/ViewerQualityControl/ViewerQualityControl';
+import ViewerSession from '../Page/ViewerSession/ViewerSession';
 
 export const workdirRoutes: RouteConfig[] = [
     {
@@ -17,6 +18,11 @@ export const workdirRoutes: RouteConfig[] = [
     {
         path: '/newStudy',
         component: NewStudy,
+        protected: true,
+    },
+    {
+        path: '/qualityControl/viewer/studies/studyInstanceUID/:studyInsUID/roomId/:roomId',
+        component: ViewerSession,
         protected: true,
     },
     {

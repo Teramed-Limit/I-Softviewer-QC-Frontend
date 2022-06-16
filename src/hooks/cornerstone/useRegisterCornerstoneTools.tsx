@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 
 import cornerstoneTools from 'cornerstone-tools';
 
+import { ToolMap, ViewerSessionMode } from '../../cornerstone-extend/tools';
+
 const AVAILABLE_TOOL_MODES = ['active', 'passive', 'enabled', 'disabled'];
 
 const TOOL_MODE_FUNCTIONS = {
@@ -11,12 +13,12 @@ const TOOL_MODE_FUNCTIONS = {
     disabled: cornerstoneTools.setToolDisabledForElement,
 };
 
-const addAndConfigureInitialToolsForElement = (tools, element) => {
+const addAndConfigureInitialToolsForElement = (tools, viewerSessionMode, element) => {
     for (let i = 0; i < tools.length; i++) {
         const tool = typeof tools[i] === 'string' ? { name: tools[i] } : { ...tools[i] };
-        const toolName = `${tool.name}Tool`; // Top level CornerstoneTools follow this pattern
 
-        tool.toolClass = tool.toolClass || cornerstoneTools[toolName];
+        if (!ToolMap[tool.name]) continue;
+        tool.toolClass = tool.toolClass || ToolMap[tool.name][viewerSessionMode];
 
         if (tool.toolClass) {
             const toolAlreadyAddedToElement = cornerstoneTools.getToolForElement(element, tool.name);
@@ -59,12 +61,17 @@ const trySetActiveTool = (element, activeToolName) => {
     });
 };
 
-export const useRegisterCornerstoneTools = (viewPortElement, tools, activeTool) => {
+export const useRegisterCornerstoneTools = (
+    viewPortElement,
+    viewerSessionMode: ViewerSessionMode,
+    tools,
+    activeTool,
+) => {
     // Register tools
     useEffect(() => {
         if (!viewPortElement) return;
-        addAndConfigureInitialToolsForElement(tools, viewPortElement);
-    }, [viewPortElement, tools]);
+        addAndConfigureInitialToolsForElement(tools, viewerSessionMode, viewPortElement);
+    }, [viewPortElement, tools, viewerSessionMode]);
 
     // Update when tool changed
     useEffect(() => {

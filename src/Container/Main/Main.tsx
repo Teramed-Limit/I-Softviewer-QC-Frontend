@@ -8,12 +8,15 @@ import Spinner from '../../Components/Spinner/Spinner';
 import RouteWithSubRoutes from '../../Route/RouteWithSubRoutes/RouteWithSubRoutes';
 import { workdirRoutes } from '../../Route/workdir-routes';
 import MenuAppBar from '../MenuAppBar/MenuAppBar';
+import SessionHub from '../SessionHub/SessionHub';
 import classes from './Main.module.scss';
 
 function Main() {
     const isLoading = useRecoilValue(loading);
+
     return (
         <>
+            <SessionHub />
             <MenuAppBar />
             <div className={classes.main}>
                 {isLoading && <Spinner />}

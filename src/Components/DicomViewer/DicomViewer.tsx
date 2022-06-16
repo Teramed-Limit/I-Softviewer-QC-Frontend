@@ -1,9 +1,10 @@
 import React, { useCallback, useLayoutEffect, useState } from 'react';
 
 import cx from 'classnames';
-import { Viewport } from 'cornerstone-core';
+import cornerstone, { Viewport } from 'cornerstone-core';
 
 // import cornerstoneTools from 'cornerstone-tools';
+import { ViewerSessionMode } from '../../cornerstone-extend/tools';
 import { useResize } from '../../hooks/useResize';
 import { CornerstoneViewportEvent, NewImageEvent, RenderImage } from '../../interface/cornerstone-viewport-event';
 import CornerstoneViewport from '../CornerstoneViewport/CornerstoneViewport';
@@ -11,7 +12,9 @@ import DicomViewerToolbar from '../DicomViewerToolbar/DicomViewerToolbar';
 import classes from './DicomViewer.module.scss';
 
 interface Props {
+    viewerSessionMode: ViewerSessionMode;
     imageIds: string[];
+    externalTools?: React.ReactNode;
 }
 
 // Create the synchronizer
@@ -26,23 +29,31 @@ const tools = [
         mode: 'active',
         modeOptions: { mouseButtonMask: 1 },
     },
-    'DoubleTapFitToWindow',
-    'Zoom',
-    'Pan',
-    'Magnify',
-    'Length',
-    'Probe',
-    'Angle',
-    'Bidirectional',
-    'FreehandRoi',
-    'Eraser',
-    'EllipticalRoi',
-    'RectangleRoi',
-    // Scroll
+    // 'DoubleTapFitToWindow',
+    // {
+    //     name: 'Zoom',
+    //     mode: 'active',
+    //     modeOptions: { mouseButtonMask: 2 },
+    // },
+    // {
+    //     name: 'Pan',
+    //     mode: 'active',
+    //     modeOptions: { mouseButtonMask: 4 },
+    // },
+    // 'Magnify',
+    // 'Length',
+    // 'Probe',
+    // 'Angle',
+    // 'Bidirectional',
+    // 'FreehandRoi',
+    // 'Eraser',
+    // 'EllipticalRoi',
+    // 'RectangleRoi',
+    // // Scroll
     // { name: 'StackScrollMouseWheel', mode: 'active' },
 ];
 
-function DicomViewer({ imageIds }: Props) {
+const DicomViewer = ({ imageIds, externalTools, viewerSessionMode }: Props) => {
     const viewerRef = React.useRef<HTMLDivElement>(null);
 
     const [row, setRow] = useState(2);
@@ -89,23 +100,28 @@ function DicomViewer({ imageIds }: Props) {
                     viewportIndex,
                     element: event.detail.element,
                     canvas: event.detail.enabledElement.canvas,
-                    image: event.detail.image,
-                    viewport: event.detail.viewport,
                 } as RenderImage,
             };
         });
     }, []);
+
+    const resetViewport = useCallback(() => {
+        if (activeViewport === undefined) return;
+        cornerstone.reset(activeViewport.element);
+    }, [activeViewport]);
 
     return (
         <>
             <DicomViewerToolbar
                 row={row}
                 col={col}
-                activeImage={activeViewport}
                 activeTool={activeTool}
                 changeLayout={changeLayout}
                 setActiveTool={setActiveTool}
-            />
+                resetViewport={resetViewport}
+            >
+                {externalTools}
+            </DicomViewerToolbar>
             <div className={classes.viewer} ref={viewerRef}>
                 <div
                     className={classes.grid}
@@ -137,9 +153,9 @@ function DicomViewer({ imageIds }: Props) {
                                         }}
                                         viewerElement={viewerRef.current}
                                         viewPortIndex={viewportIndex}
+                                        viewerSessionMode={viewerSessionMode}
                                         tools={tools}
                                         imageIds={[imageId]}
-                                        // imageIds={imageIds}
                                         isPlaying={false}
                                         frameRate={22}
                                         activeTool={activeTool}
@@ -155,6 +171,6 @@ function DicomViewer({ imageIds }: Props) {
             </div>
         </>
     );
-}
+};
 
 export default DicomViewer;

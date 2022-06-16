@@ -21,6 +21,7 @@ import FileSelect from '../../Components/FileSelect/FileSelect';
 import PrimaryButton from '../../Components/PrimaryButton/PrimaryButton';
 import ConfirmModal from '../../Container/Modal/ConfirmModal/ConfirmModal';
 import cornerstoneFileImageLoader from '../../cornerstone-extend/image-loader/cornerstoneFileImageLoader';
+import { ViewerSessionMode } from '../../cornerstone-extend/tools';
 import { DicomFile, useDicomImport } from '../../hooks/useDicomImport';
 import { useHttp } from '../../hooks/useHttp';
 import { CreateAndModifyStudy, ImageBufferAndData } from '../../interface/create-and-modify-study-params';
@@ -206,7 +207,7 @@ const ImageSelect = () => {
                     </>
                 </Stack>
             </Box>
-            <DicomViewer imageIds={imageIds} />
+            <DicomViewer viewerSessionMode={ViewerSessionMode.Standalone} imageIds={imageIds} />
         </Box>
     );
 };
