@@ -6,6 +6,7 @@ module.exports = {
         jest: true,
     },
     extends: [
+        'plugin:import/recommended',
         'airbnb-typescript',
         'airbnb/hooks',
         'plugin:@typescript-eslint/recommended',

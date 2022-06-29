@@ -19,7 +19,7 @@ const defaultOptions = {
     showNotification: true,
 };
 
-export const useHttp = <T extends any>(
+export const useHttp = <T,>(
     options: HttpRequestOptions<T> = {
         showNotification: true,
     },
