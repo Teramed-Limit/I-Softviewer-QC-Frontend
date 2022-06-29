@@ -195,20 +195,6 @@ function CornerstoneViewport({
 
         cornerstone.enable(element.current, enableWebgl ? { renderer: 'webgl' } : {});
         setEnableElement(element.current);
-
-        return () => {
-            if (!viewPortElement) return;
-
-            if (isStackPrefetchEnabled) {
-                cornerstoneTools.stackPrefetch.disable(viewPortElement);
-            }
-
-            cornerstoneTools.clearToolState(viewPortElement, 'stackPrefetch');
-            cornerstoneTools.stopClip(viewPortElement);
-            cornerstone.imageLoadPoolManager.clearRequestStack(requestType);
-            cornerstone.imageLoadPoolManager.destroy();
-            cornerstone.disable(viewPortElement);
-        };
     }, [enableWebgl, isStackPrefetchEnabled, viewPortElement]);
 
     // Binding event
@@ -250,9 +236,26 @@ function CornerstoneViewport({
         }
     }, [viewPortElement, frameRate, isPlaying, isStackPrefetchEnabled]);
 
+    // Clean up effect
     useEffect(() => {
         return () => onNewImage.cancel();
     }, [onNewImage]);
+
+    useEffect(() => {
+        return () => {
+            if (!viewPortElement) return;
+
+            if (isStackPrefetchEnabled) {
+                cornerstoneTools.stackPrefetch.disable(viewPortElement);
+            }
+
+            cornerstoneTools.clearToolState(viewPortElement, 'stackPrefetch');
+            cornerstoneTools.stopClip(viewPortElement);
+            cornerstone.imageLoadPoolManager.clearRequestStack(requestType);
+            cornerstone.imageLoadPoolManager.destroy();
+            cornerstone.disable(viewPortElement);
+        };
+    }, [isStackPrefetchEnabled, viewPortElement]);
 
     return (
         <div style={style} className={classNames('viewport-wrapper', className)}>
