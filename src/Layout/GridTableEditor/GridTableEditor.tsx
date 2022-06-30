@@ -51,7 +51,7 @@ const GridTableEditor = ({
     filterRowFunction,
     isFilterActivate,
 }: Props) => {
-    const { gridApi, rowData, colDefs, getRowNodeId, gridReady, openEditor, rendererFormEditor } = useGridTable<any[]>({
+    const { gridApi, rowData, colDefs, getRowId, gridReady, openEditor, rendererFormEditor } = useGridTable<any[]>({
         formDef,
         externalUpdateRowApi,
         apiPath,
@@ -90,7 +90,7 @@ const GridTableEditor = ({
                     columnDefs={colDefs}
                     rowData={rowData || []}
                     gridReady={gridReady}
-                    getRowNodeId={getRowNodeId}
+                    getRowId={getRowId}
                     onSelectionChanged={onSelectionChanged}
                     isFilterActivate={isFilterActivate}
                     filterRowFunction={filterRowFunction}

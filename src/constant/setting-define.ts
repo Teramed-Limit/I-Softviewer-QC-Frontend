@@ -431,7 +431,7 @@ export const define = {
     },
 };
 
-export const defaultQueryFields = ['patientId', 'accessionNumber', 'modality', 'studyDate'];
+export const defaultQueryFields = ['patientId', 'patientsName', 'accessionNumber', 'modality', 'studyDate'];
 export const dbQueryField = [
     { field: 'patientId', label: 'Patient ID', type: 'Text' },
     { field: 'patientsName', label: 'Patient Name', type: 'Text' },

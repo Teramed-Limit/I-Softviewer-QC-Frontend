@@ -1,25 +1,14 @@
-import React, { useImperativeHandle } from 'react';
+import React from 'react';
 
 import { Box, Chip } from '@mui/material';
 import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRenderers/iCellRenderer';
-import { AgReactComponent } from 'ag-grid-react/lib/interfaces';
 
 interface Props extends ICellRendererParams {
     label: string;
     value: string[];
 }
 
-const ChipCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
-    useImperativeHandle(ref, () => ({
-        getReactContainerStyle() {
-            return {
-                display: 'flex',
-                alignItems: 'center',
-                height: '100%',
-            };
-        },
-    }));
-
+const ChipCell = (props: Props) => {
     return (
         <>
             {props.value.map((label) => {
@@ -31,6 +20,6 @@ const ChipCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
             })}
         </>
     );
-});
+};
 
 export default ChipCell;

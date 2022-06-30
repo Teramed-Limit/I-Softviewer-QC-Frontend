@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { ColDef } from 'ag-grid-community';
+import { GetRowIdParams } from 'ag-grid-community/dist/lib/entities/iCallbackParams';
 import { GridReadyEvent } from 'ag-grid-community/dist/lib/events';
 import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
 import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRenderers/iCellRenderer';
@@ -136,12 +137,12 @@ export const useGridTable = <T,>({
     }, []);
 
     // each row of unique id, use on ag-grid grid rowdata CRUD, Filter etc...
-    const getRowNodeId = useCallback(
-        (data) => {
+    const getRowId = useCallback(
+        (params: GetRowIdParams) => {
             if (!isEmptyOrNil(subIdentityId)) {
-                return `${data[identityId]}_${data[subIdentityId]}`;
+                return `${params.data[identityId]}_${params.data[subIdentityId]}`;
             }
-            return data[identityId];
+            return params.data[identityId];
         },
         [identityId, subIdentityId],
     );
@@ -206,7 +207,7 @@ export const useGridTable = <T,>({
                     setOpen(false);
                     setEditFormData(initFormData);
                     gridApi?.current?.applyTransaction({ update: [formData] });
-                    const rowNode = gridApi?.current?.getRowNode(getRowNodeId(formData));
+                    const rowNode = gridApi?.current?.getRowNode(getRowId(formData));
                     if (!rowNode) return;
                     gridApi?.current?.refreshCells({ force: true, rowNodes: [rowNode] });
                     updateCallBack?.();
@@ -224,7 +225,7 @@ export const useGridTable = <T,>({
         [
             apiPath,
             externalUpdateRowApi,
-            getRowNodeId,
+            getRowId,
             identityId,
             initFormData,
             setLoading,
@@ -283,7 +284,7 @@ export const useGridTable = <T,>({
         rowData,
         colDefs,
         openEditor,
-        getRowNodeId,
+        getRowId,
         gridReady,
         rendererFormEditor,
     };

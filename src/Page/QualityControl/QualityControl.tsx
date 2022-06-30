@@ -3,15 +3,20 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { ColDef } from 'ag-grid-community';
-import { GridReadyEvent } from 'ag-grid-community/dist/lib/events';
+import { ColDef, ColumnApi } from 'ag-grid-community';
+import { GridReadyEvent, SortChangedEvent } from 'ag-grid-community/dist/lib/events';
 import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
 import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRenderers/iCellRenderer';
 import { useHistory } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 
 import { http } from '../../api/axios';
-import { atomStudyQueryCondition, atomStudyQueryResult, atomUpToDateQueryResult } from '../../atoms/study-query';
+import {
+    atomStudyQueryCondition,
+    atomStudyQueryResult,
+    atomStudyQuerySorting,
+    atomUpToDateQueryResult,
+} from '../../atoms/study-query';
 import ConditionQuerier from '../../Components/ConditonQuerier/ConditionQuerier';
 import DicomQueryRetrieve from '../../Components/DicomQueryRetrieve/DicomQueryRetrieve';
 import GridTable from '../../Components/GridTable/GridTable';
@@ -31,6 +36,7 @@ const QualityControl = () => {
     const [queryPairData, setQueryPairData] = useRecoilState(atomStudyQueryCondition);
     const [needRefreshQuery, setNeedRefreshQuery] = useRecoilState(atomUpToDateQueryResult);
     const [rowData, setRowData] = useRecoilState(atomStudyQueryResult);
+    const [sortingOrder, setSortingOrder] = useRecoilState(atomStudyQuerySorting);
     // function available
     const { checkAvailable } = useRoleFunctionAvailable();
     // dispatch event for cell event
@@ -39,12 +45,16 @@ const QualityControl = () => {
     const [openQRModal, setOpenQRModal] = useState(false);
     const [selectedRow, setSelectedRow] = useState<any[]>([]);
     const gridApiRef = useRef<GridApi | null>(null);
+    const columnApiRef = useRef<ColumnApi | null>(null);
 
     const onValueChanged = (value: any, fieldId: string) => {
         setQueryPairData((data) => ({ ...data, [fieldId]: value }));
     };
 
-    const gridReady = (params: GridReadyEvent) => (gridApiRef.current = params.api);
+    const gridReady = (params: GridReadyEvent) => {
+        gridApiRef.current = params.api;
+        columnApiRef.current = params.columnApi;
+    };
 
     const onQuery = useCallback(() => {
         gridApiRef.current?.showLoadingOverlay();
@@ -81,6 +91,15 @@ const QualityControl = () => {
 
     const onSelectionChanged = (gridApi: GridApi) => {
         setSelectedRow(gridApi.getSelectedRows());
+    };
+
+    const onSortChanged = (event: SortChangedEvent) => {
+        setSortingOrder(
+            event.columnApi
+                .getColumnState()
+                .filter((s) => s.sort != null)
+                .map((s) => ({ colId: s.colId, sort: s.sort, sortIndex: s.sortIndex })),
+        );
     };
 
     const onNewStudy = () => history.push('/newStudy');
@@ -153,7 +172,9 @@ const QualityControl = () => {
                         checkboxSelect={false}
                         columnDefs={colDefs}
                         rowData={rowData}
+                        sortingOrder={sortingOrder}
                         onSelectionChanged={onSelectionChanged}
+                        onSortChanged={onSortChanged}
                         gridReady={gridReady}
                     />
                 </div>

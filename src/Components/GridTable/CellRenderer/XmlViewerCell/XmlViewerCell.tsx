@@ -2,7 +2,7 @@ import React, { useImperativeHandle, useState } from 'react';
 
 import { Button } from '@mui/material';
 import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRenderers/iCellRenderer';
-import { AgReactComponent } from 'ag-grid-react/lib/interfaces';
+import { AgReactComponent } from 'ag-grid-react';
 import XMLViewer from 'react-xml-viewer';
 
 import BaseModal from '../../../../Container/BaseModal/BaseModal';

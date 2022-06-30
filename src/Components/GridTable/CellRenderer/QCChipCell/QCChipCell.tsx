@@ -1,8 +1,7 @@
-import React, { useImperativeHandle, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 import Stack from '@mui/material/Stack';
 import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRenderers/iCellRenderer';
-import { AgReactComponent } from 'ag-grid-react/lib/interfaces';
 
 import ConfirmModal from '../../../../Container/Modal/ConfirmModal/ConfirmModal';
 import WithElementVisibility from '../../../../HOC/WithElementVisiblity/WithElementVisibility';
@@ -19,23 +18,13 @@ interface Props extends ICellRendererParams {
 
 type ConfirmModalHandle = React.ElementRef<typeof ConfirmModal>;
 
-const QCChipCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
+const QCChipCell = (props: Props) => {
     const [isMerged] = useState(props.data?.merged || false);
     const [isMapped] = useState(props.data?.mapped || false);
     const [noQCOperation] = useState(!props.data?.merged && !props.data?.mapped);
     const { unMappingStudy, spiltStudy } = useDicomStudyQC();
     const unMappingModalRef = useRef<ConfirmModalHandle>(null);
     const spiltModalRef = useRef<ConfirmModalHandle>(null);
-
-    useImperativeHandle(ref, () => ({
-        getReactContainerStyle() {
-            return {
-                display: 'flex',
-                alignItems: 'center',
-                height: '100%',
-            };
-        },
-    }));
 
     const onUnMapping = () => {
         unMappingStudy({
@@ -52,7 +41,7 @@ const QCChipCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
     };
 
     return (
-        <Stack direction="row" spacing={1}>
+        <Stack direction="row" spacing={1} sx={{ display: 'flex', alignItems: 'center' }}>
             {noQCOperation && (
                 <SecondaryButton
                     disabled
@@ -112,6 +101,6 @@ const QCChipCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
             )}
         </Stack>
     );
-});
+};
 
 export default QCChipCell;

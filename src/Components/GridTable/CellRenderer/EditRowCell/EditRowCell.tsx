@@ -1,9 +1,8 @@
-import React, { useImperativeHandle } from 'react';
+import React from 'react';
 
 import EditIcon from '@mui/icons-material/Edit';
 import { IconButton } from '@mui/material';
 import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRenderers/iCellRenderer';
-import { AgReactComponent } from 'ag-grid-react/lib/interfaces';
 
 import { EditRowClick } from '../../../../hooks/useGridTable';
 
@@ -11,17 +10,7 @@ interface Props extends ICellRendererParams {
     onClick: EditRowClick;
 }
 
-const EditRowCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
-    useImperativeHandle(ref, () => ({
-        getReactContainerStyle() {
-            return {
-                display: 'flex',
-                alignItems: 'center',
-                height: '100%',
-            };
-        },
-    }));
-
+const EditRowCell = (props: Props) => {
     return (
         <IconButton
             color="primary"
@@ -32,6 +21,6 @@ const EditRowCell = React.forwardRef<AgReactComponent, Props>((props, ref) => {
             <EditIcon />
         </IconButton>
     );
-});
+};
 
 export default EditRowCell;

@@ -1,3 +1,4 @@
+import { ColumnState } from 'ag-grid-community/dist/lib/columns/columnModel';
 import { atom } from 'recoil';
 
 import { dbQueryField } from '../constant/setting-define';
@@ -15,6 +16,11 @@ export const atomStudyQueryCondition = atom({
 
 export const atomStudyQueryResult = atom<any[]>({
     key: 'studyQueryResult',
+    default: [],
+});
+
+export const atomStudyQuerySorting = atom<ColumnState[]>({
+    key: 'atomStudyQuerySorting',
     default: [],
 });
 

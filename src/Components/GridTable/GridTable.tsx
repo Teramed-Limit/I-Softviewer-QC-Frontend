@@ -2,9 +2,15 @@ import React, { useCallback, useRef } from 'react';
 
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-alpine.css';
-import { ColDef, RowNode } from 'ag-grid-community';
-import { GetRowNodeIdFunc } from 'ag-grid-community/dist/lib/entities/gridOptions';
-import { FirstDataRenderedEvent, GridReadyEvent, SelectionChangedEvent } from 'ag-grid-community/dist/lib/events';
+import { ColDef, ColumnApi, RowNode } from 'ag-grid-community';
+import { ColumnState } from 'ag-grid-community/dist/lib/columns/columnModel';
+import { GetRowIdParams } from 'ag-grid-community/dist/lib/entities/iCallbackParams';
+import {
+    FirstDataRenderedEvent,
+    GridReadyEvent,
+    SelectionChangedEvent,
+    SortChangedEvent,
+} from 'ag-grid-community/dist/lib/events';
 import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 
@@ -23,11 +29,13 @@ interface TableProps {
     columnDefs: ColDef[];
     rowData: any[];
     context?: any;
+    sortingOrder?: ColumnState[];
     onSelectionChanged?: (param) => void;
     onFirstDataRendered?: (param) => void;
+    onSortChanged?: (param: SortChangedEvent) => void;
     rowSelection?: string;
     gridReady?: (gridReadyEvent: GridReadyEvent) => void;
-    getRowNodeId?: GetRowNodeIdFunc;
+    getRowId?: (params: GetRowIdParams) => string;
     checkboxSelect?: boolean;
     filterRowFunction?: (node: RowNode) => boolean;
     isFilterActivate?: () => boolean;
@@ -48,20 +56,24 @@ const frameworkComponents = {
 function GridTable({
     columnDefs,
     rowData,
+    sortingOrder,
     context,
     onSelectionChanged,
     onFirstDataRendered,
+    onSortChanged,
     rowSelection = 'multiple',
     gridReady,
-    getRowNodeId,
+    getRowId,
     checkboxSelect = true,
     filterRowFunction,
     isFilterActivate,
 }: TableProps) {
     const gridApi = useRef<GridApi | null>(null);
+    const columnApi = useRef<ColumnApi | null>(null);
 
     const onGridReady = (params: GridReadyEvent) => {
         gridApi.current = params.api;
+        columnApi.current = params.columnApi;
         gridReady?.(params);
     };
 
@@ -71,10 +83,16 @@ function GridTable({
             event.columnApi.getAllColumns()?.forEach((column) => {
                 if (!column.getColDef().cellRenderer) allColumnIds.push(column.getId());
             });
+            // Apply auto size
             event.columnApi.autoSizeColumns(allColumnIds, false);
+            // Apply sorting
+            event.columnApi.applyColumnState({
+                state: sortingOrder,
+                defaultState: { sort: null },
+            });
             onFirstDataRendered?.(event.api);
         },
-        [onFirstDataRendered],
+        [onFirstDataRendered, sortingOrder],
     );
 
     const handleSelectionChanged = useCallback(
@@ -96,17 +114,18 @@ function GridTable({
             rowData={rowData}
             rowMultiSelectWithClick={checkboxSelect}
             rowSelection={rowSelection}
-            frameworkComponents={frameworkComponents}
             onFirstDataRendered={(event) => handleFirstDataRendered(event)}
             onSelectionChanged={(event) => handleSelectionChanged(event)}
-            getRowNodeId={getRowNodeId}
+            onSortChanged={(event) => onSortChanged?.(event)}
+            getRowId={getRowId}
             context={context}
+            alwaysMultiSort
         >
             {columnDefs.map((col, index) => (
                 <AgGridColumn
                     headerName={col.headerName}
-                    cellStyle={col.cellStyle}
-                    cellRenderer={col.cellRenderer}
+                    cellStyle={{ ...col.cellStyle, display: 'flex', alignCenter: 'center' }}
+                    cellRenderer={frameworkComponents[col.cellRenderer]}
                     cellRendererParams={col.cellRendererParams}
                     key={col.field}
                     field={col.field}
