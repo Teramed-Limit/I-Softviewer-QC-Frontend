@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import { GridReadyEvent } from 'ag-grid-community/dist/lib/events';
 import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
 import { AxiosResponse } from 'axios';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 
 import { http } from '../../api/axios';
@@ -23,7 +23,7 @@ import classes from './NewStudy.module.scss';
 
 const NewStudy = () => {
     const setNotification = useSetRecoilState(atomNotification);
-    const history = useHistory<CreateStudyParams>();
+    const navigate = useNavigate();
 
     const [rowData, setRowData] = useState<HISData[]>([]);
     const [selectedRow, setSelectedRow] = useState<HISData | null>(null);
@@ -71,8 +71,7 @@ const NewStudy = () => {
 
     const onNext = () => {
         if (!selectedRow) return;
-        history.push({
-            pathname: '/newStudy/viewer',
+        navigate('/newStudy/viewer', {
             state: {
                 patientId: selectedRow.documentNumber,
                 patientName: selectedRow.nameEng,
@@ -82,7 +81,7 @@ const NewStudy = () => {
                 accessionNum,
                 studyInstanceUID,
                 seriesInstanceUID: `${studyInstanceUID}.1`,
-            },
+            } as CreateStudyParams,
         });
     };
 

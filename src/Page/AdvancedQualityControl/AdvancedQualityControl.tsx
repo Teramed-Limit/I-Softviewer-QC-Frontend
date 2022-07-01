@@ -17,7 +17,7 @@ import { isEmptyOrNil } from '../../utils/general';
 import classes from './AdvancedQualityControl.module.scss';
 
 const AdvancedQualityControl = () => {
-    const { studyInsUID } = useParams<{ studyInsUID: string }>();
+    const { studyInsUID } = useParams() as { studyInsUID: string };
     const [sopInstanceUID, setSopInstanceUID] = useState('');
     const [thumbnailUrl, setThumbnailUrl] = useState<string | undefined>('');
     const [enableApi, setEnableApi] = useState(false);

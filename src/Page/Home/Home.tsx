@@ -1,19 +1,19 @@
 import React from 'react';
 
 import { Button } from '@mui/material';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import classes from './Home.module.scss';
 
 const Home = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
 
     return (
         <div className={classes.container}>
-            <Button className={classes.inner} variant="contained" onClick={() => history.push('/newStudy')}>
+            <Button className={classes.inner} variant="contained" onClick={() => navigate('/newStudy')}>
                 Create Study
             </Button>
-            <Button className={classes.inner} variant="contained" onClick={() => history.push('/qualityControl')}>
+            <Button className={classes.inner} variant="contained" onClick={() => navigate('/qualityControl')}>
                 Quality Control
             </Button>
         </div>

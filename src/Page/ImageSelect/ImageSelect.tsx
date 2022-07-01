@@ -12,8 +12,8 @@ import { Stack, TextField, Tooltip } from '@mui/material';
 import Box from '@mui/material/Box';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { format } from 'date-fns';
-import { AiOutlineFieldNumber } from 'react-icons/all';
-import { useHistory, useLocation } from 'react-router-dom';
+import { AiOutlineFieldNumber } from 'react-icons/ai';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { http } from '../../api/axios';
 import DicomViewer from '../../Components/DicomViewer/DicomViewer';
@@ -30,8 +30,10 @@ import classes from './ImageSelect.module.scss';
 type MessageModalHandle = React.ElementRef<typeof ConfirmModal>;
 
 const ImageSelect = () => {
-    const location = useLocation<CreateStudyParams>();
-    const history = useHistory();
+    const location = useLocation();
+    const state = location.state as CreateStudyParams;
+
+    const navigate = useNavigate();
     const { importJPG, importDcm } = useDicomImport();
     const { httpReq } = useHttp();
     const [imageIds, setImageIds] = useState<string[]>([]);
@@ -41,8 +43,8 @@ const ImageSelect = () => {
     const messageModalRef = useRef<MessageModalHandle>(null);
 
     useEffect(() => {
-        if (!location.state) history.push('/');
-    }, [history, location.state]);
+        if (!state) navigate('/');
+    }, [navigate, state]);
 
     const onAddImageFile = (e) => {
         importJPG(e).subscribe((imageList: DicomFile[]) => {
@@ -64,25 +66,25 @@ const ImageSelect = () => {
     const createStudyData = (importFiles: DicomFile[]): CreateAndModifyStudy<ImageBufferAndData> => {
         return {
             patientInfo: {
-                patientId: location?.state.patientId,
-                patientsName: location?.state.patientName,
-                patientsSex: location?.state.sex,
-                patientsBirthDate: location?.state.birthdate,
-                otherPatientNames: location?.state.otherPatientName,
+                patientId: state.patientId,
+                patientsName: state.patientName,
+                patientsSex: state.sex,
+                patientsBirthDate: state.birthdate,
+                otherPatientNames: state.otherPatientName,
             },
             studyInfo: [
                 {
                     modality: importFiles[0].modality,
-                    accessionNumber: location.state.accessionNum,
-                    studyInstanceUID: location.state.studyInstanceUID,
+                    accessionNumber: state.accessionNum,
+                    studyInstanceUID: state.studyInstanceUID,
                     studyDate: format(studyDate, 'yyyyMMdd'),
                     studyTime: format(studyDate, 'HHmmss'),
                 },
             ],
             seriesInfo: [
                 {
-                    studyInstanceUID: location.state.studyInstanceUID,
-                    seriesInstanceUID: location.state.seriesInstanceUID,
+                    studyInstanceUID: state.studyInstanceUID,
+                    seriesInstanceUID: state.seriesInstanceUID,
                     seriesDate: format(studyDate, 'yyyyMMdd'),
                     seriesTime: format(studyDate, 'HHmmss'),
                     seriesNumber: '1',
@@ -92,8 +94,8 @@ const ImageSelect = () => {
                 return {
                     buffer: file.buffer,
                     type: file.type,
-                    seriesInstanceUID: location.state.seriesInstanceUID,
-                    sopInstanceUID: `${location.state.seriesInstanceUID}.${index + 1}`,
+                    seriesInstanceUID: state.seriesInstanceUID,
+                    sopInstanceUID: `${state.seriesInstanceUID}.${index + 1}`,
                     sopClassUID: file.sopClassUID,
                     imageNumber: `${index + 1}`,
                     imageDate: format(studyDate, 'yyyyMMdd'),
@@ -120,12 +122,12 @@ const ImageSelect = () => {
                     <Stack direction="row" spacing={2}>
                         <Tooltip title="Patient Id">
                             <span className={classes.iconText}>
-                                <ContactPageIcon /> {location.state?.patientId}
+                                <ContactPageIcon /> {state?.patientId}
                             </span>
                         </Tooltip>
                         <Tooltip title="Accession Number">
                             <span className={classes.iconText}>
-                                <AiOutlineFieldNumber style={{ fontSize: '24px' }} /> {location.state?.accessionNum}
+                                <AiOutlineFieldNumber style={{ fontSize: '24px' }} /> {state?.accessionNum}
                             </span>
                         </Tooltip>
                         <Tooltip title="Study Date (MM/DD/YYYY)">
@@ -153,17 +155,17 @@ const ImageSelect = () => {
                     <Stack direction="row" spacing={2}>
                         <Tooltip title="Patient Name">
                             <span className={classes.iconText}>
-                                <AccountCircleIcon /> {location.state?.patientName}
+                                <AccountCircleIcon /> {state?.patientName}
                             </span>
                         </Tooltip>
                         <Tooltip title="Birth">
                             <span className={classes.iconText}>
-                                <CakeIcon /> {location.state?.birthdate}
+                                <CakeIcon /> {state?.birthdate}
                             </span>
                         </Tooltip>
                         <Tooltip title="Sex">
                             <span className={classes.iconText}>
-                                <WcIcon /> {location.state?.sex}
+                                <WcIcon /> {state?.sex}
                             </span>
                         </Tooltip>
                     </Stack>

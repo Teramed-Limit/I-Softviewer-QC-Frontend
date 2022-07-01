@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import { AxiosResponse } from 'axios';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSetRecoilState } from 'recoil';
 import { concatMap, delay, Observable, of, Subscription } from 'rxjs';
 
@@ -14,7 +14,7 @@ import TokenService from '../services/TokenService';
 let timer: Subscription;
 
 export const useAuth = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const [message, setMessage] = useState('');
     const setAuth = useSetRecoilState(isAuthorize);
     const setUserAvailableFunction = useSetRecoilState(userAvailableFunction);
@@ -42,7 +42,7 @@ export const useAuth = () => {
                     TokenService.removeUser();
                     setAuth(false);
                     stopTokenTimer();
-                    history.replace({ pathname: '/login' });
+                    navigate('/login', { replace: true });
                 },
             });
     };
@@ -68,7 +68,7 @@ export const useAuth = () => {
             setAuth(false);
             TokenService.removeUser();
             stopTokenTimer();
-            history.replace({ pathname: '/login' });
+            navigate('/login', { replace: true });
         });
     };
 
@@ -82,7 +82,7 @@ export const useAuth = () => {
                 setAuth(TokenService.getUser());
                 setUserAvailableFunction(res.data.functionList);
                 startTokenTimer();
-                history.replace(navigatePath);
+                navigate(navigatePath, { replace: true });
             },
             error: (err) => {
                 setMessage(err.response?.data);
@@ -103,7 +103,7 @@ export const useAuth = () => {
                     TokenService.removeUser();
                     setAuth(false);
                     stopTokenTimer();
-                    history.replace({ pathname: '/login' });
+                    navigate('/login', { replace: true });
                 },
             });
         }

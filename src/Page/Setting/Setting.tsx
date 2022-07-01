@@ -3,7 +3,7 @@ import React from 'react';
 import { Box } from '@mui/material';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
-import { FaLayerGroup, FaListAlt, FaServer } from 'react-icons/all';
+import { FaLayerGroup, FaListAlt, FaServer } from 'react-icons/fa';
 
 import { define } from '../../constant/setting-define';
 import { DicomClientNode, DicomOperationNode } from '../../interface/dicom-node';

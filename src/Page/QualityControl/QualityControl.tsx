@@ -7,7 +7,7 @@ import { ColDef, ColumnApi } from 'ag-grid-community';
 import { GridReadyEvent, SortChangedEvent } from 'ag-grid-community/dist/lib/events';
 import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
 import { ICellRendererParams } from 'ag-grid-community/dist/lib/rendering/cellRenderers/iCellRenderer';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 
 import { http } from '../../api/axios';
@@ -31,7 +31,7 @@ import { SVG } from '../../icon';
 import classes from './QualityControl.module.scss';
 
 const QualityControl = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     // query state management
     const [queryPairData, setQueryPairData] = useRecoilState(atomStudyQueryCondition);
     const [needRefreshQuery, setNeedRefreshQuery] = useRecoilState(atomUpToDateQueryResult);
@@ -72,21 +72,18 @@ const QualityControl = () => {
 
     const onAdvancedClick = useCallback(
         (param: ICellRendererParams) => {
-            history.push({
-                pathname: `/qualityControl/advanced/studies/studyInstanceUID/${param.data.studyInstanceUID}`,
+            navigate(`/qualityControl/advanced/studies/studyInstanceUID/${param.data.studyInstanceUID}`, {
                 state: { patientId: param.data.patientId, patientName: param.data.patientName },
             });
         },
-        [history],
+        [navigate],
     );
 
     const onViewerClick = useCallback(
         (param: ICellRendererParams) => {
-            history.push({
-                pathname: `/qualityControl/viewer/studies/studyInstanceUID/${param.data.studyInstanceUID}`,
-            });
+            navigate(`/qualityControl/viewer/studies/studyInstanceUID/${param.data.studyInstanceUID}`);
         },
-        [history],
+        [navigate],
     );
 
     const onSelectionChanged = (gridApi: GridApi) => {
@@ -102,7 +99,7 @@ const QualityControl = () => {
         );
     };
 
-    const onNewStudy = () => history.push('/newStudy');
+    const onNewStudy = () => navigate('/newStudy');
 
     useEffect(() => {
         let mutateColDef: ColDef[] = [...define.patientStudy.colDef];

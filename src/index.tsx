@@ -1,8 +1,8 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 
-import './index.scss';
 import { ThemeProvider } from '@mui/material';
+import './index.scss';
+import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { RecoilRoot } from 'recoil';
 
@@ -12,7 +12,9 @@ import reportWebVitals from './reportWebVitals';
 import { rootTheme } from './theme/rootTheme';
 
 initCornerstone();
-ReactDOM.render(
+
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
+root.render(
     <React.StrictMode>
         <BrowserRouter>
             <RecoilRoot>
@@ -22,7 +24,6 @@ ReactDOM.render(
             </RecoilRoot>
         </BrowserRouter>
     </React.StrictMode>,
-    document.getElementById('root'),
 );
 
 // If you want to start measuring performance in your app, pass a function

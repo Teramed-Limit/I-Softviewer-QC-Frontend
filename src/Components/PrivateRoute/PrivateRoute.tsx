@@ -1,34 +1,28 @@
 import * as React from 'react';
 
-import { Redirect, Route } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
 import { isAuthorize } from '../../atoms/auth';
 
+export type LocationState = {
+    from: Location;
+};
+
 interface Props {
-    path: string;
-    children: React.ReactNode;
+    children: React.ReactElement;
 }
 
-function PrivateRoute({ children, ...rest }: Props) {
+function PrivateRoute(props: Props) {
     const auth = useRecoilValue(isAuthorize);
-    return (
-        <Route
-            {...rest}
-            render={({ location }) =>
-                auth ? (
-                    children
-                ) : (
-                    <Redirect
-                        to={{
-                            pathname: '/login',
-                            state: { from: location },
-                        }}
-                    />
-                )
-            }
-        />
-    );
+    const location = useLocation();
+
+    if (!auth) {
+        const from = (location.state as LocationState)?.from?.pathname || '/';
+        return <Navigate to="/login" state={{ from }} replace />;
+    }
+
+    return props.children;
 }
 
 export default PrivateRoute;

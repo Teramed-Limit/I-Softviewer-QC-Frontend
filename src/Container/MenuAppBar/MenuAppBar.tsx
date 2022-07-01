@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Typography } from '@mui/material';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import MenuAppButton from '../../Components/MenuAppButton/MenuAppButton';
 import WithElementVisibility from '../../HOC/WithElementVisiblity/WithElementVisibility';
@@ -31,7 +31,7 @@ const randomDecorate = () => {
 };
 
 function MenuAppBar() {
-    const history = useHistory();
+    const navigate = useNavigate();
     const [decorates] = useState<React.ReactNode[]>(randomDecorate());
 
     const { logout } = useAuth();
@@ -54,7 +54,7 @@ function MenuAppBar() {
 
                     <div className={classes.menuContainer}>
                         <div className={classes.gutter}>
-                            <MenuAppButton onClick={() => history.push('/qualityControl')}>
+                            <MenuAppButton onClick={() => navigate('/qualityControl')}>
                                 <SVG.Home />
                                 Home
                             </MenuAppButton>
@@ -63,7 +63,7 @@ function MenuAppBar() {
                         <WithElementVisibility
                             wrappedComp={
                                 <div id="menuAppbar__tooltip-log" className={classes.gutter}>
-                                    <MenuAppButton onClick={() => history.push('/log')}>
+                                    <MenuAppButton onClick={() => navigate('/log')}>
                                         <SVG.Log />
                                         Log
                                     </MenuAppButton>
@@ -73,7 +73,7 @@ function MenuAppBar() {
                         <WithElementVisibility
                             wrappedComp={
                                 <div id="menuAppbar__tooltip-settings" className={classes.gutter}>
-                                    <MenuAppButton onClick={() => history.push('/setting')}>
+                                    <MenuAppButton onClick={() => navigate('/setting')}>
                                         <SVG.Setting />
                                         Setting
                                     </MenuAppButton>
@@ -83,7 +83,7 @@ function MenuAppBar() {
                         <WithElementVisibility
                             wrappedComp={
                                 <div id="menuAppbar__tooltip-user" className={classes.gutter}>
-                                    <MenuAppButton onClick={() => history.push('/user')}>
+                                    <MenuAppButton onClick={() => navigate('/user')}>
                                         <SVG.Profile />
                                         Profile
                                     </MenuAppButton>

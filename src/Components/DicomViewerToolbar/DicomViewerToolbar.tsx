@@ -5,18 +5,12 @@ import RotateLeftIcon from '@mui/icons-material/RotateLeft';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
 import Box from '@mui/material/Box';
 import cornerstone from 'cornerstone-core';
-import {
-    AiFillFileText,
-    BiRectangle,
-    BiShapeTriangle,
-    BsEyedropper,
-    BsFillEraserFill,
-    GiMagnifyingGlass,
-    GiMove,
-    IoEllipseOutline,
-    RiCheckboxMultipleBlankFill,
-    RiRulerFill,
-} from 'react-icons/all';
+import { AiFillFileText } from 'react-icons/ai';
+import { BiRectangle, BiShapeTriangle } from 'react-icons/bi';
+import { BsEyedropper, BsFillEraserFill } from 'react-icons/bs';
+import { GiMagnifyingGlass, GiMove } from 'react-icons/gi';
+import { IoEllipseOutline } from 'react-icons/io5';
+import { RiCheckboxMultipleBlankFill, RiRulerFill } from 'react-icons/ri';
 
 import { RenderImage } from '../../interface/cornerstone-viewport-event';
 import IconButton from '../IconButton/IconButton';

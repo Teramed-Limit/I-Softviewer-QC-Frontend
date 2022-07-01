@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 
 import { DateRangePicker } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import { RangeInput } from '@mui/lab/DateRangePicker/RangeTypes';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -21,7 +20,7 @@ interface Props {
 
 const DateRangeSelector = ({ field, value, onValueChanged }: Props) => {
     const [open, setOpen] = useState(false);
-    const [date, setDate] = useState<RangeInput<Date>>([null, null]);
+    const [date, setDate] = useState<any>([null, null]);
     const [startDate, setStartDate] = useState<string>();
     const [endDate, setEndDate] = useState<string>();
 

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { ColDef } from 'ag-grid-community';
+import { ColDef, ColumnApi } from 'ag-grid-community';
 import { GetRowIdParams } from 'ag-grid-community/dist/lib/entities/iCallbackParams';
 import { GridReadyEvent } from 'ag-grid-community/dist/lib/events';
 import { GridApi } from 'ag-grid-community/dist/lib/gridApi';
@@ -93,7 +93,8 @@ export const useGridTable = <T,>({
     updateCallBack,
     deleteCallBack,
 }: Props<T>) => {
-    const gridApi = useRef<GridApi | null>(null);
+    const gridApi = useRef<GridApi>();
+    const columnApi = useRef<ColumnApi>();
     const setNotification = useSetRecoilState(atomNotification);
     const [, setFormIsValid] = useState(false);
     const [open, setOpen] = useState(false);
@@ -142,6 +143,7 @@ export const useGridTable = <T,>({
             if (!isEmptyOrNil(subIdentityId)) {
                 return `${params.data[identityId]}_${params.data[subIdentityId]}`;
             }
+
             return params.data[identityId];
         },
         [identityId, subIdentityId],
@@ -207,7 +209,15 @@ export const useGridTable = <T,>({
                     setOpen(false);
                     setEditFormData(initFormData);
                     gridApi?.current?.applyTransaction({ update: [formData] });
-                    const rowNode = gridApi?.current?.getRowNode(getRowId(formData));
+                    const rowNode = gridApi?.current?.getRowNode(
+                        getRowId({
+                            level: 0,
+                            api: gridApi.current,
+                            columnApi: columnApi.current,
+                            context: undefined,
+                            data: formData,
+                        } as GetRowIdParams),
+                    );
                     if (!rowNode) return;
                     gridApi?.current?.refreshCells({ force: true, rowNodes: [rowNode] });
                     updateCallBack?.();
@@ -250,7 +260,10 @@ export const useGridTable = <T,>({
     }, [colDef, deleteRow, enableDelete, enableEdit, openEditor]);
 
     // callback when ag-grid all api are available
-    const gridReady = (params: GridReadyEvent) => (gridApi.current = params.api);
+    const gridReady = (params: GridReadyEvent) => {
+        gridApi.current = params.api;
+        columnApi.current = params.columnApi;
+    };
 
     const updateFormData = useCallback((fieldId: string, value: string) => {
         setEditFormData((data) => ({ ...data, [fieldId]: value }));

@@ -6,23 +6,24 @@ import Box from '@mui/material/Box';
 import { useLocation } from 'react-router-dom';
 
 import PrimaryButton from '../../Components/PrimaryButton/PrimaryButton';
+import { LocationState } from '../../Components/PrivateRoute/PrivateRoute';
 import { useAuth } from '../../hooks/useAuth';
 import { SVG } from '../../icon';
 import classes from './Login.module.scss';
 
 export default function Login() {
-    const location = useLocation<{ from: { pathname: string; search: string } }>();
+    const location = useLocation();
     const [password, setPassword] = useState('');
     const [userId, setUserId] = useState('');
 
     const { login, message } = useAuth();
 
-    const { from } = location.state || { from: { pathname: '/qualityControl' } };
+    const navigatePath = (location?.state as LocationState)?.from?.pathname || '/qualityControl';
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        login(data.get('username'), data.get('password'), from);
+        login(data.get('username'), data.get('password'), navigatePath);
     };
 
     return (

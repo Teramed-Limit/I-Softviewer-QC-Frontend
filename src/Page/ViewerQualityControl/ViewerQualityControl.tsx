@@ -7,7 +7,7 @@ import DicomViewer from '../../Components/DicomViewer/DicomViewer';
 import { useDicom } from '../../hooks/useDicom';
 
 const ViewerQualityControl = () => {
-    const { studyInsUID } = useParams<{ studyInsUID: string }>();
+    const { studyInsUID } = useParams() as { studyInsUID: string };
     const { dcmUrlList } = useDicom(studyInsUID);
 
     return (

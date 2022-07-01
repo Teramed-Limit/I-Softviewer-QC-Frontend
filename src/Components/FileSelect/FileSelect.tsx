@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ImFolderOpen } from 'react-icons/all';
+import { ImFolderOpen } from 'react-icons/im';
 
 import PrimaryButton from '../PrimaryButton/PrimaryButton';
 
