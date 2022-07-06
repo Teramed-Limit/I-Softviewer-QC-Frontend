@@ -53,7 +53,7 @@ export const rootTheme = createTheme({
         MuiFormControl: {
             styleOverrides: {
                 root: {
-                    background: '#1E3E62',
+                    // background: '#1E3E62',
                     '& label': {
                         fontWeight: 700,
                         background: 'linear-gradient(143.56deg, #91EAE4 -24.45%, #86A8E7 41.76%, #7F7FD5 110.97%)',
@@ -69,6 +69,7 @@ export const rootTheme = createTheme({
                     },
                     '& input': {
                         color: '#DBDBDB',
+                        background: '#1E3E62',
                     },
                     '& .MuiOutlinedInput-root': {
                         '& fieldset': {
@@ -83,12 +84,20 @@ export const rootTheme = createTheme({
                             borderLeftWidth: '6px',
                         },
                     },
+                    '& .MuiFormHelperText-root': {
+                        fontSize: '1rem',
+                    },
                 },
             },
         },
         MuiInput: {
             defaultProps: {
                 size: 'small',
+            },
+            styleOverrides: {
+                root: {
+                    background: '#1E3E62',
+                },
             },
         },
         MuiTextField: {
@@ -178,6 +187,9 @@ export const rootTheme = createTheme({
         MuiSelect: {
             defaultProps: {},
             styleOverrides: {
+                select: {
+                    background: '#1E3E62',
+                },
                 iconFilled: {
                     top: 'calc(50% - .25em)',
                 },
