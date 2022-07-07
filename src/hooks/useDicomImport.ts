@@ -8,7 +8,7 @@ const isImage = (mimeType: string): boolean => {
     return mimeType.match(/image\/*/) !== null;
 };
 
-const BufferType = {
+export const BufferType = {
     dcm: 0,
     bmp: 1,
 };
@@ -21,6 +21,8 @@ export interface FileBuffer {
 export interface DicomFile extends FileBuffer {
     type: number;
     sopClassUID: string;
+    studyDate?: string;
+    studyDescription: string;
     modality: string;
     error?: ErrorReason;
 }
@@ -59,6 +61,7 @@ export const useDicomImport = () => {
                                     ...fileBuffer,
                                     sopClassUID: '1.2.840.10008.5.1.4.1.1.7',
                                     modality: 'SC',
+                                    studyDescription: '',
                                     type: BufferType.bmp,
                                 });
                                 observer.complete();
@@ -93,7 +96,16 @@ export const useDicomImport = () => {
                             const dcmDataset = dicomParser.parseDicom(byteArray);
                             const sopClassUID = dcmDataset.string('x00080016');
                             const modality = dcmDataset.string('x00080060');
-                            observer.next({ ...fileBuffer, sopClassUID, modality, type: BufferType.dcm });
+                            const studyDescription = dcmDataset.string('x00081030');
+                            const studyDate = dcmDataset.string('x00080020');
+                            observer.next({
+                                ...fileBuffer,
+                                sopClassUID,
+                                modality,
+                                studyDescription,
+                                studyDate,
+                                type: BufferType.dcm,
+                            });
                             observer.complete();
                         } catch (err) {
                             observer.error({ error: { name, errorMessage: err } });

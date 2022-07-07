@@ -66,5 +66,10 @@ export const useSelectOptions = (type: string, source: string) => {
         );
     };
 
-    return { options, addOption, deleteOption, menuProps };
+    // check option value for table "StaticOptions"
+    const checkDuplicateOption = (value: string): Observable<boolean> => {
+        return http.get(`options/type/${source}/value/${value}`).pipe(map((res) => res.data));
+    };
+
+    return { options, setOptions, addOption, deleteOption, checkDuplicateOption, menuProps };
 };

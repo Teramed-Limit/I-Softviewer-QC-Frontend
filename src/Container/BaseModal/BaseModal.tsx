@@ -15,6 +15,8 @@ interface Props {
     footer?: {
         // action string
         actionLabel?: string;
+        // action disabled
+        actionDisabled?: boolean;
         // cancel string
         cancelLabel?: string;
         // action callback
@@ -58,6 +60,7 @@ const BaseModal = ({
                 {footer && (
                     <ModalFooter
                         setOpen={setOpen}
+                        actionDisabled={footer.actionDisabled || false}
                         actionLabel={footer.actionLabel}
                         cancelLabel={footer.cancelLabel}
                         actionHandler={footer.actionHandler}

@@ -5,6 +5,7 @@ import classes from './ModalFooter.module.scss';
 
 interface Props {
     actionLabel?: string;
+    actionDisabled?: boolean;
     cancelLabel?: string;
     setOpen: (isOpen: boolean) => void;
     actionHandler?: () => void;
@@ -15,6 +16,7 @@ const ModalFooter = ({
     setOpen,
     cancelActionHandler,
     actionHandler,
+    actionDisabled,
     cancelLabel = 'Cancel',
     actionLabel = 'Save',
 }: Props) => {
@@ -32,6 +34,7 @@ const ModalFooter = ({
             </SecondaryButton>
             <SecondaryButton
                 variant="contained"
+                disabled={actionDisabled}
                 color="primary"
                 onClick={() => {
                     actionHandler?.();
