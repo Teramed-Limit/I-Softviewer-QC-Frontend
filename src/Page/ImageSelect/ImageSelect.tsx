@@ -8,13 +8,15 @@ import SendIcon from '@mui/icons-material/Send';
 import WcIcon from '@mui/icons-material/Wc';
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import { InputAdornment, Stack, TextField, Tooltip } from '@mui/material';
+import { Stack, TextField, Tooltip, Typography } from '@mui/material';
 import Box from '@mui/material/Box';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { format } from 'date-fns';
 import { AiOutlineFieldNumber } from 'react-icons/ai';
 import { FaHospital } from 'react-icons/fa';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { filter, first, of, switchMap } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { http } from '../../api/axios';
 import DicomViewer from '../../Components/DicomViewer/DicomViewer';
@@ -27,6 +29,7 @@ import { BufferType, DicomFile, useDicomImport } from '../../hooks/useDicomImpor
 import { useHttp } from '../../hooks/useHttp';
 import { CreateAndModifyStudy, ImageBufferAndData } from '../../interface/create-and-modify-study-params';
 import { CreateStudyParams } from '../../interface/study-params';
+import { StudyQueryData } from '../../interface/study-query-data';
 import { isEmptyOrNil, strToDate } from '../../utils/general';
 import classes from './ImageSelect.module.scss';
 
@@ -40,16 +43,43 @@ const ImageSelect = () => {
     const { importJPG, importDcm } = useDicomImport();
     const { httpReq } = useHttp();
     const [imageIds, setImageIds] = useState<string[]>([]);
+    const [duplicateStudyQueryData, setDuplicateStudyQueryData] = useState<StudyQueryData[]>([]);
     const [studyDate, setStudyDate] = useState<Date>(new Date());
     const [isStudyDateDisabled, setStudyDateDisabled] = useState<boolean>(false);
     const [isDateError, setIsDateError] = useState<boolean>(false);
     const [institution, setInstitution] = useState<string>('');
     const [imageFileList, setImageFileList] = useState<DicomFile[]>([]);
     const messageModalRef = useRef<MessageModalHandle>(null);
+    const duplicateModalRef = useRef<MessageModalHandle>(null);
 
     useEffect(() => {
         if (!state) navigate('/');
     }, [navigate, state]);
+
+    const checkStudyIsDuplicated = (dcmList: DicomFile[]) => {
+        const dcm = dcmList[0];
+        return http
+            .get<StudyQueryData[]>(`dicomDbQuery`, {
+                params: {
+                    patientId: state.patientId,
+                    studyDate: dcm.studyDate,
+                    modality: dcm.modality,
+                },
+            })
+            .pipe(
+                switchMap((res) => {
+                    if (!isEmptyOrNil(res.data)) {
+                        setDuplicateStudyQueryData(res.data);
+                        return (duplicateModalRef.current as MessageModalHandle).openModal().pipe(
+                            filter((isConfirm) => isConfirm),
+                            map(() => dcmList),
+                            first(),
+                        );
+                    }
+                    return of(dcmList);
+                }),
+            );
+    };
 
     const onAddImageFile = (e) => {
         importJPG(e).subscribe((imageList: DicomFile[]) => {
@@ -63,12 +93,14 @@ const ImageSelect = () => {
     };
 
     const onAddDicomFile = (e) => {
-        importDcm(e).subscribe((dcmList: DicomFile[]) => {
-            setStudyDate(strToDate(dcmList[0].studyDate as string));
-            setStudyDateDisabled(true);
-            setImageFileList(dcmList);
-            setImageIds(dcmList.map((dcm) => cornerstoneWADOImageLoader.wadouri.fileManager.add(dcm.file)));
-        });
+        importDcm(e)
+            .pipe(switchMap((dcmList: DicomFile[]) => checkStudyIsDuplicated(dcmList)))
+            .subscribe((dcmList: DicomFile[]) => {
+                setStudyDate(strToDate(dcmList[0].studyDate as string));
+                setStudyDateDisabled(true);
+                setImageFileList(dcmList);
+                setImageIds(dcmList.map((dcm) => cornerstoneWADOImageLoader.wadouri.fileManager.add(dcm.file)));
+            });
     };
 
     const createStudyData = (importFiles: DicomFile[]): CreateAndModifyStudy<ImageBufferAndData> => {
@@ -237,6 +269,30 @@ const ImageSelect = () => {
                 </Stack>
             </Box>
             <DicomViewer imageIds={imageIds} />
+            {/* Duplicate warning modal */}
+            <ConfirmModal
+                ref={duplicateModalRef}
+                confirmMessage="The study has been duplicated, do you still want to continue?"
+                onConfirmCallback={() => {}}
+            >
+                <Typography variant="h4" gutterBottom component="div">
+                    Duplicate Study:
+                </Typography>
+                <Stack direction="column" spacing={2} sx={{ width: '100%' }}>
+                    {duplicateStudyQueryData.map((study, index) => {
+                        return (
+                            <Link
+                                style={{ color: 'red' }}
+                                to={`/qualityControl/viewer/studies/studyInstanceUID/${study.studyInstanceUID}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                {index + 1}. {study.patientId} - Click to redirect
+                            </Link>
+                        );
+                    })}
+                </Stack>
+            </ConfirmModal>
         </Box>
     );
 };

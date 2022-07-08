@@ -2,6 +2,7 @@ import { ColumnState } from 'ag-grid-community/dist/lib/columns/columnModel';
 import { atom } from 'recoil';
 
 import { dbQueryField } from '../constant/setting-define';
+import { StudyQueryData } from '../interface/study-query-data';
 
 export const initQueryParams = (fields, initialParams: any = {}) => {
     let params = {};
@@ -14,7 +15,7 @@ export const atomStudyQueryCondition = atom({
     default: initQueryParams(dbQueryField),
 });
 
-export const atomStudyQueryResult = atom<any[]>({
+export const atomStudyQueryResult = atom<StudyQueryData[]>({
     key: 'studyQueryResult',
     default: [],
 });

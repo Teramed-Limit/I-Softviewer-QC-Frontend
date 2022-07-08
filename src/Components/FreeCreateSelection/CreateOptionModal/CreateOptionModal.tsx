@@ -3,13 +3,13 @@ import { forwardRef, useEffect, useState } from 'react';
 
 import { TextField, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
+import { concatMap, filter } from 'rxjs';
 
 import BaseModal from '../../../Container/BaseModal/BaseModal';
 import { BaseModalHandle, useModal } from '../../../hooks/useModal';
 import { useSelectOptions } from '../../../hooks/useSelectOptions';
 import { AutoCompleteOption, Option } from '../../../interface/options';
 import { isEmptyOrNil } from '../../../utils/general';
-import { concatMap, filter } from 'rxjs';
 
 type CreateOptionProps = {
     type: string;

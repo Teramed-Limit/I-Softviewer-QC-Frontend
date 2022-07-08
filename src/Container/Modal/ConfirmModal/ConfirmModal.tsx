@@ -6,13 +6,18 @@ import { Typography } from '@mui/material';
 import { BaseModalHandle, useModal } from '../../../hooks/useModal';
 import BaseModal from '../../BaseModal/BaseModal';
 
-type ConfirmModalProps = { confirmMessage: string; onConfirmCallback: () => void };
+type ConfirmModalProps = {
+    children?: React.ReactNode;
+    confirmMessage: string;
+    onConfirmCallback: () => void;
+};
 
 const ConfirmModal = forwardRef<BaseModalHandle, ConfirmModalProps>((props, ref) => {
-    const { modalOpen, setModalOpen } = useModal(ref);
+    const { modalOpen, setModalOpen, modalActionSubject$ } = useModal(ref);
 
     const onConfirm = () => {
         props.onConfirmCallback();
+        modalActionSubject$.next(true);
         setModalOpen(false);
     };
 
@@ -21,7 +26,10 @@ const ConfirmModal = forwardRef<BaseModalHandle, ConfirmModalProps>((props, ref)
             width="40%"
             maxHeight="80%"
             open={modalOpen}
-            setOpen={setModalOpen}
+            setOpen={(v) => {
+                setModalOpen(v);
+                modalActionSubject$.next(false);
+            }}
             footer={{
                 actionLabel: 'Confirm',
                 actionHandler: onConfirm,
@@ -30,6 +38,7 @@ const ConfirmModal = forwardRef<BaseModalHandle, ConfirmModalProps>((props, ref)
             <Typography variant="h3" gutterBottom component="div">
                 {props.confirmMessage}
             </Typography>
+            {props.children}
         </BaseModal>
     );
 });
