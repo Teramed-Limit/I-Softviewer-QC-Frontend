@@ -1,5 +1,9 @@
 import dicomParser from 'dicom-parser';
+import { useSetRecoilState } from 'recoil';
 import { catchError, concatMap, from, Observable, Observer, of, take, toArray } from 'rxjs';
+
+import { atomNotification } from '../atoms/notification';
+import { hydrateBuffer } from '../utils/dicom-utils';
 
 const INVALID_FILE = ' Invalid file.';
 const INVALID_IMAGE = ' Invalid image.';
@@ -33,18 +37,7 @@ export interface ErrorReason {
 }
 
 export const useDicomImport = () => {
-    const hydrateBuffer = (file: File): Observable<FileBuffer> => {
-        const fileReader = new FileReader();
-        return new Observable((observer: Observer<FileBuffer>) => {
-            fileReader.readAsDataURL(file);
-            fileReader.onload = () => {
-                const buffer = (fileReader.result as string).split(',')[1];
-                observer.next({ buffer, file });
-                observer.complete();
-            };
-            fileReader.onerror = () => {};
-        });
-    };
+    const setNotification = useSetRecoilState(atomNotification);
 
     const validateImageFile = (file: File): Observable<DicomFile> => {
         const fileReader = new FileReader();

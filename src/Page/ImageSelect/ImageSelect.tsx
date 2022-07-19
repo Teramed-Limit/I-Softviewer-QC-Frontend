@@ -8,7 +8,7 @@ import SendIcon from '@mui/icons-material/Send';
 import WcIcon from '@mui/icons-material/Wc';
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import { Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Stack, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { format } from 'date-fns';
@@ -25,6 +25,7 @@ import FreeCreateSelection from '../../Components/FreeCreateSelection/FreeCreate
 import PrimaryButton from '../../Components/PrimaryButton/PrimaryButton';
 import ConfirmModal from '../../Container/Modal/ConfirmModal/ConfirmModal';
 import cornerstoneFileImageLoader from '../../cornerstone-extend/image-loader/cornerstoneFileImageLoader';
+import { useDicomDirImport } from '../../hooks/useDicomDirImport';
 import { BufferType, DicomFile, useDicomImport } from '../../hooks/useDicomImport';
 import { useHttp } from '../../hooks/useHttp';
 import { CreateAndModifyStudy, ImageBufferAndData } from '../../interface/create-and-modify-study-params';
@@ -37,10 +38,13 @@ type MessageModalHandle = React.ElementRef<typeof ConfirmModal>;
 
 const ImageSelect = () => {
     const location = useLocation();
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.down(1600));
     const state = location.state as CreateStudyParams;
 
     const navigate = useNavigate();
     const { importJPG, importDcm } = useDicomImport();
+    const { importDicomDir } = useDicomDirImport();
     const { httpReq } = useHttp();
     const [imageIds, setImageIds] = useState<string[]>([]);
     const [duplicateStudyQueryData, setDuplicateStudyQueryData] = useState<StudyQueryData[]>([]);
@@ -103,17 +107,84 @@ const ImageSelect = () => {
             });
     };
 
-    const createStudyData = (importFiles: DicomFile[]): CreateAndModifyStudy<ImageBufferAndData> => {
-        // CUHK custom required
-        let addedCustomText = isEmptyOrNil(importFiles[0].studyDescription)
+    const onAddDicomDir = (event) => {
+        importDicomDir(event).subscribe((dicomDirectory) => {
+            console.log(dicomDirectory);
+            // const allStudyPayload: CreateAndModifyStudy<ImageBufferAndData>[] = [];
+            // Patient
+            // dicomDirectory.rootDirectoryRecordCollection.forEach((patient) => {
+            //     const payload: CreateAndModifyStudy<ImageBufferAndData> = {
+            //         patientInfo: {},
+            //         studyInfo: [],
+            //         seriesInfo: [],
+            //         imageInfos: [],
+            //     };
+            //     payload.patientInfo = {
+            //         patientId: state.patientId,
+            //         patientsName: state.patientName,
+            //         patientsSex: state.sex,
+            //         patientsBirthDate: state.birthdate,
+            //         otherPatientNames: state.otherPatientName,
+            //     };
+            //     // Study
+            //     let studyIndex = 0;
+            //     patient.lowerLevelDirectoryRecordCollection.forEach((study) => {
+            //         studyIndex++;
+            //         const studyInstanceUid = `${generateNewStudyInstanceUID()}.${studyIndex}`;
+            //         payload.studyInfo?.push({
+            //             patientId: state.patientId,
+            //             studyInstanceUID: studyInstanceUid,
+            //             studyDescription: customDescription((study as StudyDirectoryRecordNode).studyDescription),
+            //         });
+            //         // Series
+            //         let seriesIndex = 0;
+            //         study.lowerLevelDirectoryRecordCollection.forEach((series) => {
+            //             seriesIndex++;
+            //             const seriesInstanceUid = `${studyInstanceUid}.${seriesIndex}`;
+            //             payload.seriesInfo?.push({
+            //                 studyInstanceUID: studyInstanceUid,
+            //                 seriesInstanceUID: seriesInstanceUid,
+            //             });
+            //             // Image
+            //             let imageIdx = 0;
+            //             series.lowerLevelDirectoryRecordCollection.forEach((image) => {
+            //                 // grab file
+            //                 const dcmFile = (image as ImageDirectoryRecordNode).referencedFileID;
+            //                 imageIdx++;
+            //                 const sopInstanceUID = `${seriesInstanceUid}.${imageIdx}`;
+            //                 payload.imageInfos?.push({
+            //                     buffer: filesArray.find(
+            //                         (file) =>
+            //                             file.webkitRelativePath === `${startFolder}/${dcmFile.replace(/\\/g, '/')}`,
+            //                     ),
+            //                     type: BufferType.dcm,
+            //                     seriesInstanceUID: seriesInstanceUid,
+            //                     sopInstanceUID: sopInstanceUID,
+            //                 });
+            //             });
+            //         });
+            //
+            //         // Collect study
+            //         allStudyPayload.push(payload);
+            //     });
+            // });
+            // console.log(allStudyPayload);
+            // http.post('studyMaintenance/withFile', { ...allStudyPayload[0], sendOtherEnableNodes: false }).subscribe();
+        });
+    };
+
+    // CUHK custom study desc.
+    const customDescription = (oriStudyDesc: string): string => {
+        let addedCustomText = isEmptyOrNil(oriStudyDesc)
             ? `${institution}, ${state.patientId}`
             : `, ${institution}, ${state.patientId}`;
 
         if (isEmptyOrNil(institution)) addedCustomText = '';
 
-        const customStudyDescription =
-            importFiles[0].studyDescription.slice(0, 64 - addedCustomText.length) + addedCustomText;
+        return oriStudyDesc.slice(0, 64 - addedCustomText.length) + addedCustomText;
+    };
 
+    const createStudyData = (importFiles: DicomFile[]): CreateAndModifyStudy<ImageBufferAndData> => {
         return {
             patientInfo: {
                 patientId: state.patientId,
@@ -131,7 +202,7 @@ const ImageSelect = () => {
                         importFiles[0].type === BufferType.bmp
                             ? format(studyDate, 'yyyyMMdd')
                             : importFiles[0].studyDate,
-                    studyDescription: customStudyDescription,
+                    studyDescription: customDescription(importFiles[0].studyDescription),
                 },
             ],
             seriesInfo: [
@@ -166,8 +237,13 @@ const ImageSelect = () => {
 
     return (
         <Box className={classes.container}>
-            <Box className={classes.headerInfo}>
-                <Stack direction="column" spacing={1} sx={{ display: 'flex', flexDirection: 'column' }}>
+            {/* Header */}
+            <Box className={classes.headerInfo} sx={{ flexDirection: matches ? 'column' : 'row' }}>
+                <Stack
+                    direction="column"
+                    spacing={1}
+                    sx={{ display: 'flex', flexDirection: 'column', marginBottom: matches ? '6px' : '0' }}
+                >
                     <Stack direction="row" spacing={2}>
                         <Tooltip title="Patient Id" placement="top">
                             <span className={classes.iconText}>
@@ -230,7 +306,11 @@ const ImageSelect = () => {
                         </Tooltip>
                     </Stack>
                 </Stack>
-                <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'end', width: '100%' }}>
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    sx={{ alignItems: 'center', justifyContent: matches ? 'start' : 'end', width: '100%' }}
+                >
                     <FileSelect
                         disabled={isDateError}
                         label="Open Image Files"
@@ -243,6 +323,14 @@ const ImageSelect = () => {
                         accept=".dcm"
                         onChange={onAddDicomFile}
                     />
+                    <FileSelect directory disabled={isDateError} label="Open DICOMDIR" onChange={onAddDicomDir} />
+                </Stack>
+            </Box>
+            {/* DicomViewer */}
+            <DicomViewer imageIds={imageIds} />
+            {/* Footer */}
+            <Box className={classes.footer}>
+                <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'end', width: '100%' }}>
                     <PrimaryButton
                         disabled={isDateError || imageFileList.length === 0}
                         variant="contained"
@@ -268,7 +356,6 @@ const ImageSelect = () => {
                     </>
                 </Stack>
             </Box>
-            <DicomViewer imageIds={imageIds} />
             {/* Duplicate warning modal */}
             <ConfirmModal
                 ref={duplicateModalRef}

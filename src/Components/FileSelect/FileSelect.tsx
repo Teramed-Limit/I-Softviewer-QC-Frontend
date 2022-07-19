@@ -10,6 +10,7 @@ interface Props {
     variant?: 'text' | 'outlined' | 'contained';
     accept?: string;
     disabled?: boolean;
+    directory?: boolean;
     onChange: (e) => void;
 }
 
@@ -19,9 +20,17 @@ const FileSelect = ({
     accept = '*',
     variant = 'contained',
     disabled = false,
+    directory = false,
     onChange,
 }: Props) => {
-    const fileInput = React.useRef<HTMLInputElement>(null);
+    let fileInput = React.useRef<HTMLInputElement>(null).current;
+
+    const addDirectory = (node: HTMLInputElement | null) => {
+        if (node) {
+            fileInput = node;
+            if (directory) node.webkitdirectory = true;
+        }
+    };
 
     return (
         <>
@@ -30,16 +39,18 @@ const FileSelect = ({
                 variant={variant}
                 size={size}
                 startIcon={<ImFolderOpen style={{ fontSize: '24px' }} />}
-                onClick={() => fileInput?.current?.click()}
+                onClick={() => fileInput?.click()}
             >
                 {label}
             </PrimaryButton>
             <input
+                ref={(node) => addDirectory(node)}
                 multiple
-                ref={fileInput}
                 type="file"
                 style={{ display: 'none' }}
                 accept={accept}
+                // allow select same file to trigger event
+                onClick={(event) => ((event.target as HTMLInputElement).value = '')}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     if (!e.target.files) return;
                     onChange(e);
