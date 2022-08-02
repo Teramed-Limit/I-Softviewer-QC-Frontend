@@ -4,7 +4,7 @@ import { AxiosError, AxiosResponse } from 'axios';
 import { AxiosObservable } from 'axios-observable/lib/axios-observable.interface';
 import { useSetRecoilState } from 'recoil';
 
-import { loading } from '../atoms/loading';
+import { loading, progressStatus } from '../atoms/loading';
 import { atomNotification } from '../atoms/notification';
 import { MessageType } from '../interface/notification';
 
@@ -26,14 +26,15 @@ export const useHttp = <T,>(
 ) => {
     const setNotification = useSetRecoilState(atomNotification);
     const setLoading = useSetRecoilState(loading);
+    const setProgressStatus = useSetRecoilState(progressStatus);
     const [response, setResponse] = useState<T>();
     const [requestOptions] = useState({ ...defaultOptions, ...options });
 
     const httpReq = (request$: AxiosObservable<T>) => {
-        setLoading(true);
-        const subscription = request$.subscribe({
+        const subscription = request$.pipe().subscribe({
             next: (res: AxiosResponse) => {
                 setLoading(false);
+                setProgressStatus({ showProgress: false, value: 0, message: '' });
                 setResponse(res.data);
                 requestOptions?.whenSuccess?.(res.data);
                 if (requestOptions?.showNotification)
@@ -44,6 +45,7 @@ export const useHttp = <T,>(
             },
             error: (err: AxiosError) => {
                 setLoading(false);
+                setProgressStatus({ showProgress: false, value: 0, message: '' });
                 requestOptions?.whenError?.(err);
                 setNotification({
                     messageType: MessageType.Error,

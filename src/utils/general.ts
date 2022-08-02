@@ -1,4 +1,5 @@
 import * as R from 'ramda';
+import { Observable, Observer } from 'rxjs';
 
 import { ImageBufferAndData } from '../interface/create-and-modify-study-params';
 
@@ -143,4 +144,42 @@ export const readBase64 = (file): Promise<string> => {
         reader.onerror = (error) => reject(error);
         reader.readAsDataURL(file);
     });
+};
+
+export const readBase64$ = (file): Observable<string> => {
+    return new Observable((observer: Observer<string>) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            observer.next((reader.result as string).split(',')[1]);
+            observer.complete();
+        };
+        reader.onerror = (error) => {
+            observer.error(error);
+            observer.complete();
+        };
+        reader.readAsDataURL(file);
+    });
+};
+
+export const readBuffer$ = (file): Observable<ArrayBuffer> => {
+    return new Observable((observer: Observer<ArrayBuffer>) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+            observer.next(reader.result as ArrayBuffer);
+            observer.complete();
+        };
+        reader.onerror = (error) => {
+            observer.error(error);
+            observer.complete();
+        };
+        reader.readAsArrayBuffer(file);
+    });
+};
+
+export const uppercaseFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+export const lowercaseFirstLetter = (string) => {
+    return string.charAt(0).toLowerCase() + string.slice(1);
 };

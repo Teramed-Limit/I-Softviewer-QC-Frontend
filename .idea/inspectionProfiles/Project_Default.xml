@@ -108,7 +108,16 @@
     <inspection_tool class="DockerFileAddOrCopySemantic" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="DockerFileArgumentCount" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="DockerFileAssignments" enabled="true" level="ERROR" enabled_by_default="true" />
+    <inspection_tool class="DockerFileRunCommandMissingContinuation" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="DocumentWriteJS" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="DotEnvDuplicateKeyInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="DotEnvExtraBlankLineInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="DotEnvIncorrectDelimiterInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="DotEnvLeadingCharacterInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="DotEnvLowercaseKeyInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="DotEnvSpaceAroundSeparatorInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="DotEnvSpaceInsideNonQuotedInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="DotEnvTrailingWhitespaceInspection" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="DuplicateConditionJS" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="DuplicatedCode" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="DynamicallyGeneratedCodeJS" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -135,6 +144,7 @@
     <inspection_tool class="EditorConfigDeprecatedDescriptor" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="EditorConfigEmptyHeader" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="EditorConfigEmptySection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="EditorConfigEncoding" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="EditorConfigHeaderUniqueness" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="EditorConfigKeyCorrectness" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="EditorConfigListAcceptability" enabled="true" level="ERROR" enabled_by_default="true" />
@@ -159,6 +169,7 @@
     <inspection_tool class="EditorConfigWildcardRedundancy" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="EjsUnresolvedInclude" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="EmptyCatchBlockJS" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="EmptyDirectory" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="EmptyFinallyBlockJS" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="EmptyStatementBodyJS" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="m_reportEmptyBlocks" value="false" />
@@ -206,7 +217,9 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="0" />
+          <list size="1">
+            <item index="0" class="java.lang.String" itemvalue="webkitdirectory" />
+          </list>
         </value>
       </option>
       <option name="myCustomValuesEnabled" value="true" />
@@ -228,6 +241,7 @@
       <option name="myCustomValuesEnabled" value="true" />
     </inspection_tool>
     <inspection_tool class="HtmlUnknownTarget" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="HttpClientUnresolvedVariable" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="HttpRequestContentLengthIsIgnored" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="HttpRequestPlaceholder" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="HttpUrlsUsage" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
@@ -235,7 +249,13 @@
     <inspection_tool class="IfStatementWithTooManyBranchesJS" enabled="false" level="WARNING" enabled_by_default="false">
       <option name="m_limit" value="3" />
     </inspection_tool>
+    <inspection_tool class="IgnoreCoverEntry" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="IgnoreDuplicateEntry" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="IgnoreFileDuplicateEntry" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="IgnoreIncorrectEntry" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="IgnoreRelativeEntry" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="IgnoreSyntaxEntry" enabled="false" level="ERROR" enabled_by_default="false" />
+    <inspection_tool class="IgnoreUnusedEntry" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="ImplicitTypeConversion" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="BITS" value="1720" />
       <option name="FLAG_EXPLICIT_CONVERSION" value="true" />
@@ -243,6 +263,7 @@
     </inspection_tool>
     <inspection_tool class="IncompatibleMaskJS" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="InconsistentLineSeparators" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="IncorrectFormatting" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="IncorrectHttpHeaderInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="IncrementDecrementResultUsedJS" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="IndexZeroUsage" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -323,6 +344,7 @@
     <inspection_tool class="JSUnusedAssignment" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="JSUnusedGlobalSymbols" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="JSUnusedLocalSymbols" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="JSUrlImportUsage" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="JSValidateJSDoc" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="JSValidateTypes" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="JSVoidFunctionReturnValueUsed" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -353,6 +375,8 @@
     <inspection_tool class="LoopStatementThatDoesntLoopJS" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="LossyEncoding" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="MagicNumberJS" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="MarkdownIncorrectTableFormatting" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
+    <inspection_tool class="MarkdownNoTableBorders" enabled="false" level="ERROR" enabled_by_default="false" />
     <inspection_tool class="MarkdownUnresolvedFileReference" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="MeteorUnresolvedSymbol" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="NegatedConditionalExpressionJS" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -407,7 +431,9 @@
     <inspection_tool class="RegExpRedundantEscape" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="RegExpRedundantNestedCharacterClass" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="RegExpRepeatedSpace" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="RegExpSimplifiable" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="RegExpSingleCharAlternation" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="RegExpSuspiciousBackref" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="RegExpUnexpectedAnchor" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="RegExpUnnecessaryNonCapturingGroup" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ReplaceAssignmentWithOperatorAssignmentJS" enabled="false" level="WARNING" enabled_by_default="false" />
@@ -485,6 +511,7 @@
       <option name="m_ignoreCatchBlocksWithComments" value="false" />
     </inspection_tool>
     <inspection_tool class="UnusedDefine" enabled="false" level="WARNING" enabled_by_default="false" />
+    <inspection_tool class="UpdateDependencyToLatestVersion" enabled="false" level="INFORMATION" enabled_by_default="false" />
     <inspection_tool class="VoidExpressionJS" enabled="false" level="WARNING" enabled_by_default="false" />
     <inspection_tool class="VueDataFunction" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="VueDuplicateTag" enabled="true" level="WARNING" enabled_by_default="true" />

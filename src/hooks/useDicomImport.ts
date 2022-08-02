@@ -1,6 +1,8 @@
 import dicomParser from 'dicom-parser';
 import { catchError, concatMap, from, Observable, Observer, of, take, toArray } from 'rxjs';
 
+import { hydrateBuffer } from '../utils/dicom-utils';
+
 const INVALID_FILE = ' Invalid file.';
 const INVALID_IMAGE = ' Invalid image.';
 
@@ -33,19 +35,6 @@ export interface ErrorReason {
 }
 
 export const useDicomImport = () => {
-    const hydrateBuffer = (file: File): Observable<FileBuffer> => {
-        const fileReader = new FileReader();
-        return new Observable((observer: Observer<FileBuffer>) => {
-            fileReader.readAsDataURL(file);
-            fileReader.onload = () => {
-                const buffer = (fileReader.result as string).split(',')[1];
-                observer.next({ buffer, file });
-                observer.complete();
-            };
-            fileReader.onerror = () => {};
-        });
-    };
-
     const validateImageFile = (file: File): Observable<DicomFile> => {
         const fileReader = new FileReader();
         const { type, name } = file;
@@ -120,9 +109,7 @@ export const useDicomImport = () => {
         );
     };
 
-    const importJPG = (e): Observable<DicomFile[]> => {
-        if (!e.target.files.length) return of([]);
-        const files = e?.target?.files as File[];
+    const importJPG = (files: File[]): Observable<DicomFile[]> => {
         const numberOfFiles = files.length;
 
         return from(files).pipe(
@@ -132,9 +119,7 @@ export const useDicomImport = () => {
         );
     };
 
-    const importDcm = (e): Observable<DicomFile[]> => {
-        if (!e.target.files.length) return of([]);
-        const files = e?.target?.files as File[];
+    const importDcm = (files: File[]): Observable<DicomFile[]> => {
         const numberOfFiles = files.length;
 
         return from(files).pipe(

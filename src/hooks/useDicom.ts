@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 
 import { AxiosError } from 'axios';
 import { useSetRecoilState } from 'recoil';
-import { concatMap, from, tap, toArray } from 'rxjs';
+import { concatMap, forkJoin, tap } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { http } from '../api/axios';
 import { atomNotification } from '../atoms/notification';
@@ -46,16 +47,23 @@ export const useDicom = (studyInsUID: string) => {
                 // Series
                 concatMap(() => http.get<DicomSeries[]>(`dicomDbQuery/studyInstanceUID/${studyInsUID}/series`)),
                 tap((seriesRes) => (dicomIOD.dicomSeries = seriesRes.data)),
-                concatMap((seriesRes) => from(seriesRes.data.map((seriesData) => seriesData.seriesInstanceUID))),
+                map((seriesRes) => seriesRes.data.map((seriesData) => seriesData.seriesInstanceUID)),
                 // Image
-                concatMap((seriesInstanceUID) =>
-                    http.get<DicomImagePath[]>(`dicomDbQuery/seriesInstanceUID/${seriesInstanceUID}/imagePathList`),
+                concatMap((seriesInstanceUIDList) =>
+                    forkJoin(
+                        seriesInstanceUIDList.map((seriesInstanceUID) =>
+                            http.get<DicomImagePath[]>(
+                                `dicomDbQuery/seriesInstanceUID/${seriesInstanceUID}/imagePathList`,
+                            ),
+                        ),
+                    ),
                 ),
-                tap((imageRes) => (dicomIOD.dicomImage = [...dicomIOD.dicomImage, ...imageRes.data])),
-                toArray(),
             )
             .subscribe({
-                next: () => {
+                next: (imageResList) => {
+                    imageResList.forEach((imageRes) => {
+                        dicomIOD.dicomImage = [...dicomIOD.dicomImage, ...imageRes.data];
+                    });
                     setDicomData(dicomIOD);
                     setDcmUrlList(convertToCornerstoneSchemeUrl(dicomIOD.dicomImage));
                     setLoading(false);

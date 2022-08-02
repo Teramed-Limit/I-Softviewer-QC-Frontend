@@ -8,39 +8,50 @@ import SendIcon from '@mui/icons-material/Send';
 import WcIcon from '@mui/icons-material/Wc';
 import { DatePicker, LocalizationProvider } from '@mui/lab';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import { Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Stack, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { format } from 'date-fns';
 import { AiOutlineFieldNumber } from 'react-icons/ai';
 import { FaHospital } from 'react-icons/fa';
+import { ImFolderOpen } from 'react-icons/im';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { filter, first, of, switchMap } from 'rxjs';
+import { useSetRecoilState } from 'recoil';
+import { concatMap, filter, first, from, of, switchMap } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { http } from '../../api/axios';
+import { loading, progressStatus } from '../../atoms/loading';
 import DicomViewer from '../../Components/DicomViewer/DicomViewer';
 import FileSelect from '../../Components/FileSelect/FileSelect';
 import FreeCreateSelection from '../../Components/FreeCreateSelection/FreeCreateSelection';
 import PrimaryButton from '../../Components/PrimaryButton/PrimaryButton';
 import ConfirmModal from '../../Container/Modal/ConfirmModal/ConfirmModal';
+import DicomDirectoryModal from '../../Container/Modal/DicomDirectoryModal/DicomDirectoryModal';
 import cornerstoneFileImageLoader from '../../cornerstone-extend/image-loader/cornerstoneFileImageLoader';
 import { BufferType, DicomFile, useDicomImport } from '../../hooks/useDicomImport';
 import { useHttp } from '../../hooks/useHttp';
 import { CreateAndModifyStudy, ImageBufferAndData } from '../../interface/create-and-modify-study-params';
+import { RootRecord } from '../../interface/dicom-directory-record';
 import { CreateStudyParams } from '../../interface/study-params';
 import { StudyQueryData } from '../../interface/study-query-data';
 import { isEmptyOrNil, strToDate } from '../../utils/general';
 import classes from './ImageSelect.module.scss';
 
 type MessageModalHandle = React.ElementRef<typeof ConfirmModal>;
+type DicomDirModalHandle = React.ElementRef<typeof DicomDirectoryModal>;
 
 const ImageSelect = () => {
+    const setProgressStatus = useSetRecoilState(progressStatus);
+    const setLoading = useSetRecoilState(loading);
     const location = useLocation();
+    const theme = useTheme();
+    const matches = useMediaQuery(theme.breakpoints.down(1600));
     const state = location.state as CreateStudyParams;
 
     const navigate = useNavigate();
     const { importJPG, importDcm } = useDicomImport();
+
     const { httpReq } = useHttp();
     const [imageIds, setImageIds] = useState<string[]>([]);
     const [duplicateStudyQueryData, setDuplicateStudyQueryData] = useState<StudyQueryData[]>([]);
@@ -51,19 +62,19 @@ const ImageSelect = () => {
     const [imageFileList, setImageFileList] = useState<DicomFile[]>([]);
     const messageModalRef = useRef<MessageModalHandle>(null);
     const duplicateModalRef = useRef<MessageModalHandle>(null);
+    const dicomDirectoryModalRef = useRef<DicomDirModalHandle>(null);
 
     useEffect(() => {
         if (!state) navigate('/');
     }, [navigate, state]);
 
-    const checkStudyIsDuplicated = (dcmList: DicomFile[]) => {
-        const dcm = dcmList[0];
+    const checkStudyIsDuplicated = (compareStudyDate, compareModality, returnResult) => {
         return http
             .get<StudyQueryData[]>(`dicomDbQuery`, {
                 params: {
                     patientId: state.patientId,
-                    studyDate: dcm.studyDate,
-                    modality: dcm.modality,
+                    studyDate: compareStudyDate,
+                    modality: compareModality,
                 },
             })
             .pipe(
@@ -71,18 +82,20 @@ const ImageSelect = () => {
                     if (!isEmptyOrNil(res.data)) {
                         setDuplicateStudyQueryData(res.data);
                         return (duplicateModalRef.current as MessageModalHandle).openModal().pipe(
-                            filter((isConfirm) => isConfirm),
-                            map(() => dcmList),
                             first(),
+                            filter((isConfirm) => isConfirm),
+                            map(() => returnResult),
                         );
                     }
-                    return of(dcmList);
+                    return of(returnResult);
                 }),
             );
     };
 
     const onAddImageFile = (e) => {
-        importJPG(e).subscribe((imageList: DicomFile[]) => {
+        if (!e.target.files.length) return;
+        const files = e?.target?.files as File[];
+        importJPG(files).subscribe((imageList: DicomFile[]) => {
             setStudyDateDisabled(false);
             setImageFileList(imageList);
             cornerstoneFileImageLoader.fileManager.init();
@@ -93,8 +106,14 @@ const ImageSelect = () => {
     };
 
     const onAddDicomFile = (e) => {
-        importDcm(e)
-            .pipe(switchMap((dcmList: DicomFile[]) => checkStudyIsDuplicated(dcmList)))
+        if (!e.target.files.length) return;
+        const files = e?.target?.files as File[];
+        importDcm(files)
+            .pipe(
+                switchMap((dcmList: DicomFile[]) =>
+                    checkStudyIsDuplicated(dcmList[0].studyDate, dcmList[0].modality, dcmList),
+                ),
+            )
             .subscribe((dcmList: DicomFile[]) => {
                 setStudyDate(strToDate(dcmList[0].studyDate as string));
                 setStudyDateDisabled(true);
@@ -103,17 +122,18 @@ const ImageSelect = () => {
             });
     };
 
-    const createStudyData = (importFiles: DicomFile[]): CreateAndModifyStudy<ImageBufferAndData> => {
-        // CUHK custom required
-        let addedCustomText = isEmptyOrNil(importFiles[0].studyDescription)
+    // CUHK custom study desc.
+    const customDescription = (oriStudyDesc: string): string => {
+        let addedCustomText = isEmptyOrNil(oriStudyDesc)
             ? `${institution}, ${state.patientId}`
             : `, ${institution}, ${state.patientId}`;
 
         if (isEmptyOrNil(institution)) addedCustomText = '';
 
-        const customStudyDescription =
-            importFiles[0].studyDescription.slice(0, 64 - addedCustomText.length) + addedCustomText;
+        return oriStudyDesc.slice(0, 64 - addedCustomText.length) + addedCustomText;
+    };
 
+    const createStudyData = (importFiles: DicomFile[]): CreateAndModifyStudy<ImageBufferAndData> => {
         return {
             patientInfo: {
                 patientId: state.patientId,
@@ -131,7 +151,7 @@ const ImageSelect = () => {
                         importFiles[0].type === BufferType.bmp
                             ? format(studyDate, 'yyyyMMdd')
                             : importFiles[0].studyDate,
-                    studyDescription: customStudyDescription,
+                    studyDescription: customDescription(importFiles[0].studyDescription),
                 },
             ],
             seriesInfo: [
@@ -155,19 +175,64 @@ const ImageSelect = () => {
     };
 
     const onSaveToOwnPacs = () => {
+        setLoading(true);
         const studyData = createStudyData(imageFileList);
         httpReq(http.post('studyMaintenance', { ...studyData, sendOtherEnableNodes: false }));
     };
 
     const onSaveToAllEnablePacs = () => {
+        setLoading(true);
         const studyData = createStudyData(imageFileList);
         httpReq(http.post('studyMaintenance', { ...studyData, sendOtherEnableNodes: true }));
     };
 
+    const onSaveDicomDirToPacs = (selectedStudiesFormData: FormData[], rootRecord: RootRecord) => {
+        const modifyTag: Record<string, string>[] = [
+            { '0010,0010': state.patientName },
+            { '0010,0020': state.patientId },
+            { '0010,0030': state.birthdate },
+            { '0010,0040': state.sex },
+            { '0010,1001': state.otherPatientName },
+            { '0008,0050': state.accessionNum },
+            { '0008,1030': customDescription(rootRecord.lowerLevelRecords[0].lowerLevelRecords[0].studyDescription) },
+        ];
+
+        const studyRecord = rootRecord.lowerLevelRecords[0].lowerLevelRecords[0];
+        const seriesRecord = rootRecord.lowerLevelRecords[0].lowerLevelRecords[0].lowerLevelRecords[0];
+        const sendPacs$ = checkStudyIsDuplicated(studyRecord.studyDate, seriesRecord.modality, null).pipe(
+            concatMap(() => from(selectedStudiesFormData)),
+            concatMap((formData) => {
+                setLoading(true);
+                formData.append('ModifyTag', JSON.stringify(modifyTag));
+                formData.append('NewInstanceUid', '1');
+                return http.post('studyMaintenance/dicomDir', formData, {
+                    onUploadProgress: (progressEvent) => {
+                        const progressValue = (progressEvent.loaded / progressEvent.total) * 100;
+                        setProgressStatus({
+                            showProgress: true,
+                            value: progressValue,
+                            message:
+                                progressValue === 100
+                                    ? 'Processing files take a while please do not close the browser'
+                                    : 'Uploading files...',
+                        });
+                    },
+                });
+            }),
+        );
+
+        httpReq(sendPacs$);
+    };
+
     return (
         <Box className={classes.container}>
-            <Box className={classes.headerInfo}>
-                <Stack direction="column" spacing={1} sx={{ display: 'flex', flexDirection: 'column' }}>
+            {/* Header */}
+            <Box className={classes.headerInfo} sx={{ flexDirection: matches ? 'column' : 'row' }}>
+                <Stack
+                    direction="column"
+                    spacing={1}
+                    sx={{ display: 'flex', flexDirection: 'column', marginBottom: matches ? '6px' : '0' }}
+                >
                     <Stack direction="row" spacing={2}>
                         <Tooltip title="Patient Id" placement="top">
                             <span className={classes.iconText}>
@@ -230,7 +295,11 @@ const ImageSelect = () => {
                         </Tooltip>
                     </Stack>
                 </Stack>
-                <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'end', width: '100%' }}>
+                <Stack
+                    direction="row"
+                    spacing={2}
+                    sx={{ alignItems: 'center', justifyContent: matches ? 'start' : 'end', width: '100%' }}
+                >
                     <FileSelect
                         disabled={isDateError}
                         label="Open Image Files"
@@ -244,21 +313,43 @@ const ImageSelect = () => {
                         onChange={onAddDicomFile}
                     />
                     <PrimaryButton
+                        size="small"
+                        startIcon={<ImFolderOpen style={{ fontSize: '24px' }} />}
+                        onClick={() => dicomDirectoryModalRef?.current?.openModal()}
+                    >
+                        <Typography variant="button" component="span">
+                            Open DICOMDIR
+                        </Typography>
+                    </PrimaryButton>
+                </Stack>
+            </Box>
+            {/* DicomViewer */}
+            <DicomViewer imageIds={imageIds} />
+            {/* Footer */}
+            <Box className={classes.footer}>
+                <Stack direction="row" spacing={2} sx={{ alignItems: 'center', justifyContent: 'end', width: '100%' }}>
+                    <PrimaryButton
+                        size="small"
                         disabled={isDateError || imageFileList.length === 0}
                         variant="contained"
                         onClick={onSaveToOwnPacs}
                         startIcon={<SaveIcon sx={{ fontSize: '24px' }} />}
                     >
-                        Save Order
+                        <Typography variant="button" component="span">
+                            Save Order
+                        </Typography>
                     </PrimaryButton>
                     <>
                         <PrimaryButton
+                            size="small"
                             disabled={isDateError || imageFileList.length === 0}
                             variant="contained"
                             onClick={() => messageModalRef?.current?.openModal()}
                             startIcon={<SendIcon sx={{ fontSize: '24px' }} />}
                         >
-                            Send DICOM
+                            <Typography variant="button" component="span">
+                                Send DICOM
+                            </Typography>
                         </PrimaryButton>
                         <ConfirmModal
                             ref={messageModalRef}
@@ -268,7 +359,6 @@ const ImageSelect = () => {
                     </>
                 </Stack>
             </Box>
-            <DicomViewer imageIds={imageIds} />
             {/* Duplicate warning modal */}
             <ConfirmModal
                 ref={duplicateModalRef}
@@ -293,6 +383,8 @@ const ImageSelect = () => {
                     })}
                 </Stack>
             </ConfirmModal>
+            {/* Dicom Directory modal */}
+            <DicomDirectoryModal ref={dicomDirectoryModalRef} onDicomDirPrepared={onSaveDicomDirToPacs} />
         </Box>
     );
 };

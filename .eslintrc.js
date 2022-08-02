@@ -75,5 +75,7 @@ module.exports = {
         'jsx-a11y/label-has-associated-control': 'off',
         'no-restricted-syntax': ['error'],
         'no-return-assign': 0,
+        'lines-between-class-members': 'off',
+        '@typescript-eslint/lines-between-class-members': 'off',
     },
 };

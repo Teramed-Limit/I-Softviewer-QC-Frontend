@@ -35,6 +35,15 @@
     align-content: space-between;
     width: 100%;
     background: #102740;
-    padding: 20px;
+    padding: 12px;
     border-bottom: 2px solid #494949;
+}
+
+.footer {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 12px;
+    border-top: 2px solid #494949;
+	background: radial-gradient(#154a93, transparent);
 }

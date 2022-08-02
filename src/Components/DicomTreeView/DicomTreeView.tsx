@@ -5,7 +5,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { Box } from '@mui/material';
 import cx from 'classnames';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { Draggable, Droppable } from 'react-beautiful-dnd';
 
 import { DicomIOD } from '../../interface/dicom-data';
 import {
@@ -66,56 +66,53 @@ const DicomTreeView = ({ dicomIOD, onImageSelected }: Props) => {
         onImageSelected(instanceUID);
     };
 
-    const onDragEnd = () => {};
+    // const onDragEnd = () => {};
 
     const patientLabel = () => `${dicomIOD?.dicomPatient.patientsName} (${dicomIOD?.dicomPatient.patientId})`;
     const studyLabel = (study: DicomStudyTree) => `${study.accessionNumber} (${study.modality})`;
-    const seriesLabel = (series: DicomSeriesTree, index: number) => `Series #${index}`;
-    const imageLabel = (image: DicomImageTree) => `${image.sopInstanceUID}`;
+    const seriesLabel = (series: DicomSeriesTree, index: number) => `Series #${index + 1}`;
+    const imageLabel = (image: DicomImageTree, index: number) => `Image #${index + 1}`;
 
     return (
-        <Box sx={{ height: '100%', overflow: 'auto' }}>
+        <Box sx={{ height: '100%', overflow: 'auto', p: '0 4px' }}>
             <div className={classes.node}>
                 <div className={classes.nodeContent}>
                     <AccountCircleIcon />
                     <span className={classes.text}>{patientLabel()}</span>
                 </div>
             </div>
-            <DragDropContext onDragEnd={() => onDragEnd()}>
-                <Node<DicomStudyTree>
-                    isRoot
-                    nodeKey="dicomStudy"
-                    nodes={dicomIODTree.dicomStudy}
-                    nodeIdKey="studyInstanceUID"
-                    labelKey={studyLabel}
-                    level={0}
+
+            <Node<DicomStudyTree>
+                isRoot
+                nodeKey="dicomStudy"
+                nodes={dicomIODTree.dicomStudy}
+                nodeIdKey="studyInstanceUID"
+                labelKey={studyLabel}
+                level={0}
+                onNodeClick={onNodeClick}
+            >
+                <Node<DicomSeriesTree>
+                    nodeKey="dicomSeries"
+                    nodes={dicomIODTree.dicomSeries}
+                    nodeIdKey="seriesInstanceUID"
+                    labelKey={seriesLabel}
+                    parentNodeId="studyInstanceUID"
+                    level={1}
                     onNodeClick={onNodeClick}
                 >
-                    <Node<DicomSeriesTree>
-                        nodeKey="dicomSeries"
-                        nodes={dicomIODTree.dicomSeries}
-                        nodeIdKey="seriesInstanceUID"
-                        labelKey={seriesLabel}
-                        parentNodeId="studyInstanceUID"
-                        droppable
-                        level={1}
-                        onNodeClick={onNodeClick}
-                    >
-                        <Node<DicomImageTree>
-                            nodeKey="dicomImage"
-                            nodes={dicomIODTree.dicomImage}
-                            nodeIdKey="sopInstanceUID"
-                            labelKey={imageLabel}
-                            parentNodeId="seriesInstanceUID"
-                            draggable
-                            scrollable
-                            level={2}
-                            selectedNodes={selectedImages}
-                            onNodeClick={onImageNodeClick}
-                        />
-                    </Node>
+                    <Node<DicomImageTree>
+                        nodeKey="dicomImage"
+                        nodes={dicomIODTree.dicomImage}
+                        nodeIdKey="sopInstanceUID"
+                        labelKey={imageLabel}
+                        parentNodeId="seriesInstanceUID"
+                        scrollable
+                        level={2}
+                        selectedNodes={selectedImages}
+                        onNodeClick={onImageNodeClick}
+                    />
                 </Node>
-            </DragDropContext>
+            </Node>
         </Box>
     );
 };
