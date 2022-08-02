@@ -383,7 +383,7 @@ export const rootTheme = createTheme({
             contrastText: 'rgba(0, 0, 0, 0.87)',
         },
         neutral: {
-            main: '#ffb860',
+            main: '#ff940f',
             contrastText: '#fff',
         },
         contrastThreshold: 3,

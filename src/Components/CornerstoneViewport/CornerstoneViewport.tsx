@@ -17,12 +17,12 @@ import {
     ImageProgressEvent,
     ImageRenderedEvent,
 } from '../../interface/cornerstone-viewport-event';
+import { isEmptyOrNil } from '../../utils/general';
 import ImageScrollbar from './ImageScrollbar/ImageScrollbar';
 import { cornerstoneEx as cornerstone } from './interface/cornerstone-extend';
 import LoadingIndicator from './LoadingIndicator/LoadingIndicator';
 import ViewportOrientationMarkers from './ViewportOrientationMarkers/ViewportOrientationMarkers';
 import ViewportOverlay from './ViewportOverlay/ViewportOverlay';
-
 import './CornerstoneViewport.scss';
 
 const requestType = 'interaction';
@@ -32,7 +32,7 @@ interface Props {
     // unique index
     viewPortIndex: number;
     // container element
-    viewerElement: HTMLElement;
+    viewerElement?: HTMLElement;
     // imageUrl list
     imageIds: string[];
     // initial viewport
@@ -52,7 +52,7 @@ interface Props {
     isPlaying: boolean;
     frameRate: number; // Between 1 and ?
     // Called when viewport should be set to active
-    setViewportActive: (viewPortIndex: number) => void;
+    setViewportActive?: (viewPortIndex: number) => void;
     // Cornerstone Events
     onNewImageCallBack?: (event, viewportIndex) => void;
     onElementEnabled?: (event) => void;
@@ -104,8 +104,8 @@ function CornerstoneViewport({
     const element = useRef<HTMLDivElement>(null);
     // Viewport state
     const [viewPortElement, setEnableElement] = useState<HTMLDivElement>();
-    const [imageIdList] = useState(imageIds);
-    const [imageId] = useState(imageIds[0]);
+    const [imageIdList, setImageIdList] = useState(imageIds);
+    const [imageId, setImageId] = useState(imageIds[0]);
     const [imageIdIndex, setImageIdIndex] = useState(0);
     const [imageProgress, setImageProgress] = useState(0);
     const [, setNumImagesLoaded] = useState(0);
@@ -118,6 +118,11 @@ function CornerstoneViewport({
     const [rotationDegree, setRotationDegree] = useState(0);
     const [isFlippedVertically, setIsFlippedVertically] = useState<boolean>(false);
     const [isFlippedHorizontally, setIsFlippedHorizontally] = useState<boolean>(false);
+
+    useEffect(() => {
+        setImageIdList(imageIds);
+        setImageId(imageIds[0]);
+    }, [imageIds]);
 
     // image loader load
     const onImageLoaded = useCallback(() => {
@@ -134,7 +139,7 @@ function CornerstoneViewport({
     }, []);
 
     // cornerstone tools event
-    const onViewportActive = useCallback(() => setViewportActive(viewPortIndex), [setViewportActive, viewPortIndex]);
+    const onViewportActive = useCallback(() => setViewportActive?.(viewPortIndex), [setViewportActive, viewPortIndex]);
 
     // image render
     const onNewImage = useMemo(
@@ -167,6 +172,7 @@ function CornerstoneViewport({
     // canvas mouse wheel
     const onCanvasWheel = useCallback(
         (event: CornerstoneViewportEvent<CanvasMouseWheelEvent>) => {
+            if (!viewerElement) return;
             viewerElement.scroll({
                 top: viewerElement.scrollTop + (event.detail.detail.deltaY < 0 ? -100 : 100),
                 behavior: 'auto',
@@ -178,7 +184,7 @@ function CornerstoneViewport({
     const imageSliderOnInputCallback = useCallback(
         (value) => {
             if (!element.current) return;
-            setViewportActive(viewPortIndex);
+            setViewportActive?.(viewPortIndex);
             scrollToIndex(element.current, value);
         },
         [setViewportActive, viewPortIndex],
@@ -276,7 +282,9 @@ function CornerstoneViewport({
                 onContextMenu={(e) => e.preventDefault()}
                 onMouseDown={(e) => e.preventDefault()}
             >
-                {(isLoading || error) && <LoadingIndicator error={error} percentComplete={imageProgress} />}
+                {(isLoading || error) && !isEmptyOrNil(imageIds) && (
+                    <LoadingIndicator error={error} percentComplete={imageProgress} />
+                )}
                 {/* This classname is important in that it tells `cornerstone` to not
                  * create a new canvas element when we "enable" the `viewport-element`
                  */}

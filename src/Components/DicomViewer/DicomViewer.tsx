@@ -1,11 +1,12 @@
-import React, { useCallback, useLayoutEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
+import { Pagination } from '@mui/material';
 import cx from 'classnames';
-import { Viewport } from 'cornerstone-core';
+import cornerstone, { Viewport } from 'cornerstone-core';
 
 // import cornerstoneTools from 'cornerstone-tools';
-import { useResize } from '../../hooks/useResize';
 import { CornerstoneViewportEvent, NewImageEvent, RenderImage } from '../../interface/cornerstone-viewport-event';
+import { isEmptyOrNil } from '../../utils/general';
 import CornerstoneViewport from '../CornerstoneViewport/CornerstoneViewport';
 import DicomViewerToolbar from '../DicomViewerToolbar/DicomViewerToolbar';
 import classes from './DicomViewer.module.scss';
@@ -43,34 +44,37 @@ const tools = [
 ];
 
 function DicomViewer({ imageIds }: Props) {
-    const viewerRef = React.useRef<HTMLDivElement>(null);
-
     const [row, setRow] = useState(2);
     const [col, setCol] = useState(2);
+    const [page, setPage] = useState(1);
+    const [pageCount, setPageCount] = useState(1);
+    const [displayImageIds, setDisplayImageIds] = useState<string[]>([]);
     const [initViewport] = useState<Viewport>({});
     const [renderImages, setRenderImages] = useState<{ [keys: string]: RenderImage }>({});
     const [activeViewportIndex, setActiveViewportIndex] = useState(0);
     const [activeViewport, setActiveViewport] = useState<RenderImage>();
     const [activeTool, setActiveTool] = useState('Wwwc');
-    const [viewerHeight, setViewerHeight] = useState(0);
-
-    useResize(() => {
-        if (viewerRef.current === null) return;
-        setViewerHeight(viewerRef.current.offsetHeight);
-    }, 0);
-
-    useLayoutEffect(() => {
-        if (viewerRef.current === null) return;
-        setTimeout(() => {
-            if (viewerRef.current === null) return;
-            setViewerHeight(viewerRef.current.offsetHeight);
-        }, 1000);
-    }, []);
 
     const changeLayout = (selRow: number, selCol: number) => {
         setRow(selRow);
         setCol(selCol);
+        setPageCount(Math.ceil(imageIds.length / selRow / selCol));
+        setPage(1);
+        onPageSelect(1, selRow * selCol);
     };
+
+    const onPageSelect = useCallback(
+        (pageNumber: number, displayCount: number) => {
+            const chunks: string[][] = [];
+            for (let i = 0; i < imageIds.length; i += displayCount) {
+                const chunk = imageIds.slice(i, i + displayCount);
+                chunks.push(chunk);
+            }
+            setPage(pageNumber);
+            setDisplayImageIds(chunks[pageNumber - 1]);
+        },
+        [imageIds],
+    );
 
     const onViewportActive = useCallback(
         (index) => {
@@ -82,6 +86,7 @@ function DicomViewer({ imageIds }: Props) {
 
     const onNewImage = useCallback((event: CornerstoneViewportEvent<NewImageEvent>, viewportIndex) => {
         // wwwcSynchronizer.add(viewPortElement.element);
+        cornerstone.reset(event.detail.element);
         setRenderImages((list) => {
             return {
                 ...list,
@@ -96,6 +101,13 @@ function DicomViewer({ imageIds }: Props) {
         });
     }, []);
 
+    useEffect(() => {
+        if (isEmptyOrNil(imageIds)) return;
+        setPageCount(Math.ceil(imageIds.length / 2 / 2));
+        setPage(1);
+        onPageSelect(1, 4);
+    }, [imageIds, onPageSelect]);
+
     return (
         <>
             <DicomViewerToolbar
@@ -106,7 +118,7 @@ function DicomViewer({ imageIds }: Props) {
                 changeLayout={changeLayout}
                 setActiveTool={setActiveTool}
             />
-            <div className={classes.viewer} ref={viewerRef}>
+            <div className={classes.viewer}>
                 <div
                     className={classes.grid}
                     style={{
@@ -114,45 +126,40 @@ function DicomViewer({ imageIds }: Props) {
                         gridTemplateColumns: `repeat(${col}, ${100 / col}%)`,
                     }}
                 >
-                    {imageIds.map((imageId, viewportIndex) => (
-                        <div
-                            key={imageId}
+                    {displayImageIds.map((imageId, viewportIndex) => (
+                        <CornerstoneViewport
+                            key={viewportIndex}
+                            className={cx(classes.viewport, {
+                                [classes.active]: activeViewportIndex === viewportIndex,
+                            })}
                             style={{
-                                height: `${viewerHeight / row}px`,
-                                minHeight: `${viewerHeight / row}px`,
-                                maxHeight: `${viewerHeight / row}px`,
+                                height: `${100}%`,
                                 flex: `1 1 auto`,
                                 padding: '2px',
+                                border: '2px #666060 solid',
                             }}
-                        >
-                            {viewerRef.current && viewerHeight !== 0 && (
-                                <>
-                                    <CornerstoneViewport
-                                        className={cx(classes.viewport, {
-                                            [classes.active]: activeViewportIndex === viewportIndex,
-                                        })}
-                                        style={{
-                                            height: '100%',
-                                            border: '2px #666060 solid',
-                                        }}
-                                        viewerElement={viewerRef.current}
-                                        viewPortIndex={viewportIndex}
-                                        tools={tools}
-                                        imageIds={[imageId]}
-                                        // imageIds={imageIds}
-                                        isPlaying={false}
-                                        frameRate={22}
-                                        activeTool={activeTool}
-                                        setViewportActive={onViewportActive}
-                                        initialViewport={initViewport}
-                                        onNewImageCallBack={onNewImage}
-                                    />
-                                </>
-                            )}
-                        </div>
+                            viewPortIndex={viewportIndex}
+                            tools={tools}
+                            imageIds={[imageId]}
+                            isPlaying={false}
+                            frameRate={22}
+                            activeTool={activeTool}
+                            setViewportActive={onViewportActive}
+                            initialViewport={initViewport}
+                            onNewImageCallBack={onNewImage}
+                        />
                     ))}
                 </div>
             </div>
+            <Pagination
+                className={classes.pagination}
+                boundaryCount={3}
+                siblingCount={3}
+                page={page}
+                count={pageCount}
+                color={'neutral' as any}
+                onChange={(event, pageNum: number) => onPageSelect(pageNum, row * col)}
+            />
         </>
     );
 }

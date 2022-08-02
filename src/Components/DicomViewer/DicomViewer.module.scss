@@ -8,6 +8,16 @@
     height: 100%;
     overflow: auto;
     margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 6px;
 }
 
 .drawerPaper {

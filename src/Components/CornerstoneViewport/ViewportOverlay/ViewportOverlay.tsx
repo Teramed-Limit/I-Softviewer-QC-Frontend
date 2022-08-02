@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react';
+import React from 'react';
 
 import cornerstone from 'cornerstone-core';
 
@@ -29,82 +29,76 @@ interface Props {
     stackSize: number;
 }
 
-class ViewportOverlay extends PureComponent<Props> {
-    render() {
-        const { imageId, scale, windowWidth, windowCenter } = this.props;
+const ViewportOverlay = ({ imageId, scale, windowWidth, windowCenter, imageIndex, stackSize }: Props) => {
+    const zoomPercentage = formatNumberPrecision(scale * 100, 0);
+    const seriesMetadata = cornerstone.metaData.get('generalSeriesModule', imageId) || {};
+    const imagePlaneModule = cornerstone.metaData.get('imagePlaneModule', imageId) || {};
+    const { rows, columns, sliceThickness, sliceLocation } = imagePlaneModule;
+    const { seriesNumber, seriesDescription } = seriesMetadata;
 
-        if (!imageId) {
-            return null;
-        }
+    const generalStudyModule = cornerstone.metaData.get('generalStudyModule', imageId) || {};
+    const { studyDate, studyTime, studyDescription } = generalStudyModule;
 
-        const zoomPercentage = formatNumberPrecision(scale * 100, 0);
-        const seriesMetadata = cornerstone.metaData.get('generalSeriesModule', imageId) || {};
-        const imagePlaneModule = cornerstone.metaData.get('imagePlaneModule', imageId) || {};
-        const { rows, columns, sliceThickness, sliceLocation } = imagePlaneModule;
-        const { seriesNumber, seriesDescription } = seriesMetadata;
+    const patientModule = cornerstone.metaData.get('patientModule', imageId) || {};
+    const { patientId, patientName } = patientModule;
 
-        const generalStudyModule = cornerstone.metaData.get('generalStudyModule', imageId) || {};
-        const { studyDate, studyTime, studyDescription } = generalStudyModule;
+    const generalImageModule = cornerstone.metaData.get('generalImageModule', imageId) || {};
+    const { instanceNumber } = generalImageModule;
 
-        const patientModule = cornerstone.metaData.get('patientModule', imageId) || {};
-        const { patientId, patientName } = patientModule;
+    const cineModule = cornerstone.metaData.get('cineModule', imageId) || {};
+    const { frameTime } = cineModule;
 
-        const generalImageModule = cornerstone.metaData.get('generalImageModule', imageId) || {};
-        const { instanceNumber } = generalImageModule;
+    const frameRate = formatNumberPrecision(1000 / frameTime, 1) || 24;
+    const compression = getCompression(imageId);
 
-        const cineModule = cornerstone.metaData.get('cineModule', imageId) || {};
-        const { frameTime } = cineModule;
-
-        const frameRate = formatNumberPrecision(1000 / frameTime, 1) || 24;
-        const compression = getCompression(imageId);
-
-        let wwwc;
-        if (typeof windowWidth === 'string' && typeof windowCenter === 'string') {
-            wwwc = `W: ${windowWidth} L: ${windowCenter}`;
-        } else if (typeof windowWidth === 'number' && typeof windowCenter === 'number') {
-            wwwc = `W: ${windowWidth.toFixed(0)} 
+    let wwwc;
+    if (typeof windowWidth === 'string' && typeof windowCenter === 'string') {
+        wwwc = `W: ${windowWidth} L: ${windowCenter}`;
+    } else if (typeof windowWidth === 'number' && typeof windowCenter === 'number') {
+        wwwc = `W: ${windowWidth.toFixed(0)} 
                       L: ${windowCenter.toFixed(0)}`;
-        }
-
-        const imageDimensions = `${columns} x ${rows}`;
-
-        const { imageIndex, stackSize } = this.props;
-
-        const normal = (
-            <>
-                <div className="top-left overlay-element">
-                    <div>{formatPN(patientName)}</div>
-                    <div>{patientId}</div>
-                </div>
-                <div className="top-right overlay-element">
-                    <div>{studyDescription}</div>
-                    <div>
-                        {formatDA(studyDate)} {formatTM(studyTime)}
-                    </div>
-                </div>
-                <div className="bottom-right overlay-element">
-                    <div>Zoom: {zoomPercentage}%</div>
-                    <div>{wwwc}</div>
-                    <div className="compressionIndicator">{compression}</div>
-                </div>
-                <div className="bottom-left overlay-element">
-                    <div>{seriesNumber >= 0 ? `Ser: ${seriesNumber}` : ''}</div>
-                    <div>{stackSize > 1 ? `Img: ${instanceNumber} ${imageIndex}/${stackSize}` : ''}</div>
-                    <div>
-                        {frameRate >= 0 ? `${formatNumberPrecision(frameRate, 2)} FPS` : ''}
-                        <div>{imageDimensions}</div>
-                        <div>
-                            {isValidNumber(sliceLocation) ? `Loc: ${formatNumberPrecision(sliceLocation, 2)} mm ` : ''}
-                            {sliceThickness ? `Thick: ${formatNumberPrecision(sliceThickness, 2)} mm` : ''}
-                        </div>
-                        <div>{seriesDescription}</div>
-                    </div>
-                </div>
-            </>
-        );
-
-        return <div className="ViewportOverlay">{normal}</div>;
     }
-}
+
+    const imageDimensions = `${columns} x ${rows}`;
+
+    return (
+        <>
+            {imageId && (
+                <div className="ViewportOverlay">
+                    <div className="top-left overlay-element">
+                        <div>{formatPN(patientName)}</div>
+                        <div>{patientId}</div>
+                    </div>
+                    <div className="top-right overlay-element">
+                        <div>{studyDescription}</div>
+                        <div>
+                            {formatDA(studyDate)} {formatTM(studyTime)}
+                        </div>
+                    </div>
+                    <div className="bottom-right overlay-element">
+                        <div>Zoom: {zoomPercentage}%</div>
+                        <div>{wwwc}</div>
+                        <div className="compressionIndicator">{compression}</div>
+                    </div>
+                    <div className="bottom-left overlay-element">
+                        <div>{seriesNumber >= 0 ? `Ser: ${seriesNumber}` : ''}</div>
+                        <div>{stackSize > 1 ? `Img: ${instanceNumber} ${imageIndex}/${stackSize}` : ''}</div>
+                        <div>
+                            {frameRate >= 0 ? `${formatNumberPrecision(frameRate, 2)} FPS` : ''}
+                            <div>{imageDimensions}</div>
+                            <div>
+                                {isValidNumber(sliceLocation)
+                                    ? `Loc: ${formatNumberPrecision(sliceLocation, 2)} mm `
+                                    : ''}
+                                {sliceThickness ? `Thick: ${formatNumberPrecision(sliceThickness, 2)} mm` : ''}
+                            </div>
+                            <div>{seriesDescription}</div>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+};
 
 export default ViewportOverlay;
