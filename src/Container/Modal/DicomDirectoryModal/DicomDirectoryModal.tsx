@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import cornerstone from 'cornerstone-core';
 import cornerstoneWADOImageLoader from 'cornerstone-wado-image-loader';
 import { useSetRecoilState } from 'recoil';
+import { finalize } from 'rxjs';
 
 import { loading } from '../../../atoms/loading';
 import CornerstoneViewport from '../../../Components/CornerstoneViewport/CornerstoneViewport';
@@ -22,7 +23,6 @@ import { CornerstoneViewportEvent, NewImageEvent } from '../../../interface/corn
 import { RootRecord, SeriesRecord } from '../../../interface/dicom-directory-record';
 import { isEmptyOrNil } from '../../../utils/general';
 import BaseModal from '../../BaseModal/BaseModal';
-import { finalize } from 'rxjs';
 
 interface TreeItemProps {
     uniqueKey: string;

@@ -124,11 +124,14 @@ const ImageSelect = () => {
 
     // CUHK custom study desc.
     const customDescription = (oriStudyDesc: string): string => {
-        let addedCustomText = isEmptyOrNil(oriStudyDesc)
-            ? `${institution}, ${state.patientId}`
-            : `, ${institution}, ${state.patientId}`;
+        let addedCustomText;
 
-        if (isEmptyOrNil(institution)) addedCustomText = '';
+        if (isEmptyOrNil(institution))
+            addedCustomText = isEmptyOrNil(oriStudyDesc) ? `${state.patientId}` : `, ${state.patientId}`;
+        else
+            addedCustomText = isEmptyOrNil(oriStudyDesc)
+                ? `${institution}, ${state.patientId}`
+                : `, ${institution}, ${state.patientId}`;
 
         return oriStudyDesc.slice(0, 64 - addedCustomText.length) + addedCustomText;
     };
