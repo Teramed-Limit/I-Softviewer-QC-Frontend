@@ -22,6 +22,7 @@ import { CornerstoneViewportEvent, NewImageEvent } from '../../../interface/corn
 import { RootRecord, SeriesRecord } from '../../../interface/dicom-directory-record';
 import { isEmptyOrNil } from '../../../utils/general';
 import BaseModal from '../../BaseModal/BaseModal';
+import { finalize } from 'rxjs';
 
 interface TreeItemProps {
     uniqueKey: string;
@@ -88,21 +89,23 @@ const DicomDirectoryModal = forwardRef<BaseModalHandle, Props>((props, ref) => {
 
     const onParseDicomDir = (event) => {
         setLoading(true);
-        parseDicomDir(event).subscribe((res) => {
-            const defaultExpandNodeIdList = res.dicomDirectoryRecord?.lowerLevelRecords.map(
-                (record) => record.patientId,
-            );
-            setNodeExpanded(defaultExpandNodeIdList);
-            setDicomDirRecord(res.dicomDirectoryRecord);
-            setFileLookup(res.fileLookup);
-            // Clean up and reset state
-            setImageIds([]);
-            setBtnDisable(true);
-            setSelectedStudy({});
-            filesCache.current = {};
-            cornerstoneWADOImageLoader.wadouri.fileManager.purge();
-            setLoading(false);
-        });
+        parseDicomDir(event)
+            .pipe(finalize(() => setLoading(false)))
+            .subscribe((res) => {
+                const defaultExpandNodeIdList = res.dicomDirectoryRecord?.lowerLevelRecords.map(
+                    (record) => record.patientId,
+                );
+                setNodeExpanded(defaultExpandNodeIdList);
+                setDicomDirRecord(res.dicomDirectoryRecord);
+                setFileLookup(res.fileLookup);
+                // Clean up and reset state
+                setImageIds([]);
+                setBtnDisable(true);
+                setSelectedStudy({});
+                filesCache.current = {};
+                cornerstoneWADOImageLoader.wadouri.fileManager.purge();
+                setLoading(false);
+            });
     };
 
     const onStudySelected = (check: boolean, key: string) => {
@@ -153,7 +156,7 @@ const DicomDirectoryModal = forwardRef<BaseModalHandle, Props>((props, ref) => {
                     <FileSelect directory label="Select the directory with DICOMDIR" onChange={onParseDicomDir} />
                     <Box
                         sx={{
-                            height: '600px',
+                            height: '400px',
                             width: '500px',
                             flexGrow: 1,
                             border: '2px #666060 solid',
