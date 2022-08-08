@@ -66,7 +66,7 @@ export default function FreeCreateSelection({ label, type, onChange, labelFormat
                     }
                     // Null option
                     else {
-                        onChange('');
+                        handleValueChanged(null);
                     }
                 }}
                 filterOptions={(options, params) => {
@@ -129,6 +129,9 @@ export default function FreeCreateSelection({ label, type, onChange, labelFormat
                 onConfirmCallback={(newOptions, addedOption) => {
                     setOptions(newOptions);
                     handleValueChanged(addedOption);
+                }}
+                onCancelCallback={() => {
+                    setInputText('');
                 }}
             />
         </>

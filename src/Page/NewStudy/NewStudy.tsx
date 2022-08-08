@@ -81,6 +81,7 @@ const NewStudy = () => {
                 accessionNum,
                 studyInstanceUID,
                 seriesInstanceUID: `${studyInstanceUID}.1`,
+                episodeNo: selectedRow.episodeNo,
             } as CreateStudyParams,
         });
     };

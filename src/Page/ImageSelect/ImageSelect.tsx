@@ -127,11 +127,11 @@ const ImageSelect = () => {
         let addedCustomText;
 
         if (isEmptyOrNil(institution))
-            addedCustomText = isEmptyOrNil(oriStudyDesc) ? `${state.patientId}` : `, ${state.patientId}`;
+            addedCustomText = isEmptyOrNil(oriStudyDesc) ? `${state.episodeNo}` : `, ${state.episodeNo}`;
         else
             addedCustomText = isEmptyOrNil(oriStudyDesc)
-                ? `${institution}, ${state.patientId}`
-                : `, ${institution}, ${state.patientId}`;
+                ? `${institution}, ${state.episodeNo}`
+                : `, ${institution}, ${state.episodeNo}`;
 
         return oriStudyDesc.slice(0, 64 - addedCustomText.length) + addedCustomText;
     };
@@ -275,7 +275,9 @@ const ImageSelect = () => {
                                 <FreeCreateSelection
                                     type="Institution"
                                     value={institution}
-                                    onChange={(value) => setInstitution(value)}
+                                    onChange={(value) => {
+                                        setInstitution(value);
+                                    }}
                                 />
                             </span>
                         </Tooltip>
@@ -375,6 +377,7 @@ const ImageSelect = () => {
                     {duplicateStudyQueryData.map((study, index) => {
                         return (
                             <Link
+                                key={study.studyInstanceUID}
                                 style={{ color: 'red' }}
                                 to={`/qualityControl/viewer/studies/studyInstanceUID/${study.studyInstanceUID}`}
                                 target="_blank"

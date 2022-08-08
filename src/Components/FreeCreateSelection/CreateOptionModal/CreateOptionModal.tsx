@@ -16,6 +16,7 @@ type CreateOptionProps = {
     defaultLabel: string;
     defaultValue: string;
     onConfirmCallback: (newOptions: AutoCompleteOption[], addedOption: Option) => void;
+    onCancelCallback: () => void;
 };
 
 const CreateOptionModal = forwardRef<BaseModalHandle, CreateOptionProps>((props, ref) => {
@@ -64,6 +65,11 @@ const CreateOptionModal = forwardRef<BaseModalHandle, CreateOptionProps>((props,
             });
     };
 
+    const onCancel = () => {
+        props?.onCancelCallback?.();
+        setModalOpen(false);
+    };
+
     return (
         <BaseModal
             width="40%"
@@ -74,6 +80,7 @@ const CreateOptionModal = forwardRef<BaseModalHandle, CreateOptionProps>((props,
                 actionLabel: 'Save',
                 actionDisabled: labelInvalid || valueInvalid,
                 actionHandler: onConfirm,
+                cancelActionHandler: onCancel,
             }}
         >
             <Stack direction="column" spacing={1}>

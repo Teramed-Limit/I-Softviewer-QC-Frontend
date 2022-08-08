@@ -7,4 +7,5 @@ export interface CreateStudyParams {
     seriesInstanceUID: string;
     birthdate: string;
     sex: string;
+    episodeNo: string;
 }
