@@ -1,4 +1,4 @@
-export interface CreateStudyParams {
+export interface HISStudyParams {
     patientId: string;
     patientName: string;
     otherPatientName: string;

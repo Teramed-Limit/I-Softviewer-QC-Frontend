@@ -45,13 +45,13 @@ export const hydrateDataset = (file): Promise<{ dcmDataset: dicomParser.DataSet;
     });
 };
 
-export const hydrateBuffer = (file: File): Observable<FileBuffer> => {
+export const hydrateBuffer = (file: File, type): Observable<FileBuffer> => {
     const fileReader = new FileReader();
     return new Observable((observer: Observer<FileBuffer>) => {
         fileReader.readAsDataURL(file);
         fileReader.onload = () => {
             const buffer = (fileReader.result as string).split(',')[1];
-            observer.next({ buffer, file });
+            observer.next({ buffer, file, type });
             observer.complete();
         };
         fileReader.onerror = () => {};

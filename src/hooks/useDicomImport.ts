@@ -18,14 +18,15 @@ export const BufferType = {
 export interface FileBuffer {
     file: File;
     buffer: string;
+    type: number;
+}
+
+export interface ImageFile extends FileBuffer {
+    error?: ErrorReason;
 }
 
 export interface DicomFile extends FileBuffer {
-    type: number;
-    sopClassUID: string;
-    studyDate?: string;
-    studyDescription: string;
-    modality: string;
+    dcmDataset: dicomParser.DataSet;
     error?: ErrorReason;
 }
 
@@ -35,12 +36,12 @@ export interface ErrorReason {
 }
 
 export const useDicomImport = () => {
-    const validateImageFile = (file: File): Observable<DicomFile> => {
+    const validateImageFile = (file: File): Observable<ImageFile> => {
         const fileReader = new FileReader();
         const { type, name } = file;
-        return hydrateBuffer(file).pipe(
+        return hydrateBuffer(file, BufferType.bmp).pipe(
             concatMap((fileBuffer: FileBuffer) => {
-                return new Observable((observer: Observer<DicomFile>) => {
+                return new Observable((observer: Observer<ImageFile>) => {
                     fileReader.readAsDataURL(file);
                     fileReader.onload = () => {
                         if (isImage(type)) {
@@ -48,10 +49,6 @@ export const useDicomImport = () => {
                             image.onload = () => {
                                 observer.next({
                                     ...fileBuffer,
-                                    sopClassUID: '1.2.840.10008.5.1.4.1.1.7',
-                                    modality: 'SC',
-                                    studyDescription: '',
-                                    type: BufferType.bmp,
                                 });
                                 observer.complete();
                             };
@@ -74,7 +71,7 @@ export const useDicomImport = () => {
     const validateDcmFile = (file: File): Observable<DicomFile> => {
         const fileReader = new FileReader();
         const { name } = file;
-        return hydrateBuffer(file).pipe(
+        return hydrateBuffer(file, BufferType.dcm).pipe(
             concatMap((fileBuffer: FileBuffer) => {
                 return new Observable((observer: Observer<DicomFile>) => {
                     fileReader.readAsArrayBuffer(file);
@@ -83,17 +80,9 @@ export const useDicomImport = () => {
                             const arrayBuffer = fileReader.result as ArrayBuffer;
                             const byteArray = new Uint8Array(arrayBuffer);
                             const dcmDataset = dicomParser.parseDicom(byteArray);
-                            const sopClassUID = dcmDataset.string('x00080016');
-                            const modality = dcmDataset.string('x00080060');
-                            const studyDescription = dcmDataset.string('x00081030');
-                            const studyDate = dcmDataset.string('x00080020');
                             observer.next({
                                 ...fileBuffer,
-                                sopClassUID,
-                                modality,
-                                studyDescription,
-                                studyDate,
-                                type: BufferType.dcm,
+                                dcmDataset,
                             });
                             observer.complete();
                         } catch (err) {
@@ -109,7 +98,7 @@ export const useDicomImport = () => {
         );
     };
 
-    const importJPG = (files: File[]): Observable<DicomFile[]> => {
+    const importJPG = (files: File[]): Observable<ImageFile[]> => {
         const numberOfFiles = files.length;
 
         return from(files).pipe(

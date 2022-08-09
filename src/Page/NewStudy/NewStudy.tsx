@@ -18,7 +18,7 @@ import { SVG } from '../../icon';
 import { GenerateStudyUniqueId } from '../../interface/generate-study-uniqueId';
 import { HISData } from '../../interface/his-data';
 import { MessageType } from '../../interface/notification';
-import { CreateStudyParams } from '../../interface/study-params';
+import { HISStudyParams } from '../../interface/study-params';
 import classes from './NewStudy.module.scss';
 
 const NewStudy = () => {
@@ -82,7 +82,7 @@ const NewStudy = () => {
                 studyInstanceUID,
                 seriesInstanceUID: `${studyInstanceUID}.1`,
                 episodeNo: selectedRow.episodeNo,
-            } as CreateStudyParams,
+            } as HISStudyParams,
         });
     };
 

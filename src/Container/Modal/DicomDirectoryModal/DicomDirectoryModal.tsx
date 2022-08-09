@@ -5,7 +5,7 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import TreeItem from '@mui/lab/TreeItem/TreeItem';
 import TreeView from '@mui/lab/TreeView/TreeView';
-import { Checkbox, Stack } from '@mui/material';
+import { Radio, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import cornerstone from 'cornerstone-core';
@@ -26,28 +26,17 @@ import BaseModal from '../../BaseModal/BaseModal';
 
 interface TreeItemProps {
     uniqueKey: string;
+    selectedValue?: string;
     label: string;
     caption: string;
     checkBox?: boolean;
-    isCheck?: boolean;
-    onCheck?: (check: boolean, key: string) => void;
+    onCheck?: (e) => void;
 }
 
-const StyledTreeItem = ({ uniqueKey, label, caption, checkBox = false, isCheck, onCheck }: TreeItemProps) => {
-    const [check, setCheck] = useState(isCheck || false);
+const StyledTreeItem = ({ uniqueKey, selectedValue, label, caption, checkBox = false, onCheck }: TreeItemProps) => {
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', p: 0.5, pr: 0 }}>
-            {checkBox && (
-                <Checkbox
-                    checked={check}
-                    color="secondary"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setCheck((c) => !c);
-                        onCheck?.((e as unknown as React.ChangeEvent<HTMLInputElement>).target.checked, uniqueKey);
-                    }}
-                />
-            )}
+            {checkBox && <Radio checked={selectedValue === uniqueKey} onChange={onCheck} value={uniqueKey} />}
             <Typography variant="body1" sx={{ fontWeight: 'inherit', flexGrow: 1 }}>
                 {label}
             </Typography>
@@ -69,7 +58,8 @@ const StyledTreeItem = ({ uniqueKey, label, caption, checkBox = false, isCheck, 
 };
 
 interface Props {
-    onDicomDirPrepared: (selectedStudiesFormData: FormData[], rootRecord: RootRecord) => void;
+    onSelectedStudyPreparedCallback: (rootRecord: RootRecord, studyInstanceUid: string) => void;
+    onDicomDirSendCallback: (selectedStudiesFormData: FormData[]) => void;
 }
 const DicomDirectoryModal = forwardRef<BaseModalHandle, Props>((props, ref) => {
     const { parseDicomDir } = useDicomDirImport();
@@ -77,7 +67,7 @@ const DicomDirectoryModal = forwardRef<BaseModalHandle, Props>((props, ref) => {
     const [dicomDirRecord, setDicomDirRecord] = useState<RootRecord>();
     const [fileLookup, setFileLookup] = useState<Record<string, File>>({});
     const [imageIds, setImageIds] = useState<string[]>([]);
-    const [selectedStudy, setSelectedStudy] = useState<Record<string, boolean>>({});
+    const [selectedStudyInstanceUid, setSelectedStudyInstanceUid] = useState<string>('');
     const [isBtnDisable, setBtnDisable] = useState<boolean>(true);
     const [nodeExpanded, setNodeExpanded] = useState<string[]>([]);
     const { modalOpen, setModalOpen } = useModal(ref);
@@ -101,20 +91,18 @@ const DicomDirectoryModal = forwardRef<BaseModalHandle, Props>((props, ref) => {
                 // Clean up and reset state
                 setImageIds([]);
                 setBtnDisable(true);
-                setSelectedStudy({});
+                setSelectedStudyInstanceUid('');
                 filesCache.current = {};
                 cornerstoneWADOImageLoader.wadouri.fileManager.purge();
                 setLoading(false);
             });
     };
 
-    const onStudySelected = (check: boolean, key: string) => {
-        setSelectedStudy((v) => {
-            if (check) v[key] = true;
-            else delete v[key];
-            setBtnDisable(isEmptyOrNil(v));
-            return v;
-        });
+    const onStudySelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!dicomDirRecord) return;
+        setSelectedStudyInstanceUid(e.target.value);
+        setBtnDisable(isEmptyOrNil(e.target.value));
+        props.onSelectedStudyPreparedCallback(dicomDirRecord, e.target.value);
     };
 
     const onDisplayDicomImage = (series: SeriesRecord) => {
@@ -135,18 +123,18 @@ const DicomDirectoryModal = forwardRef<BaseModalHandle, Props>((props, ref) => {
         if (!dicomDirRecord) return;
 
         const selectedStudiesFormData: FormData[] = [];
-        Object.keys(selectedStudy).forEach((studyInstanceUid) => {
-            const form = new FormData();
-            form.append('DicomDirRecord', JSON.stringify(dicomDirRecord));
-            form.append('SendOtherEnableNodes', sendOtherEnableNodes ? '1' : '0');
-            form.append('StudyInstanceUid', studyInstanceUid);
-            dicomDirRecord?.imageReferenceFileLookup[studyInstanceUid].forEach((fileName) => {
-                form.append('DicomFiles', fileLookup[fileName]);
-            });
-            selectedStudiesFormData.push(form);
-        });
 
-        props.onDicomDirPrepared(selectedStudiesFormData, dicomDirRecord);
+        const form = new FormData();
+        form.append('DicomDirRecord', JSON.stringify(dicomDirRecord));
+        form.append('SendOtherEnableNodes', sendOtherEnableNodes ? '1' : '0');
+        form.append('StudyInstanceUid', selectedStudyInstanceUid);
+
+        dicomDirRecord?.imageReferenceFileLookup[selectedStudyInstanceUid].forEach((fileName) => {
+            form.append('DicomFiles', fileLookup[fileName]);
+        });
+        selectedStudiesFormData.push(form);
+
+        props.onDicomDirSendCallback(selectedStudiesFormData);
     };
 
     return (
@@ -196,7 +184,7 @@ const DicomDirectoryModal = forwardRef<BaseModalHandle, Props>((props, ref) => {
                                                             <StyledTreeItem
                                                                 uniqueKey={study.studyInstanceUID}
                                                                 checkBox
-                                                                isCheck={selectedStudy[study.studyInstanceUID]}
+                                                                selectedValue={selectedStudyInstanceUid}
                                                                 onCheck={onStudySelected}
                                                                 label={`Study ${stIndex + 1}`}
                                                                 caption={study.studyDescription}

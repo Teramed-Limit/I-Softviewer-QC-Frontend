@@ -29,11 +29,12 @@ import PrimaryButton from '../../Components/PrimaryButton/PrimaryButton';
 import ConfirmModal from '../../Container/Modal/ConfirmModal/ConfirmModal';
 import DicomDirectoryModal from '../../Container/Modal/DicomDirectoryModal/DicomDirectoryModal';
 import cornerstoneFileImageLoader from '../../cornerstone-extend/image-loader/cornerstoneFileImageLoader';
-import { BufferType, DicomFile, useDicomImport } from '../../hooks/useDicomImport';
+import { DicomFile, FileBuffer, ImageFile, useDicomImport } from '../../hooks/useDicomImport';
 import { useHttp } from '../../hooks/useHttp';
 import { CreateAndModifyStudy, ImageBufferAndData } from '../../interface/create-and-modify-study-params';
-import { RootRecord } from '../../interface/dicom-directory-record';
-import { CreateStudyParams } from '../../interface/study-params';
+import { CreateStudyInfo } from '../../interface/create-study-info';
+import { PatientRecord, RootRecord, SeriesRecord, StudyRecord } from '../../interface/dicom-directory-record';
+import { HISStudyParams } from '../../interface/study-params';
 import { StudyQueryData } from '../../interface/study-query-data';
 import { isEmptyOrNil, strToDate } from '../../utils/general';
 import classes from './ImageSelect.module.scss';
@@ -47,7 +48,7 @@ const ImageSelect = () => {
     const location = useLocation();
     const theme = useTheme();
     const matches = useMediaQuery(theme.breakpoints.down(1600));
-    const state = location.state as CreateStudyParams;
+    const hisPatientInfo = location.state as HISStudyParams;
 
     const navigate = useNavigate();
     const { importJPG, importDcm } = useDicomImport();
@@ -59,22 +60,36 @@ const ImageSelect = () => {
     const [isStudyDateDisabled, setStudyDateDisabled] = useState<boolean>(false);
     const [isDateError, setIsDateError] = useState<boolean>(false);
     const [institution, setInstitution] = useState<string>('');
-    const [imageFileList, setImageFileList] = useState<DicomFile[]>([]);
+    const [imageFileList, setImageFileList] = useState<FileBuffer[]>([]);
+    const [createStudyInfo, setCreateStudyInfo] = useState<CreateStudyInfo>();
     const messageModalRef = useRef<MessageModalHandle>(null);
     const duplicateModalRef = useRef<MessageModalHandle>(null);
+    const patientIdModalRef = useRef<MessageModalHandle>(null);
     const dicomDirectoryModalRef = useRef<DicomDirModalHandle>(null);
 
     useEffect(() => {
-        if (!state) navigate('/');
-    }, [navigate, state]);
+        if (!hisPatientInfo) navigate('/');
+    }, [navigate, hisPatientInfo]);
 
-    const checkStudyIsDuplicated = (compareStudyDate, compareModality, returnResult) => {
+    const checkDcmPatentIdIsEqualHISDocumentNumber = (patientId: string, documentNumber: string) => {
+        if (patientId === documentNumber) {
+            return of(true);
+        } else {
+            return (patientIdModalRef.current as MessageModalHandle).openModal().pipe(
+                first(),
+                filter((isConfirm) => isConfirm),
+                map(() => true),
+            );
+        }
+    };
+
+    const checkStudyIsDuplicated = (selectStudyInfo: CreateStudyInfo) => {
         return http
             .get<StudyQueryData[]>(`dicomDbQuery`, {
                 params: {
-                    patientId: state.patientId,
-                    studyDate: compareStudyDate,
-                    modality: compareModality,
+                    patientId: hisPatientInfo.patientId,
+                    studyDate: selectStudyInfo.studyDate,
+                    modality: selectStudyInfo.modality,
                 },
             })
             .pipe(
@@ -84,10 +99,10 @@ const ImageSelect = () => {
                         return (duplicateModalRef.current as MessageModalHandle).openModal().pipe(
                             first(),
                             filter((isConfirm) => isConfirm),
-                            map(() => returnResult),
+                            map(() => true),
                         );
                     }
-                    return of(returnResult);
+                    return of(true);
                 }),
             );
     };
@@ -95,72 +110,100 @@ const ImageSelect = () => {
     const onAddImageFile = (e) => {
         if (!e.target.files.length) return;
         const files = e?.target?.files as File[];
-        importJPG(files).subscribe((imageList: DicomFile[]) => {
+        importJPG(files).subscribe((imageList: ImageFile[]) => {
             setStudyDateDisabled(false);
             setImageFileList(imageList);
             cornerstoneFileImageLoader.fileManager.init();
             setImageIds(
                 imageList.map((image, index) => cornerstoneFileImageLoader.fileManager.setFile(image.file, index)),
             );
+            setCreateStudyInfo({
+                patientId: hisPatientInfo.patientId,
+                sopClassUID: '1.2.840.10008.5.1.4.1.1.7',
+                studyDate: format(studyDate, 'yyyyMMdd'),
+                modality: 'SC',
+                studyDescription: '',
+            });
         });
     };
 
     const onAddDicomFile = (e) => {
         if (!e.target.files.length) return;
         const files = e?.target?.files as File[];
-        importDcm(files)
-            .pipe(
-                switchMap((dcmList: DicomFile[]) =>
-                    checkStudyIsDuplicated(dcmList[0].studyDate, dcmList[0].modality, dcmList),
-                ),
-            )
-            .subscribe((dcmList: DicomFile[]) => {
-                setStudyDate(strToDate(dcmList[0].studyDate as string));
-                setStudyDateDisabled(true);
-                setImageFileList(dcmList);
-                setImageIds(dcmList.map((dcm) => cornerstoneWADOImageLoader.wadouri.fileManager.add(dcm.file)));
+        importDcm(files).subscribe((dcmList: DicomFile[]) => {
+            setStudyDate(strToDate(dcmList[0].dcmDataset.string('x00080020') as string));
+            setStudyDateDisabled(true);
+            setImageFileList(dcmList);
+            setImageIds(dcmList.map((dcm) => cornerstoneWADOImageLoader.wadouri.fileManager.add(dcm.file)));
+            setCreateStudyInfo({
+                patientId: dcmList[0].dcmDataset.string('x00100020'),
+                sopClassUID: dcmList[0].dcmDataset.string('x00080016'),
+                studyDate: dcmList[0].dcmDataset.string('x00080020'),
+                modality: dcmList[0].dcmDataset.string('x00080060'),
+                studyDescription: dcmList[0].dcmDataset.string('x00081030'),
             });
+        });
+    };
+
+    const onAddDicomDirStudy = (rootRecord: RootRecord, studyInstanceUid: string) => {
+        let patientRecord: PatientRecord | undefined;
+        let studyRecord: StudyRecord | undefined;
+        rootRecord.lowerLevelRecords.forEach((patRecord) => {
+            studyRecord = patRecord.lowerLevelRecords.find((stdRecord) => {
+                patientRecord = patRecord;
+                return stdRecord.studyInstanceUID === studyInstanceUid;
+            });
+        });
+        if (!studyRecord || !patientRecord) return;
+        debugger;
+        const seriesRecord: SeriesRecord = studyRecord.lowerLevelRecords[0];
+        setCreateStudyInfo({
+            patientId: patientRecord.patientId,
+            sopClassUID: '',
+            studyDate: studyRecord.studyDate,
+            modality: seriesRecord.modality,
+            studyDescription: studyRecord.studyDescription,
+        });
     };
 
     // CUHK custom study desc.
-    const customDescription = (oriStudyDesc: string): string => {
+    const customDescription = (oriStudyDesc: string, episodeNo: string): string => {
         let addedCustomText;
 
-        if (isEmptyOrNil(institution))
-            addedCustomText = isEmptyOrNil(oriStudyDesc) ? `${state.episodeNo}` : `, ${state.episodeNo}`;
+        if (isEmptyOrNil(institution)) addedCustomText = isEmptyOrNil(oriStudyDesc) ? `${episodeNo}` : `, ${episodeNo}`;
         else
             addedCustomText = isEmptyOrNil(oriStudyDesc)
-                ? `${institution}, ${state.episodeNo}`
-                : `, ${institution}, ${state.episodeNo}`;
+                ? `${institution}, ${episodeNo}`
+                : `, ${institution}, ${episodeNo}`;
 
         return oriStudyDesc.slice(0, 64 - addedCustomText.length) + addedCustomText;
     };
 
-    const createStudyData = (importFiles: DicomFile[]): CreateAndModifyStudy<ImageBufferAndData> => {
+    const createStudyData = (
+        importFiles: FileBuffer[],
+        selectStudyInfo: CreateStudyInfo,
+    ): CreateAndModifyStudy<ImageBufferAndData> => {
         return {
             patientInfo: {
-                patientId: state.patientId,
-                patientsName: state.patientName,
-                patientsSex: state.sex,
-                patientsBirthDate: state.birthdate,
-                otherPatientNames: state.otherPatientName,
+                patientId: hisPatientInfo.patientId,
+                patientsName: hisPatientInfo.patientName,
+                patientsSex: hisPatientInfo.sex,
+                patientsBirthDate: hisPatientInfo.birthdate,
+                otherPatientNames: hisPatientInfo.otherPatientName,
             },
             studyInfo: [
                 {
-                    modality: importFiles[0].modality,
-                    accessionNumber: state.accessionNum,
-                    studyInstanceUID: state.studyInstanceUID,
-                    studyDate:
-                        importFiles[0].type === BufferType.bmp
-                            ? format(studyDate, 'yyyyMMdd')
-                            : importFiles[0].studyDate,
-                    studyDescription: customDescription(importFiles[0].studyDescription),
+                    modality: selectStudyInfo.modality,
+                    accessionNumber: hisPatientInfo.accessionNum,
+                    studyInstanceUID: hisPatientInfo.studyInstanceUID,
+                    studyDate: selectStudyInfo.studyDate,
+                    studyDescription: customDescription(selectStudyInfo.studyDescription, hisPatientInfo.episodeNo),
                 },
             ],
             seriesInfo: [
                 {
-                    studyInstanceUID: state.studyInstanceUID,
-                    seriesInstanceUID: state.seriesInstanceUID,
+                    studyInstanceUID: hisPatientInfo.studyInstanceUID,
+                    seriesInstanceUID: hisPatientInfo.seriesInstanceUID,
                     seriesNumber: '1',
                 },
             ],
@@ -168,41 +211,50 @@ const ImageSelect = () => {
                 return {
                     buffer: file.buffer,
                     type: file.type,
-                    seriesInstanceUID: state.seriesInstanceUID,
-                    sopInstanceUID: `${state.seriesInstanceUID}.${index + 1}`,
-                    sopClassUID: file.sopClassUID,
+                    seriesInstanceUID: hisPatientInfo.seriesInstanceUID,
+                    sopInstanceUID: `${hisPatientInfo.seriesInstanceUID}.${index + 1}`,
+                    sopClassUID: selectStudyInfo.sopClassUID,
                     imageNumber: `${index + 1}`,
                 };
             }),
         };
     };
 
-    const onSaveToOwnPacs = () => {
-        setLoading(true);
-        const studyData = createStudyData(imageFileList);
-        httpReq(http.post('studyMaintenance', { ...studyData, sendOtherEnableNodes: false }));
+    const onSaveToPacs = (sendOtherEnableNodes: boolean) => {
+        if (!createStudyInfo) return;
+        httpReq(
+            of(createStudyInfo).pipe(
+                switchMap(() =>
+                    checkDcmPatentIdIsEqualHISDocumentNumber(createStudyInfo.patientId, hisPatientInfo.patientId),
+                ),
+                switchMap(() => checkStudyIsDuplicated(createStudyInfo)),
+                switchMap(() => {
+                    setLoading(true);
+                    const studyData = createStudyData(imageFileList, createStudyInfo);
+                    return http.post('studyMaintenance', { ...studyData, sendOtherEnableNodes });
+                }),
+            ),
+        );
     };
 
-    const onSaveToAllEnablePacs = () => {
-        setLoading(true);
-        const studyData = createStudyData(imageFileList);
-        httpReq(http.post('studyMaintenance', { ...studyData, sendOtherEnableNodes: true }));
-    };
+    const onSaveDicomDirToPacs = (selectedStudiesFormData: FormData[]) => {
+        if (!createStudyInfo) return;
 
-    const onSaveDicomDirToPacs = (selectedStudiesFormData: FormData[], rootRecord: RootRecord) => {
         const modifyTag: Record<string, string>[] = [
-            { '0010,0010': state.patientName },
-            { '0010,0020': state.patientId },
-            { '0010,0030': state.birthdate },
-            { '0010,0040': state.sex },
-            { '0010,1001': state.otherPatientName },
-            { '0008,0050': state.accessionNum },
-            { '0008,1030': customDescription(rootRecord.lowerLevelRecords[0].lowerLevelRecords[0].studyDescription) },
+            { '0010,0010': hisPatientInfo.patientName },
+            { '0010,0020': hisPatientInfo.patientId },
+            { '0010,0030': hisPatientInfo.birthdate },
+            { '0010,0040': hisPatientInfo.sex },
+            { '0010,1001': hisPatientInfo.otherPatientName },
+            { '0008,0050': hisPatientInfo.accessionNum },
+            { '0008,1030': customDescription(createStudyInfo.studyDescription, hisPatientInfo.episodeNo) },
         ];
 
-        const studyRecord = rootRecord.lowerLevelRecords[0].lowerLevelRecords[0];
-        const seriesRecord = rootRecord.lowerLevelRecords[0].lowerLevelRecords[0].lowerLevelRecords[0];
-        const sendPacs$ = checkStudyIsDuplicated(studyRecord.studyDate, seriesRecord.modality, null).pipe(
+        const sendPacs$ = checkDcmPatentIdIsEqualHISDocumentNumber(
+            createStudyInfo.patientId,
+            hisPatientInfo.patientId,
+        ).pipe(
+            concatMap(() => checkStudyIsDuplicated(createStudyInfo)),
             concatMap(() => from(selectedStudiesFormData)),
             concatMap((formData) => {
                 setLoading(true);
@@ -239,12 +291,12 @@ const ImageSelect = () => {
                     <Stack direction="row" spacing={2}>
                         <Tooltip title="Patient Id" placement="top">
                             <span className={classes.iconText}>
-                                <ContactPageIcon /> {state?.patientId}
+                                <ContactPageIcon /> {hisPatientInfo?.patientId}
                             </span>
                         </Tooltip>
                         <Tooltip title="Accession Number" placement="top">
                             <span className={classes.iconText}>
-                                <AiOutlineFieldNumber style={{ fontSize: '24px' }} /> {state?.accessionNum}
+                                <AiOutlineFieldNumber style={{ fontSize: '24px' }} /> {hisPatientInfo?.accessionNum}
                             </span>
                         </Tooltip>
                         <Tooltip title="Study Date (MM/DD/YYYY)" placement="top">
@@ -285,17 +337,17 @@ const ImageSelect = () => {
                     <Stack direction="row" spacing={2}>
                         <Tooltip title="Patient Name">
                             <span className={classes.iconText}>
-                                <AccountCircleIcon /> {state?.patientName}
+                                <AccountCircleIcon /> {hisPatientInfo?.patientName}
                             </span>
                         </Tooltip>
                         <Tooltip title="Birth">
                             <span className={classes.iconText}>
-                                <CakeIcon /> {state?.birthdate}
+                                <CakeIcon /> {hisPatientInfo?.birthdate}
                             </span>
                         </Tooltip>
                         <Tooltip title="Sex">
                             <span className={classes.iconText}>
-                                <WcIcon /> {state?.sex}
+                                <WcIcon /> {hisPatientInfo?.sex}
                             </span>
                         </Tooltip>
                     </Stack>
@@ -337,7 +389,7 @@ const ImageSelect = () => {
                         size="small"
                         disabled={isDateError || imageFileList.length === 0}
                         variant="contained"
-                        onClick={onSaveToOwnPacs}
+                        onClick={() => onSaveToPacs(false)}
                         startIcon={<SaveIcon sx={{ fontSize: '24px' }} />}
                     >
                         <Typography variant="button" component="span">
@@ -359,7 +411,7 @@ const ImageSelect = () => {
                         <ConfirmModal
                             ref={messageModalRef}
                             confirmMessage="Anything submitted to VNA will not be able to be edited or deleted. Are you sure to continue?"
-                            onConfirmCallback={onSaveToAllEnablePacs}
+                            onConfirmCallback={() => onSaveToPacs(true)}
                         />
                     </>
                 </Stack>
@@ -389,8 +441,25 @@ const ImageSelect = () => {
                     })}
                 </Stack>
             </ConfirmModal>
+            {/* PatientId not equal warning modal */}
+            <ConfirmModal
+                ref={patientIdModalRef}
+                confirmMessage="The patient id does not equal document number, do you want to continue?"
+                onConfirmCallback={() => {}}
+            >
+                <Typography variant="h4" gutterBottom component="div">
+                    Patient Id: {createStudyInfo?.patientId}
+                </Typography>
+                <Typography variant="h4" gutterBottom component="div">
+                    Document Number: {hisPatientInfo?.patientId}
+                </Typography>
+            </ConfirmModal>
             {/* Dicom Directory modal */}
-            <DicomDirectoryModal ref={dicomDirectoryModalRef} onDicomDirPrepared={onSaveDicomDirToPacs} />
+            <DicomDirectoryModal
+                ref={dicomDirectoryModalRef}
+                onSelectedStudyPreparedCallback={onAddDicomDirStudy}
+                onDicomDirSendCallback={onSaveDicomDirToPacs}
+            />
         </Box>
     );
 };
