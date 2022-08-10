@@ -59,7 +59,8 @@ const ImageSelect = () => {
     const [studyDate, setStudyDate] = useState<Date>(new Date());
     const [isStudyDateDisabled, setStudyDateDisabled] = useState<boolean>(false);
     const [isDateError, setIsDateError] = useState<boolean>(false);
-    const [institution, setInstitution] = useState<string>('');
+    const [institutionValue, setInstitutionValue] = useState<string>('');
+    const [institutionLabel, setInstitutionLabel] = useState<string>('');
     const [imageFileList, setImageFileList] = useState<FileBuffer[]>([]);
     const [createStudyInfo, setCreateStudyInfo] = useState<CreateStudyInfo>();
     const messageModalRef = useRef<MessageModalHandle>(null);
@@ -170,11 +171,12 @@ const ImageSelect = () => {
     const customDescription = (oriStudyDesc: string, episodeNo: string): string => {
         let addedCustomText;
 
-        if (isEmptyOrNil(institution)) addedCustomText = isEmptyOrNil(oriStudyDesc) ? `${episodeNo}` : `, ${episodeNo}`;
+        if (isEmptyOrNil(institutionValue))
+            addedCustomText = isEmptyOrNil(oriStudyDesc) ? `${episodeNo}` : `, ${episodeNo}`;
         else
             addedCustomText = isEmptyOrNil(oriStudyDesc)
-                ? `${institution}, ${episodeNo}`
-                : `, ${institution}, ${episodeNo}`;
+                ? `${institutionValue}, ${episodeNo}`
+                : `, ${institutionValue}, ${episodeNo}`;
 
         return oriStudyDesc.slice(0, 64 - addedCustomText.length) + addedCustomText;
     };
@@ -198,6 +200,8 @@ const ImageSelect = () => {
                     studyInstanceUID: hisPatientInfo.studyInstanceUID,
                     studyDate: selectStudyInfo.studyDate,
                     studyDescription: customDescription(selectStudyInfo.studyDescription, hisPatientInfo.episodeNo),
+                    // institution
+                    customizedFields: [{ group: 8, elem: 128, value: institutionLabel }],
                 },
             ],
             seriesInfo: [
@@ -326,9 +330,10 @@ const ImageSelect = () => {
                                 <FaHospital />
                                 <FreeCreateSelection
                                     type="Institution"
-                                    value={institution}
-                                    onChange={(value) => {
-                                        setInstitution(value);
+                                    value={institutionValue}
+                                    onChange={(value, label) => {
+                                        setInstitutionValue(value);
+                                        setInstitutionLabel(label);
                                     }}
                                 />
                             </span>
@@ -444,14 +449,14 @@ const ImageSelect = () => {
             {/* PatientId not equal warning modal */}
             <ConfirmModal
                 ref={patientIdModalRef}
-                confirmMessage="The patient id does not equal document number, do you want to continue?"
+                confirmMessage="The Patient ID of DICOM image does not equal to selected patient, do you want to continue?"
                 onConfirmCallback={() => {}}
             >
                 <Typography variant="h4" gutterBottom component="div">
-                    Patient Id: {createStudyInfo?.patientId}
+                    DICOM image: {createStudyInfo?.patientId}
                 </Typography>
                 <Typography variant="h4" gutterBottom component="div">
-                    Document Number: {hisPatientInfo?.patientId}
+                    Selected patient: {hisPatientInfo?.patientId}
                 </Typography>
             </ConfirmModal>
             {/* Dicom Directory modal */}

@@ -15,7 +15,7 @@ interface Props {
     label?: string;
     value: string;
     type: string;
-    onChange: (value: string) => void;
+    onChange: (value: string, label: string) => void;
     labelFormatter?: (option: AutoCompleteOption) => string;
     valueFormatter?: (option: AutoCompleteOption) => string;
 }
@@ -33,14 +33,16 @@ export default function FreeCreateSelection({ label, type, onChange, labelFormat
     const handleValueChanged = (option: AutoCompleteOption | null) => {
         if (!option) {
             setValue(null);
-            onChange('');
+            onChange('', '');
             return;
         }
 
         setValue(option);
         // custom value format
-        if (valueFormatter) onChange(valueFormatter(option));
-        else onChange(option.value);
+        onChange(
+            valueFormatter ? valueFormatter(option) : option.value,
+            labelFormatter ? labelFormatter(option) : option.label,
+        );
     };
 
     return (

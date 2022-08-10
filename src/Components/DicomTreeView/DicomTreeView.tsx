@@ -35,8 +35,8 @@ const DicomTreeView = ({ dicomIOD, onImageSelected }: Props) => {
     useEffect(() => {
         setDicomIODTree({
             dicomStudy: dicomIOD.dicomStudy.map((data) => ({ ...data, isOpen: true })),
-            dicomSeries: dicomIOD.dicomSeries.map((data) => ({ ...data, isOpen: true })),
-            dicomImage: dicomIOD.dicomImage.map((data) => ({ ...data, isOpen: true })),
+            dicomSeries: dicomIOD.dicomSeries.map((data) => ({ ...data, isOpen: false })),
+            dicomImage: dicomIOD.dicomImage.map((data) => ({ ...data, isOpen: false })),
         });
     }, [dicomIOD]);
 
@@ -69,8 +69,8 @@ const DicomTreeView = ({ dicomIOD, onImageSelected }: Props) => {
     // const onDragEnd = () => {};
 
     const patientLabel = () => `${dicomIOD?.dicomPatient.patientsName} (${dicomIOD?.dicomPatient.patientId})`;
-    const studyLabel = (study: DicomStudyTree) => `${study.accessionNumber} (${study.modality})`;
-    const seriesLabel = (series: DicomSeriesTree, index: number) => `Series #${index + 1}`;
+    const studyLabel = (study: DicomStudyTree, index: number) => study.studyDescription || `Study #${index + 1}`;
+    const seriesLabel = (series: DicomSeriesTree, index: number) => series.seriesDescription || `Series #${index + 1}`;
     const imageLabel = (image: DicomImageTree, index: number) => `Image #${index + 1}`;
 
     return (
