@@ -178,7 +178,7 @@ const ImageSelect = () => {
                 ? `${institutionValue}, ${episodeNo}`
                 : `, ${institutionValue}, ${episodeNo}`;
 
-        return oriStudyDesc.slice(0, 64 - addedCustomText.length) + addedCustomText;
+        return (oriStudyDesc || '').slice(0, 64 - addedCustomText.length) + addedCustomText;
     };
 
     const createStudyData = (
