@@ -20,9 +20,17 @@ interface Props {
     queryPairData: any;
     onQuery: () => void;
     onQueryPairDataChanged: (value: any, fieldId: string) => void;
+    onQueryConditionChanged?: (value: string[]) => void;
 }
 
-const ConditionQuerier = ({ fields, queryPairData, defaultQueryFields, onQuery, onQueryPairDataChanged }: Props) => {
+const ConditionQuerier = ({
+    fields,
+    queryPairData,
+    defaultQueryFields,
+    onQuery,
+    onQueryPairDataChanged,
+    onQueryConditionChanged,
+}: Props) => {
     const [open, setOpen] = useState(false);
 
     const [transferItems] = useState(fields.map((item) => ({ id: item.field, label: item.label, disabled: false })));
@@ -37,13 +45,14 @@ const ConditionQuerier = ({ fields, queryPairData, defaultQueryFields, onQuery, 
         onQueryPairDataChanged(value, fieldId);
     };
 
-    const onQueryConditionChanged = (selectedList: TransferItem[], unselectedList: TransferItem[]) => {
+    const onTransferListChanged = (selectedList: TransferItem[], unselectedList: TransferItem[]) => {
         // reset query pair data
         unselectedList.forEach((item) => onQueryPairDataChanged('', item.id));
         // update query field
         const fieldIdList = selectedList.map((item) => item.id);
         setSelectedTransferItems(selectedList);
         setQueryFields(fields.filter((field) => fieldIdList.includes(field.field)));
+        onQueryConditionChanged?.(fieldIdList);
         setOpen(false);
     };
 
@@ -73,7 +82,7 @@ const ConditionQuerier = ({ fields, queryPairData, defaultQueryFields, onQuery, 
                 <TransferList
                     itemList={transferItems}
                     selectItemList={selectedTransferItems}
-                    onTransferListChanged={onQueryConditionChanged}
+                    onTransferListChanged={onTransferListChanged}
                 />
             </BaseModal>
         </>

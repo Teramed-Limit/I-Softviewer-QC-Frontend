@@ -13,6 +13,7 @@ import { useRecoilState } from 'recoil';
 import { http } from '../../api/axios';
 import {
     atomStudyQueryCondition,
+    atomStudyQueryFields,
     atomStudyQueryResult,
     atomStudyQuerySorting,
     atomUpToDateQueryResult,
@@ -22,7 +23,7 @@ import DicomQueryRetrieve from '../../Components/DicomQueryRetrieve/DicomQueryRe
 import GridTable from '../../Components/GridTable/GridTable';
 import GridTableToolbar from '../../Components/GridTableToolbar/GridTableToolbar';
 import PrimaryButton from '../../Components/PrimaryButton/PrimaryButton';
-import { dbQueryField, defaultQueryFields, define } from '../../constant/setting-define';
+import { dbQueryField, define } from '../../constant/setting-define';
 import BaseModal from '../../Container/BaseModal/BaseModal';
 import WithElementVisibility from '../../HOC/WithElementVisiblity/WithElementVisibility';
 import { useGridColDef } from '../../hooks/useGridColDef';
@@ -34,6 +35,7 @@ const QualityControl = () => {
     const navigate = useNavigate();
     // query state management
     const [queryPairData, setQueryPairData] = useRecoilState(atomStudyQueryCondition);
+    const [queryFields, setQueryFields] = useRecoilState(atomStudyQueryFields);
     const [needRefreshQuery, setNeedRefreshQuery] = useRecoilState(atomUpToDateQueryResult);
     const [rowData, setRowData] = useRecoilState(atomStudyQueryResult);
     const [sortingOrder, setSortingOrder] = useRecoilState(atomStudyQuerySorting);
@@ -158,10 +160,11 @@ const QualityControl = () => {
             <div className={classes.content}>
                 <ConditionQuerier
                     fields={dbQueryField}
-                    defaultQueryFields={defaultQueryFields}
+                    defaultQueryFields={queryFields}
                     queryPairData={queryPairData}
                     onQuery={onQuery}
                     onQueryPairDataChanged={onValueChanged}
+                    onQueryConditionChanged={(fields) => setQueryFields(fields)}
                 />
 
                 <div className={`${classes.tableContainer} ag-theme-dark`}>

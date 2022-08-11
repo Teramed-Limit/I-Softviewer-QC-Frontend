@@ -2,7 +2,7 @@ import { ColumnState } from 'ag-grid-community/dist/lib/columns/columnModel';
 import { format, add } from 'date-fns';
 import { atom } from 'recoil';
 
-import { dbQueryField } from '../constant/setting-define';
+import { dbQueryField, defaultQueryFields } from '../constant/setting-define';
 import { StudyQueryData } from '../interface/study-query-data';
 
 export const initQueryParams = (fields, initialParams: any = {}) => {
@@ -16,6 +16,11 @@ export const atomStudyQueryCondition = atom({
     default: initQueryParams(dbQueryField, {
         studyDate: `${format(add(new Date(), { months: -1 }), 'yyyyMMdd')}-${format(new Date(), 'yyyyMMdd')}`,
     }),
+});
+
+export const atomStudyQueryFields = atom({
+    key: 'studyQueryFields',
+    default: defaultQueryFields,
 });
 
 export const atomStudyQueryResult = atom<StudyQueryData[]>({
