@@ -49,6 +49,10 @@ const DateRangeSelector = ({ field, value, onValueChanged }: Props) => {
                 disableCloseOnSelect={false}
                 disableOpenPicker
                 onChange={(newValue) => {
+                    if (!newValue[0] || !newValue[1]) {
+                        onValueChanged('', field.field);
+                        return;
+                    }
                     const dateBetween = newValue.map((dateVal) => dateToStr(dateVal)).join('-');
                     onValueChanged(dateBetween, field.field);
                 }}
