@@ -1,10 +1,8 @@
 import { AxiosResponse } from 'axios';
 import dicomParser from 'dicom-parser';
-import { Observable, Observer } from 'rxjs';
 
 import { TAG_DICT } from '../constant/dicom-tag-dict';
 import { DICOM_UID } from '../constant/dicom-uid';
-import { FileBuffer } from '../hooks/useDicomImport';
 import { DicomQRResult } from '../interface/dicom-dataset';
 import { TagElement } from '../interface/tag-dict';
 import { getDateString, readBase64 } from './general';
@@ -42,19 +40,6 @@ export const hydrateDataset = (file): Promise<{ dcmDataset: dicomParser.DataSet;
             reader.readAsArrayBuffer(file);
             reader.onerror = (error) => reject(error);
         });
-    });
-};
-
-export const hydrateBuffer = (file: File, type): Observable<FileBuffer> => {
-    const fileReader = new FileReader();
-    return new Observable((observer: Observer<FileBuffer>) => {
-        fileReader.readAsDataURL(file);
-        fileReader.onload = () => {
-            const buffer = (fileReader.result as string).split(',')[1];
-            observer.next({ buffer, file, type });
-            observer.complete();
-        };
-        fileReader.onerror = () => {};
     });
 };
 

@@ -55,6 +55,11 @@ export interface ImageInfo {
     windowCenter?: string;
 }
 
+export interface ImageTypeAndName extends ImageInfo {
+    fileName: string;
+    type: number;
+}
+
 export interface ImageBufferAndData extends ImageInfo {
     buffer: any;
     type: number;

@@ -31,7 +31,6 @@ import DicomDirectoryModal from '../../Container/Modal/DicomDirectoryModal/Dicom
 import cornerstoneFileImageLoader from '../../cornerstone-extend/image-loader/cornerstoneFileImageLoader';
 import { DicomFile, FileBuffer, ImageFile, useDicomImport } from '../../hooks/useDicomImport';
 import { useHttp } from '../../hooks/useHttp';
-import { CreateAndModifyStudy, ImageBufferAndData } from '../../interface/create-and-modify-study-params';
 import { CreateStudyInfo } from '../../interface/create-study-info';
 import { PatientRecord, RootRecord, SeriesRecord, StudyRecord } from '../../interface/dicom-directory-record';
 import { HISStudyParams } from '../../interface/study-params';
@@ -156,7 +155,6 @@ const ImageSelect = () => {
             });
         });
         if (!studyRecord || !patientRecord) return;
-        debugger;
         const seriesRecord: SeriesRecord = studyRecord.lowerLevelRecords[0];
         setCreateStudyInfo({
             patientId: patientRecord.patientId,
@@ -181,11 +179,24 @@ const ImageSelect = () => {
         return (oriStudyDesc || '').slice(0, 64 - addedCustomText.length) + addedCustomText;
     };
 
-    const createStudyData = (
-        importFiles: FileBuffer[],
-        selectStudyInfo: CreateStudyInfo,
-    ): CreateAndModifyStudy<ImageBufferAndData> => {
-        return {
+    const createStudyData = (importFiles: FileBuffer[], selectStudyInfo: CreateStudyInfo): FormData => {
+        const formData = new FormData();
+
+        // collect file and generate imageinfos
+        const imageInfos = importFiles.map((file, index) => {
+            const sopInstanceUID = `${hisPatientInfo.seriesInstanceUID}.${index + 1}`;
+            formData.append('DicomFiles', file.file);
+            return {
+                fileName: file.file.name,
+                type: file.type,
+                seriesInstanceUID: hisPatientInfo.seriesInstanceUID,
+                sopInstanceUID,
+                sopClassUID: selectStudyInfo.sopClassUID,
+                imageNumber: `${index + 1}`,
+            };
+        });
+
+        const dicomIOD = {
             patientInfo: {
                 patientId: hisPatientInfo.patientId,
                 patientsName: hisPatientInfo.patientName,
@@ -200,8 +211,10 @@ const ImageSelect = () => {
                     studyInstanceUID: hisPatientInfo.studyInstanceUID,
                     studyDate: selectStudyInfo.studyDate,
                     studyDescription: customDescription(selectStudyInfo.studyDescription, hisPatientInfo.episodeNo),
-                    // institution
-                    customizedFields: [{ group: 8, elem: 128, value: institutionLabel }],
+                    customizedFields: [
+                        // institution
+                        { group: 8, elem: 128, value: institutionLabel },
+                    ],
                 },
             ],
             seriesInfo: [
@@ -211,31 +224,36 @@ const ImageSelect = () => {
                     seriesNumber: '1',
                 },
             ],
-            imageInfos: importFiles.map((file, index) => {
-                return {
-                    buffer: file.buffer,
-                    type: file.type,
-                    seriesInstanceUID: hisPatientInfo.seriesInstanceUID,
-                    sopInstanceUID: `${hisPatientInfo.seriesInstanceUID}.${index + 1}`,
-                    sopClassUID: selectStudyInfo.sopClassUID,
-                    imageNumber: `${index + 1}`,
-                };
-            }),
+            imageInfos,
         };
+
+        formData.append('DicomIOD', JSON.stringify(dicomIOD));
+
+        return formData;
+    };
+
+    const onUploadProgress = (progressEvent) => {
+        const progressValue = (progressEvent.loaded / progressEvent.total) * 100;
+        setProgressStatus({
+            showProgress: true,
+            value: progressValue,
+            message:
+                progressValue === 100
+                    ? 'Processing files take a while please do not close the browser'
+                    : 'Uploading files...',
+        });
     };
 
     const onSaveToPacs = (sendOtherEnableNodes: boolean) => {
         if (!createStudyInfo) return;
         httpReq(
-            of(createStudyInfo).pipe(
-                switchMap(() =>
-                    checkDcmPatentIdIsEqualHISDocumentNumber(createStudyInfo.patientId, hisPatientInfo.patientId),
-                ),
-                switchMap(() => checkStudyIsDuplicated(createStudyInfo)),
+            checkDcmPatentIdIsEqualHISDocumentNumber(createStudyInfo.patientId, hisPatientInfo.patientId).pipe(
+                concatMap(() => checkStudyIsDuplicated(createStudyInfo)),
                 switchMap(() => {
                     setLoading(true);
-                    const studyData = createStudyData(imageFileList, createStudyInfo);
-                    return http.post('studyMaintenance', { ...studyData, sendOtherEnableNodes });
+                    const formData = createStudyData(imageFileList, createStudyInfo);
+                    formData.append('sendOtherEnableNodes', sendOtherEnableNodes ? '1' : '0');
+                    return http.post('studyMaintenance/file', formData, { onUploadProgress });
                 }),
             ),
         );
@@ -254,33 +272,18 @@ const ImageSelect = () => {
             { '0008,1030': customDescription(createStudyInfo.studyDescription, hisPatientInfo.episodeNo) },
         ];
 
-        const sendPacs$ = checkDcmPatentIdIsEqualHISDocumentNumber(
-            createStudyInfo.patientId,
-            hisPatientInfo.patientId,
-        ).pipe(
-            concatMap(() => checkStudyIsDuplicated(createStudyInfo)),
-            concatMap(() => from(selectedStudiesFormData)),
-            concatMap((formData) => {
-                setLoading(true);
-                formData.append('ModifyTag', JSON.stringify(modifyTag));
-                formData.append('NewInstanceUid', '1');
-                return http.post('studyMaintenance/dicomDir', formData, {
-                    onUploadProgress: (progressEvent) => {
-                        const progressValue = (progressEvent.loaded / progressEvent.total) * 100;
-                        setProgressStatus({
-                            showProgress: true,
-                            value: progressValue,
-                            message:
-                                progressValue === 100
-                                    ? 'Processing files take a while please do not close the browser'
-                                    : 'Uploading files...',
-                        });
-                    },
-                });
-            }),
+        httpReq(
+            checkDcmPatentIdIsEqualHISDocumentNumber(createStudyInfo.patientId, hisPatientInfo.patientId).pipe(
+                concatMap(() => checkStudyIsDuplicated(createStudyInfo)),
+                concatMap(() => from(selectedStudiesFormData)),
+                switchMap((formData) => {
+                    setLoading(true);
+                    formData.append('ModifyTag', JSON.stringify(modifyTag));
+                    formData.append('NewInstanceUid', '1');
+                    return http.post('studyMaintenance/dicomDir', formData, { onUploadProgress });
+                }),
+            ),
         );
-
-        httpReq(sendPacs$);
     };
 
     return (
