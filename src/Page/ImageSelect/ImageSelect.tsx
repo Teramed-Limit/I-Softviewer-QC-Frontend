@@ -269,6 +269,7 @@ const ImageSelect = () => {
             { '0010,0040': hisPatientInfo.sex },
             { '0010,1001': hisPatientInfo.otherPatientName },
             { '0008,0050': hisPatientInfo.accessionNum },
+            { '0008,0080': institutionLabel },
             { '0008,1030': customDescription(createStudyInfo.studyDescription, hisPatientInfo.episodeNo) },
         ];
 
