@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Pagination } from '@mui/material';
 import cx from 'classnames';
@@ -50,14 +50,13 @@ function DicomViewer({ imageIds, imageLookup = {} }: Props) {
     const [row, setRow] = useState(2);
     const [col, setCol] = useState(2);
     const [page, setPage] = useState(1);
-    const [pageCount, setPageCount] = useState(1);
+    const [pageCount, setPageCount] = useState(Math.ceil(imageIds.length / 2 / 2));
     const [displayImageIds, setDisplayImageIds] = useState<string[]>([]);
     const [initViewport] = useState<Viewport>({});
     const [renderImages, setRenderImages] = useState<{ [keys: string]: RenderImage }>({});
-    const [activeViewportIndex, setActiveViewportIndex] = useState(-1);
+    const [activeViewportIndex, setActiveViewportIndex] = useState(0);
     const [activeViewport, setActiveViewport] = useState<RenderImage>();
     const [activeTool, setActiveTool] = useState('Wwwc');
-    const initRender = useRef(false);
 
     // Dicom measurement
     const measurementLookup: Record<string, MeasurementDTO[]> = {};
@@ -131,18 +130,8 @@ function DicomViewer({ imageIds, imageLookup = {} }: Props) {
 
     useEffect(() => {
         if (isEmptyOrNil(imageIds)) return;
-        setPageCount(Math.ceil(imageIds.length / 2 / 2));
-        setPage(1);
         onPageSelect(1, 4);
     }, [imageIds, onPageSelect]);
-
-    useEffect(() => {
-        if (!isEmptyOrNil(renderImages) && !initRender.current) {
-            setActiveViewportIndex(0);
-            setActiveViewport(renderImages[0]);
-            initRender.current = true;
-        }
-    }, [renderImages]);
 
     return (
         <>
