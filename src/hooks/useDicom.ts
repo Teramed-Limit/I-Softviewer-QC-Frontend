@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 
 import { http } from '../api/axios';
 import { atomNotification } from '../atoms/notification';
-import { DicomImagePath, DicomIOD, DicomPatient, DicomSeries, DicomStudy } from '../interface/dicom-data';
+import { DicomImage, DicomImagePath, DicomIOD, DicomPatient, DicomSeries, DicomStudy } from '../interface/dicom-data';
 import { MessageType } from '../interface/notification';
 import { deepCopy } from '../utils/general';
 
@@ -21,16 +21,26 @@ const initDicomIOD = {
 export const useDicom = (studyInsUID: string) => {
     const setNotification = useSetRecoilState(atomNotification);
     const [dicomData, setDicomData] = useState<DicomIOD>(initDicomIOD);
-    const [dcmUrlList, setDcmUrlList] = useState<string[]>([]);
+    // cornerstone image id list
+    const [imageIdList, setImageIdList] = useState<string[]>([]);
+    // [cornerstone image id: DicomImage]
+    const [imageLookup, setImageLookup] = useState<Record<string, DicomImage>>({});
     const [loading, setLoading] = useState(false);
 
-    const convertToCornerstoneSchemeUrl = (dicomImage: DicomImagePath[]): string[] => {
-        return dicomImage.map((images) => {
+    const convertToCornerstoneSchemeUrl = (dicomImage: DicomImagePath[]) => {
+        const dcmImageIds: string[] = [];
+        const dcmLookup = {};
+        dicomImage.forEach((images) => {
             if (images.dcmPath.includes('https')) {
-                return images.dcmPath.replace('https', 'dicomweb');
+                const dicomImageId = images.dcmPath.replace('https', 'dicomweb');
+                dcmImageIds.push(dicomImageId);
+                dcmLookup[images.sopInstanceUID] = images;
             }
-            return images.dcmPath.replace('http', 'dicomweb');
+            const dicomImageId = images.dcmPath.replace('http', 'dicomweb');
+            dcmImageIds.push(dicomImageId);
+            dcmLookup[dicomImageId] = images;
         });
+        return { dcmImageIds, dcmLookup };
     };
 
     useEffect(() => {
@@ -65,7 +75,9 @@ export const useDicom = (studyInsUID: string) => {
                         dicomIOD.dicomImage = [...dicomIOD.dicomImage, ...imageRes.data];
                     });
                     setDicomData(dicomIOD);
-                    setDcmUrlList(convertToCornerstoneSchemeUrl(dicomIOD.dicomImage));
+                    const dcmData = convertToCornerstoneSchemeUrl(dicomIOD.dicomImage);
+                    setImageIdList(dcmData.dcmImageIds);
+                    setImageLookup(dcmData.dcmLookup);
                     setLoading(false);
                 },
                 error: (err: AxiosError) => {
@@ -87,7 +99,8 @@ export const useDicom = (studyInsUID: string) => {
         dicomSeries: dicomData.dicomSeries,
         dicomImage: dicomData.dicomImage,
         dicomData,
-        dcmUrlList,
+        imageIdList,
+        imageLookup,
         loading,
     };
 };

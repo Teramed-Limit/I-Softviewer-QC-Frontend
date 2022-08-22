@@ -13,7 +13,6 @@ import { useCornerstoneToolStateLoadHandler } from '../../hooks/cornerstone/useC
 import { useRegisterCornerstoneTools } from '../../hooks/cornerstone/useRegisterCornerstoneTools';
 import {
     CanvasMouseWheelEvent,
-    CornerstoneViewportEvent,
     ImageProgressEvent,
     ImageRenderedEvent,
 } from '../../interface/cornerstone-viewport-event';
@@ -57,6 +56,8 @@ interface Props {
     onNewImageCallBack?: (event, viewportIndex) => void;
     onElementEnabled?: (event) => void;
     onElementDisable?: (event) => void;
+    onMeasurementModified?: (event) => void;
+    onMeasurementRemoved?: (event) => void;
     startLoadHandler?: (element) => void;
     endLoadHandler?: (element, image) => void;
     /** false to enable automatic viewport resizing */
@@ -90,6 +91,8 @@ function CornerstoneViewport({
     onNewImageDebounceTime = 0,
     onElementEnabled = undefined,
     onElementDisable = undefined,
+    onMeasurementModified = undefined,
+    onMeasurementRemoved = undefined,
     startLoadHandler,
     endLoadHandler,
     loadIndicatorDelay = 45,
@@ -133,7 +136,7 @@ function CornerstoneViewport({
     }, []);
 
     // xhr request
-    const onImageLoadProgress = useCallback((event: CornerstoneViewportEvent<ImageProgressEvent>) => {
+    const onImageLoadProgress = useCallback((event: CustomEvent<ImageProgressEvent>) => {
         if (!element.current) return;
         setImageProgress(event.detail.percentComplete);
     }, []);
@@ -157,7 +160,7 @@ function CornerstoneViewport({
     );
 
     // image draw complete
-    const onImageRendered = useCallback((event: CornerstoneViewportEvent<ImageRenderedEvent>) => {
+    const onImageRendered = useCallback((event: CustomEvent<ImageRenderedEvent>) => {
         if (!element.current) return;
         const { viewport } = event.detail;
         setScale(viewport.scale);
@@ -171,7 +174,7 @@ function CornerstoneViewport({
 
     // canvas mouse wheel
     const onCanvasWheel = useCallback(
-        (event: CornerstoneViewportEvent<CanvasMouseWheelEvent>) => {
+        (event: CustomEvent<CanvasMouseWheelEvent>) => {
             if (!viewerElement) return;
             viewerElement.scroll({
                 top: viewerElement.scrollTop + (event.detail.detail.deltaY < 0 ? -100 : 100),
@@ -204,7 +207,15 @@ function CornerstoneViewport({
     }, [enableWebgl, isStackPrefetchEnabled, viewPortElement]);
 
     // Binding event
-    useBindCornerstoneElementEvent(viewPortElement, onNewImage, onImageRendered, onViewportActive, onCanvasWheel);
+    useBindCornerstoneElementEvent(
+        viewPortElement,
+        onNewImage,
+        onImageRendered,
+        onViewportActive,
+        onCanvasWheel,
+        onMeasurementModified,
+        onMeasurementRemoved,
+    );
     useBindCornerstoneEvent(
         viewPortElement,
         onElementEnabled,
@@ -256,12 +267,16 @@ function CornerstoneViewport({
             }
 
             cornerstoneTools.clearToolState(viewPortElement, 'stackPrefetch');
+            for (let i = 0; i < tools.length; i++) {
+                const tool = typeof tools[i] === 'string' ? { name: tools[i] } : { ...tools[i] };
+                cornerstoneTools.clearToolState(viewPortElement, tool.name);
+            }
             cornerstoneTools.stopClip(viewPortElement);
             cornerstone.imageLoadPoolManager.clearRequestStack(requestType);
             cornerstone.imageLoadPoolManager.destroy();
             cornerstone.disable(viewPortElement);
         };
-    }, [isStackPrefetchEnabled, viewPortElement]);
+    }, [isStackPrefetchEnabled, tools, viewPortElement]);
 
     return (
         <div style={style} className={classNames('viewport-wrapper', className)}>

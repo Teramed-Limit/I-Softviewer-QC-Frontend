@@ -1,11 +1,13 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 import { Pagination } from '@mui/material';
 import cx from 'classnames';
 import cornerstone, { Viewport } from 'cornerstone-core';
 
-// import cornerstoneTools from 'cornerstone-tools';
-import { CornerstoneViewportEvent, NewImageEvent, RenderImage } from '../../interface/cornerstone-viewport-event';
+import { http } from '../../api/axios';
+import { useDicomMeasurement } from '../../hooks/useDicomMeasurement';
+import { MeasurementDTO, NewImageEvent, RenderImage } from '../../interface/cornerstone-viewport-event';
+import { DicomImage } from '../../interface/dicom-data';
 import { isEmptyOrNil } from '../../utils/general';
 import CornerstoneViewport from '../CornerstoneViewport/CornerstoneViewport';
 import DicomViewerToolbar from '../DicomViewerToolbar/DicomViewerToolbar';
@@ -13,6 +15,7 @@ import classes from './DicomViewer.module.scss';
 
 interface Props {
     imageIds: string[];
+    imageLookup?: Record<string, DicomImage>;
 }
 
 // Create the synchronizer
@@ -43,7 +46,7 @@ const tools = [
     // { name: 'StackScrollMouseWheel', mode: 'active' },
 ];
 
-function DicomViewer({ imageIds }: Props) {
+function DicomViewer({ imageIds, imageLookup = {} }: Props) {
     const [row, setRow] = useState(2);
     const [col, setCol] = useState(2);
     const [page, setPage] = useState(1);
@@ -51,9 +54,18 @@ function DicomViewer({ imageIds }: Props) {
     const [displayImageIds, setDisplayImageIds] = useState<string[]>([]);
     const [initViewport] = useState<Viewport>({});
     const [renderImages, setRenderImages] = useState<{ [keys: string]: RenderImage }>({});
-    const [activeViewportIndex, setActiveViewportIndex] = useState(0);
+    const [activeViewportIndex, setActiveViewportIndex] = useState(-1);
     const [activeViewport, setActiveViewport] = useState<RenderImage>();
     const [activeTool, setActiveTool] = useState('Wwwc');
+    const initRender = useRef(false);
+
+    // Dicom measurement
+    const measurementLookup: Record<string, MeasurementDTO[]> = {};
+    Object.entries(imageLookup).forEach(
+        ([k, v]) => (measurementLookup[k] = v.measurementData ? JSON.parse(v.measurementData) : []),
+    );
+    const { imageIdMeasurementList, placeMeasurement, onMeasurementModified, onMeasurementRemoved } =
+        useDicomMeasurement(measurementLookup);
 
     const changeLayout = (selRow: number, selCol: number) => {
         setRow(selRow);
@@ -62,6 +74,16 @@ function DicomViewer({ imageIds }: Props) {
         setPage(1);
         onPageSelect(1, selRow * selCol);
     };
+
+    const saveMeasurement = useCallback(() => {
+        if (!activeViewport) return;
+        const measurementData = imageIdMeasurementList[activeViewport.image.imageId];
+        const sopInstanceUid = imageLookup[activeViewport.image.imageId].sopInstanceUID;
+        if (!sopInstanceUid || !measurementData) return;
+        http.post(`/dicomMeasurement/sopInstanceUid/${sopInstanceUid}`, {
+            measurementData: JSON.stringify(measurementData),
+        }).subscribe();
+    }, [activeViewport, imageIdMeasurementList, imageLookup]);
 
     const onPageSelect = useCallback(
         (pageNumber: number, displayCount: number) => {
@@ -84,22 +106,28 @@ function DicomViewer({ imageIds }: Props) {
         [renderImages],
     );
 
-    const onNewImage = useCallback((event: CornerstoneViewportEvent<NewImageEvent>, viewportIndex) => {
-        // wwwcSynchronizer.add(viewPortElement.element);
-        cornerstone.reset(event.detail.element);
-        setRenderImages((list) => {
-            return {
-                ...list,
-                [viewportIndex]: {
-                    viewportIndex,
-                    element: event.detail.element,
-                    canvas: event.detail.enabledElement.canvas,
-                    image: event.detail.image,
-                    viewport: event.detail.viewport,
-                } as RenderImage,
-            };
-        });
-    }, []);
+    const onNewImage = useCallback(
+        (event: CustomEvent<NewImageEvent>, viewportIndex) => {
+            // wwwcSynchronizer.add(viewPortElement.element);
+            cornerstone.reset(event.detail.element);
+            setRenderImages((list) => {
+                return {
+                    ...list,
+                    [viewportIndex]: {
+                        viewportIndex,
+                        element: event.detail.element,
+                        canvas: event.detail.enabledElement.canvas,
+                        image: event.detail.image,
+                        viewport: event.detail.viewport,
+                    } as RenderImage,
+                };
+            });
+
+            // place measurement
+            placeMeasurement(event.detail.image.imageId, event.detail.element);
+        },
+        [placeMeasurement],
+    );
 
     useEffect(() => {
         if (isEmptyOrNil(imageIds)) return;
@@ -107,6 +135,14 @@ function DicomViewer({ imageIds }: Props) {
         setPage(1);
         onPageSelect(1, 4);
     }, [imageIds, onPageSelect]);
+
+    useEffect(() => {
+        if (!isEmptyOrNil(renderImages) && !initRender.current) {
+            setActiveViewportIndex(0);
+            setActiveViewport(renderImages[0]);
+            initRender.current = true;
+        }
+    }, [renderImages]);
 
     return (
         <>
@@ -116,6 +152,7 @@ function DicomViewer({ imageIds }: Props) {
                 activeImage={activeViewport}
                 activeTool={activeTool}
                 changeLayout={changeLayout}
+                saveMeasurement={saveMeasurement}
                 setActiveTool={setActiveTool}
             />
             <div className={classes.viewer}>
@@ -147,6 +184,8 @@ function DicomViewer({ imageIds }: Props) {
                             setViewportActive={onViewportActive}
                             initialViewport={initViewport}
                             onNewImageCallBack={onNewImage}
+                            onMeasurementModified={onMeasurementModified}
+                            onMeasurementRemoved={onMeasurementRemoved}
                         />
                     ))}
                 </div>

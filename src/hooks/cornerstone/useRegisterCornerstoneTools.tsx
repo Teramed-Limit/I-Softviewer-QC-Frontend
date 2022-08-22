@@ -24,6 +24,7 @@ const addAndConfigureInitialToolsForElement = (tools, element) => {
             if (toolAlreadyAddedToElement) continue;
 
             cornerstoneTools.addToolForElement(element, tool.toolClass, tool.props || {});
+            cornerstoneTools.setToolPassiveForElement(element, tool.name);
 
             const hasInitialMode = tool.mode && AVAILABLE_TOOL_MODES.includes(tool.mode);
 

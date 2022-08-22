@@ -82,6 +82,7 @@ export interface DicomImage {
     referencedSeriesInstanceUID: string;
     dcmPath: string;
     jpgPath: string;
+    measurementData: string;
 }
 
 export interface DicomImagePath {

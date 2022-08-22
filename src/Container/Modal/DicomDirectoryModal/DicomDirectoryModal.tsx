@@ -19,7 +19,7 @@ import FileSelect from '../../../Components/FileSelect/FileSelect';
 import SecondaryButton from '../../../Components/SecondaryButton/SecondaryButton';
 import { useDicomDirImport } from '../../../hooks/useDicomDirImport';
 import { BaseModalHandle, useModal } from '../../../hooks/useModal';
-import { CornerstoneViewportEvent, NewImageEvent } from '../../../interface/cornerstone-viewport-event';
+import { NewImageEvent } from '../../../interface/cornerstone-viewport-event';
 import { RootRecord, SeriesRecord } from '../../../interface/dicom-directory-record';
 import { isEmptyOrNil } from '../../../utils/general';
 import BaseModal from '../../BaseModal/BaseModal';
@@ -73,7 +73,7 @@ const DicomDirectoryModal = forwardRef<BaseModalHandle, Props>((props, ref) => {
     const { modalOpen, setModalOpen } = useModal(ref);
     const filesCache = useRef<Record<string, string>>({});
 
-    const resetViewport = (event: CornerstoneViewportEvent<NewImageEvent>) => {
+    const resetViewport = (event: CustomEvent<NewImageEvent>) => {
         cornerstone.reset(event.detail.element);
     };
 

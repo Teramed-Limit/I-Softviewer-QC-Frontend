@@ -2,6 +2,7 @@ import React from 'react';
 
 import InvertColorsIcon from '@mui/icons-material/InvertColors';
 import RotateLeftIcon from '@mui/icons-material/RotateLeft';
+import SaveIcon from '@mui/icons-material/Save';
 import ViewComfyIcon from '@mui/icons-material/ViewComfy';
 import Box from '@mui/material/Box';
 import cornerstone from 'cornerstone-core';
@@ -26,9 +27,18 @@ interface Props {
     activeTool: string;
     setActiveTool: (tool: string) => void;
     changeLayout: (selRow: number, selCol: number) => void;
+    saveMeasurement: () => void;
 }
 
-const DicomViewerToolbar = ({ row, col, activeImage = undefined, activeTool, setActiveTool, changeLayout }: Props) => {
+const DicomViewerToolbar = ({
+    row,
+    col,
+    activeImage = undefined,
+    activeTool,
+    setActiveTool,
+    changeLayout,
+    saveMeasurement,
+}: Props) => {
     // const [openModal, setModalOpen] = React.useState(false);
 
     const resetViewport = () => {
@@ -106,6 +116,7 @@ const DicomViewerToolbar = ({ row, col, activeImage = undefined, activeTool, set
                 />
             </IconMenuButton>
             <IconButton isActive={false} onClick={() => resetViewport()} IconComp={<RotateLeftIcon />} label="Reset" />
+            <IconButton isActive={false} onClick={() => saveMeasurement()} IconComp={<SaveIcon />} label="Save" />
             {/* <> */}
             {/*    <IconButton */}
             {/*        isActive={false} */}

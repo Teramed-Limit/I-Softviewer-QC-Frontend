@@ -1,9 +1,5 @@
 import cornerstone, { EnabledElementLayer, Image, LUT, vec2, VOI } from 'cornerstone-core';
 
-export interface CornerstoneViewportEvent<T> extends Event {
-    detail: T;
-}
-
 export interface NewImageEvent {
     viewport: Viewport;
     element: HTMLElement;
@@ -109,4 +105,31 @@ export interface RenderImage {
     canvas: HTMLCanvasElement;
     image: cornerstone.Image;
     viewport: Viewport;
+}
+
+export interface MeasurementModified {
+    element: HTMLElement;
+    measurementData: MeasurementData;
+    toolName: string;
+    toolType: string;
+}
+
+export interface MeasurementRemoved {
+    element: HTMLElement;
+    measurementData: MeasurementData;
+    toolName: string;
+    toolType: string;
+}
+
+export interface MeasurementData {
+    active: boolean;
+    invalidated: boolean;
+    handles: any;
+    uuid: string;
+    visible: boolean;
+}
+
+export interface MeasurementDTO {
+    toolName: string;
+    measurementData: MeasurementData;
 }
